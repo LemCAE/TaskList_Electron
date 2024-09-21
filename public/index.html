@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="LemCAE">
+        <meta name="description" content="It's a webpage used for prastice and have fun.Still studying and working.">
+        <title>TaskList</title>
+        <link rel="icon" href="../resource/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="style.css">
+        <script src="styleload.js"></script>
+    </head>
+    <body>
+        <div class="titlebar">
+            <div class="icon">
+              <img src="../resource/icon.ico" alt="App Icon">
+            </div>
+            <div class="title">TaskList</div>
+            <div class="controls">
+                <button id="minimize">
+                    <svg t="1725463744988" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4231" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path d="M98.23 451.003l829.685-1.992 0.154 64-829.685 1.992z" fill="" p-id="4232"></path>
+                    </svg>
+                </button>
+                <button id="maximize">
+                    <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
+                        <path d="M836.224 917.333333h-644.266667a85.589333 85.589333 0 0 1-85.333333-85.333333V187.733333a85.589333 85.589333 0 0 1 85.333333-85.333333h644.266667a85.589333 85.589333 0 0 1 85.333333 85.333333v644.266667a91.690667 91.690667 0 0 1-85.333333 85.333333zM191.957333 170.666667a22.869333 22.869333 0 0 0-21.333333 21.333333v644.266667a22.869333 22.869333 0 0 0 21.333333 21.333333h644.266667a22.869333 22.869333 0 0 0 21.333333-21.333333V192a22.869333 22.869333 0 0 0-21.333333-21.333333z" p-id="4130"></path>
+                    </svg>
+                </button>
+                <button id="close">
+                    <svg t="1725463516138" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3260" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path d="M548.992 503.744L885.44 167.328a31.968 31.968 0 1 0-45.248-45.248L503.744 458.496 167.328 122.08a31.968 31.968 0 1 0-45.248 45.248l336.416 336.416L122.08 840.16a31.968 31.968 0 1 0 45.248 45.248l336.416-336.416L840.16 885.44a31.968 31.968 0 1 0 45.248-45.248L548.992 503.744z" p-id="3261"></path>
+                    </svg>
+                </button>
+            </div>
+          </div>
+        <div class="classList">
+            <p id="time" class="A">11:45</p>
+            <p id="date" class="A">8/19</p>
+            <p id="weekdays" class="A"></p>
+            <div class="classListBox">
+                <div class="className" id="name1">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name2">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name3">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name4">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name5">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name6">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name7">
+                    <p class="A"></p>
+                </div>
+                <div class="className" id="name8">
+                    <p class="A"></p>
+                </div>
+            </div>
+            <div class="extraFunction">
+
+            </div>
+        </div>
+        <div class="taskList">
+            <div id="cnlist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">语文</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+            <div id="malist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">数学</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+            <div id="enlist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">英语</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+            <div id="phlist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">物理</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+            <div id="chlist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">化学</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+            <div id="bilist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">生物</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+            <div id="otlist" class="listinfo">
+                <div class="listTitle">
+                    <p class="subject-name">其他</p>
+                </div>
+                <div class="listContent">
+                </div>
+            </div>
+        </div>
+        <div class="configs" id="configsBox">
+            <div id="outControl">
+                <div id="openMenu"></div>
+                <div id="icons">
+                    <button id="iconEditDiv" class="iconDiv">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="menuIcon" id="iconEdit" viewBox="0 0 24 24" style="width: 100%; height: auto;">
+                            <path fill="currentColor" d="m7 17.013l4.413-.015l9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583zM18.045 4.458l1.589 1.583l-1.597 1.582l-1.586-1.585zM9 13.417l6.03-5.973l1.586 1.586l-6.029 5.971L9 15.006z"/>
+                            <path fill="currentColor" d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2"/>
+                        </svg>
+                    </button>
+                    <button id="iconSettingDiv" class="iconDiv">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="menuIcon" id="iconSetting" viewBox="0 0 24 24" style="width: 100%; height: auto;">
+                            <path fill="currentColor" d="M12 16c2.206 0 4-1.794 4-4s-1.794-4-4-4s-4 1.794-4 4s1.794 4 4 4m0-6c1.084 0 2 .916 2 2s-.916 2-2 2s-2-.916-2-2s.916-2 2-2"/>
+                            <path fill="currentColor" d="m2.845 16.136l1 1.73c.531.917 1.809 1.261 2.73.73l.529-.306A8 8 0 0 0 9 19.402V20c0 1.103.897 2 2 2h2c1.103 0 2-.897 2-2v-.598a8 8 0 0 0 1.896-1.111l.529.306c.923.53 2.198.188 2.731-.731l.999-1.729a2 2 0 0 0-.731-2.732l-.505-.292a7.7 7.7 0 0 0 0-2.224l.505-.292a2 2 0 0 0 .731-2.732l-.999-1.729c-.531-.92-1.808-1.265-2.731-.732l-.529.306A8 8 0 0 0 15 4.598V4c0-1.103-.897-2-2-2h-2c-1.103 0-2 .897-2 2v.598a8 8 0 0 0-1.896 1.111l-.529-.306c-.924-.531-2.2-.187-2.731.732l-.999 1.729a2 2 0 0 0 .731 2.732l.505.292a7.7 7.7 0 0 0 0 2.223l-.505.292a2.003 2.003 0 0 0-.731 2.733m3.326-2.758A5.7 5.7 0 0 1 6 12c0-.462.058-.926.17-1.378a1 1 0 0 0-.47-1.108l-1.123-.65l.998-1.729l1.145.662a1 1 0 0 0 1.188-.142a6.1 6.1 0 0 1 2.384-1.399A1 1 0 0 0 11 5.3V4h2v1.3a1 1 0 0 0 .708.956a6.1 6.1 0 0 1 2.384 1.399a1 1 0 0 0 1.188.142l1.144-.661l1 1.729l-1.124.649a1 1 0 0 0-.47 1.108c.112.452.17.916.17 1.378s-.058.925-.171 1.378a1 1 0 0 0 .471 1.108l1.123.649l-.998 1.729l-1.145-.661a1 1 0 0 0-1.188.142a6.1 6.1 0 0 1-2.384 1.399A1 1 0 0 0 13 18.7l.002 1.3H11v-1.3a1 1 0 0 0-.708-.956a6.1 6.1 0 0 1-2.384-1.399a.99.99 0 0 0-1.188-.141l-1.144.662l-1-1.729l1.124-.651a1 1 0 0 0 .471-1.108"/>
+                        </svg>
+                    </button>
+                    <button id="iconInfoDiv" class="iconDiv">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="menuIcon" id="iconInfo" viewBox="0 0 24 24" style="width: 100%; height: auto;">
+                            <path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8s8 3.589 8 8s-3.589 8-8 8"/>
+                            <path fill="currentColor" d="M11 11h2v6h-2zm0-4h2v2h-2z"/>
+                        </svg>     
+                    </button>
+                </div>
+            </div>
+            <div id="inControl">
+                <div id="editList">
+                    <div class="editListInnerContainer">
+                        <div id="editListcn" class="editListinner">
+                            <div class="editListTitle">语文</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                        <div id="editListma" class="editListinner">
+                            <div class="editListTitle">数学</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                        <div id="editListen" class="editListinner">
+                            <div class="editListTitle">英语</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                        <div id="editListph" class="editListinner">
+                            <div class="editListTitle">物理</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                        <div id="editListch" class="editListinner">
+                            <div class="editListTitle">化学</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                        <div id="editListbi" class="editListinner">
+                            <div class="editListTitle">生物</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                        <div id="editListot" class="editListinner">
+                            <div class="editListTitle">其他</div>
+                            <div class="editListContent">
+                                <div  draggable="false" class="createNewTask">+</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="saveList">保存并更新</button>
+                </div>
+                <div id="setting">
+                    <div class="settingInnerContainer">
+                        <div class="settingPart" id="settingAppearance">
+                            <div class="settingTitle">外观设置</div>
+                            <div class="settingContent">
+                                <div class="rangeChange singleSetting" id="fontSizeChange">
+                                    <label for="fontSize">字体大小</label>
+                                    <div class="numberInputClick" id="fontSize">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0.1" max="5" step="0.05" value="1.6">
+                                        <div class="plus numberChange">+</div>
+                                        <p>vw</p>
+                                    </div>
+                                </div>
+                                <div class="rangeChange singleSetting" id="backgroundMaskChange">
+                                    <label for="backgroundMask">背景遮罩不透明度</label>
+                                    <div class="numberInputClick" id="backgroundMask">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="1" step="0.05" value="0.4">
+                                        <div class="plus numberChange">+</div>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSettingc" id="configAnimineChange">
+                                    <label for="configAnimine">编辑窗格动画</label>
+                                    <label class="switch">
+                                        <input id="configAnimine" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="rangeChange singleSetting" id="configBlurChange">
+                                    <label for="configBlur">编辑窗格模糊</label>
+                                    <div class="numberInputClick" id="configBlur">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="20" step="1" value="5">
+                                        <div class="plus numberChange">+</div>
+                                        <p>px</p>
+                                    </div>
+                                </div>
+                                <div class="rangeChange singleSetting" id="configMaskChange">
+                                    <label for="configMask">编辑窗格遮罩不透明度</label>
+                                    <div class="numberInputClick" id="configMask">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="1" step="0.05" value="0.4">
+                                        <div class="plus numberChange">+</div>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSettingc" id="CheckboxAnimineChange">
+                                    <label for="CheckboxAnimine">按钮动画</label>
+                                    <label class="switch">
+                                        <input id="CheckboxAnimine" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSettingc" id="darkModeChange">
+                                    <label for="darkMode">暗色背景适配</label>
+                                    <label class="switch">
+                                        <input id="darkMode" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="selectChange singleSetting" id="backgroundPic">
+                                    <div class="selectChangeContainer">
+                                        <label for="backgroundSource">背景图片来源:</label>
+                                        <select id="backgroundSource">
+                                            <option value="defaultLight">默认亮色背景</option>
+                                            <option value="defaultDark">默认暗色背景</option>
+                                            <option value="local">本地文件</option>
+                                            <option value="url">网络文件</option>
+                                        </select>
+                                        <div id="fileInputContainer" class="hidden">
+                                            <div class="hidden" id="fileInputContainerLocal">
+                                                <label for="backgroundLocal">选择本地文件</label>
+                                                <input id="backgroundLocal" type="text" placeholder="输入本地文件路径">
+                                                <button id="selectLocalImage">选择文件</button>
+                                            </div>
+                                            <div id="fileInputContainerURL" class="hidden">
+                                                <label for="backgroundURLInput">图片资源链接:</label>
+                                                <input type="text" id="backgroundURLInput" placeholder="https://example.com/image.jpg">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settingPart" id="settingFunction">
+                            <div class="settingTitle">功能设置</div>
+                            <div class="settingContent">
+                                <div class="enableChange singleSetting" id="autoColseAfterSaveChange">
+                                    <label for="autoColseAfterSave">保存任务后自动关闭编辑窗格</label>
+                                    <label class="switch">
+                                        <input id="autoColseAfterSave" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="showClassListChange">
+                                    <label for="showClassList">显示课程列表</label>
+                                    <label class="switch">
+                                        <input id="showClassList" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="showTimeChange">
+                                    <label for="showTime">显示时间</label>
+                                    <label class="switch">
+                                        <input id="showTime" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="rangeChange singleSetting" id="refreshTimeChange">
+                                    <label for="refreshTime">时间刷新周期</label>
+                                    <div class="numberInputClick" id="refreshTime">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="100" max="6000" step="100" value="3000">
+                                        <div class="plus numberChange">+</div>
+                                        <p>ms</p>
+                                    </div>
+                                </div>
+                                <div class="selectChange singleSetting" id="reorderMethodChange">
+                                    <div class="selectChangeContainer">
+                                        <label for="reorderMethod">任务列表重排方式</label>
+                                        <select id="reorderMethod">
+                                            <option value="drag">拖动重排</option>
+                                            <option value="button">按键重排</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSetting" id="autoLaunchChange">
+                                    <label for="autoLaunch">开机时自动启动</label>
+                                    <label class="switch">
+                                        <input id="autoLaunch" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settingPart" id="settingOthers">
+                            <div class="settingTitle">其他设置</div>
+                            <div class="settingContent">
+                                <div class="singleSetting" id="importTask">
+                                    <button class="configsButton" id="importTaskButton">导入任务列表</button>
+                                </div>
+                                <div class="singleSetting" id="exportTask">
+                                    <button class="configsButton" id="exportTaskButton">导出任务列表</button>
+                                </div>
+                                <div class="singleSetting" id="clearTask">
+                                    <button class="configsButton" id="clearTaskButton">清空任务列表</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="saveSetting">保存并更新</button>
+                </div>
+                <div id="info">
+                    <img src="../resource/icon.ico">
+                    <p id="name">TaskList v1.0.3 beta</p>
+                    <p>By LemCAE</p>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="sortable.min.js"></script>
+    <script src="script.js"></script>
+</html>
