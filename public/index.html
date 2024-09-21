@@ -34,11 +34,11 @@
                 </button>
             </div>
           </div>
-        <div class="classList">
+        <div id="classTable">
             <p id="time" class="A">11:45</p>
             <p id="date" class="A">8/19</p>
             <p id="weekdays" class="A"></p>
-            <div class="classListBox">
+            <div id="classTableBox">
                 <div class="className" id="name1">
                     <p class="A"></p>
                 </div>
@@ -68,7 +68,7 @@
 
             </div>
         </div>
-        <div class="taskList">
+        <div id="taskList">
             <div id="cnlist" class="listinfo">
                 <div class="listTitle">
                     <p class="subject-name">语文</p>
@@ -237,6 +237,13 @@
                                         <div class="plus numberChange">+</div>
                                     </div>
                                 </div>
+                                <div class="enableChange singleSettingc" id="taskListHoverAnimineChange">
+                                    <label for="taskListHoverAnimine">列表鼠标悬停效果</label>
+                                    <label class="switch">
+                                        <input id="taskListHoverAnimine" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
                                 <div class="enableChange singleSettingc" id="CheckboxAnimineChange">
                                     <label for="CheckboxAnimine">按钮动画</label>
                                     <label class="switch">
@@ -321,6 +328,13 @@
                                     <label for="autoLaunch">开机时自动启动</label>
                                     <label class="switch">
                                         <input id="autoLaunch" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="autoMinimizeWhenAutoLaunchChange">
+                                    <label for="autoMinimizeWhenAutoLaunch">自动启动时最小化到系统托盘</label>
+                                    <label class="switch">
+                                        <input id="autoMinimizeWhenAutoLaunch" type="checkbox">
                                         <span class="slider"></span>
                                     </label>
                                 </div>

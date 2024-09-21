@@ -3,8 +3,13 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
-    asar: false,
-    icon: './resource/icon'
+    icon: './resource/icon',
+    ignore: [
+      "forge.config.js",
+      "package-lock.json",
+      "server.js",
+      ".gitignore"
+    ],
   },
   rebuildConfig: {},
   makers: [
@@ -26,10 +31,6 @@ module.exports = {
     },
   ],
   plugins: [
-    //{
-      //name: '@electron-forge/plugin-auto-unpack-natives',
-      //config: {},
-    //},
     new FusesPlugin({
       version: FuseVersion.V1,
       fuses: {

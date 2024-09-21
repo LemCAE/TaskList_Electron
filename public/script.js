@@ -27,7 +27,7 @@ window.wAPI.onWindowUnmaximized(() => {
     document.getElementById('maximize').querySelector('svg').style.width = '20px';
 });
 document.querySelector('.titlebar').style.height = `25px`;
-document.querySelector('.classList').style.marginTop = `26px`;
+document.getElementById('classTable').style.marginTop = `26px`;
 document.querySelector('.configs').style.marginTop = `26px`;
 document.getElementById('minimize').querySelector('svg').style.height = '20px';
 document.getElementById('maximize').querySelector('svg').style.height = '20px';
@@ -35,7 +35,7 @@ document.getElementById('close').querySelector('svg').style.height = '20px';
 document.getElementById('minimize').querySelector('svg').style.width = '20px';
 document.getElementById('maximize').querySelector('svg').style.width = '20px';
 document.getElementById('close').querySelector('svg').style.width = '20px';
-document.querySelector('.taskList').style.marginTop = `26px`;
+document.getElementById('taskList').style.marginTop = `26px`;
 
 function updateTime() {
     const now = new Date();
@@ -119,8 +119,14 @@ async function loadStyleSetting() {
     };
     if (configJson.autoLaunch === false) {
         document.getElementById('autoLaunch').checked = false;
+        document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'none';
     } else {
         document.getElementById('autoLaunch').checked = true;
+    };
+    if (configJson.autoMinimizeWhenAutoLaunch === false) {
+        document.getElementById('autoMinimizeWhenAutoLaunch').checked = false;
+    } else {
+        document.getElementById('autoMinimizeWhenAutoLaunch').checked = true;
     };
     if (configJson.showClassList === false) {
         document.getElementById('showClassList').checked = false;
@@ -128,6 +134,11 @@ async function loadStyleSetting() {
         document.getElementById('refreshTimeChange').style.display = 'none';
     } else {
         document.getElementById('showClassList').checked = true;
+    };
+    if (configJson.taskListHoverAnimine === false) {
+        document.getElementById('taskListHoverAnimine').checked = false;
+    } else {
+        document.getElementById('taskListHoverAnimine').checked = true;
     }
 }
 document.addEventListener('DOMContentLoaded', loadStyleSetting);
@@ -166,7 +177,7 @@ document.getElementById('openMenu').addEventListener('click', function () {
 });
 
 // 读取课表
-async function readTable() {
+async function readClassTable() {
     const weekday=new Date().toLocaleDateString('en-US', {
         weekday: 'long'
     });
@@ -190,23 +201,31 @@ async function readTable() {
         console.error('处理课程数据时出错:', error);
     }
 }
-
-readTable();
-
+readClassTable();
 function getCurrentDate() {
-const now=new Date();
-const month=now.getMonth()+1;
-const day=now.getDate();
-return `${month < 10 ? '0' + month : month}/${day < 10 ? '0' + day : day}`;}
+    const now=new Date();
+    const month=now.getMonth()+1;
+    const day=now.getDate();
+    return `${month < 10 ? '0' + month : month}/${day < 10 ? '0' + day : day}`;
+}
 document.getElementById('date').innerText=getCurrentDate();
 document.getElementById('weekdays').innerText=new Date().toLocaleDateString('zh-CN', {weekday: 'long'});
+setInterval(60000,function () {
+    if (document.getElementById('date').innerText !== getCurrentDate()) {
+        document.getElementById('date').innerText=getCurrentDate();
+        document.getElementById('weekdays').innerText=new Date().toLocaleDateString('zh-CN', {weekday: 'long'});
+        readClassTable();
+    } else {
+        null
+    }
+})
 
 // 读取任务列表
 function createlist(inner) {
-const div=document.createElement('div');
-div.classList.add('listItem');
-div.innerHTML=` <div class="singleLine"><p>${inner}</p></div>`;
-return div;
+    const div=document.createElement('div');
+    div.classList.add('listItem');
+    div.innerHTML=` <div class="singleLine"><p>${inner}</p></div>`;
+    return div;
 }
 
 async function readTaskList(jsonFile) {
@@ -257,7 +276,6 @@ async function getListToEdit(jsonFile) {
             }
         }
     }
-
     catch (error) {
         console.error('处理任务数据时出错:', error);
     }
@@ -277,7 +295,6 @@ document.addEventListener('click', function (event) {
     }
 });
 
-
 function hideSettingContent(id) {
     var element=document.getElementById(id).querySelector(".settingContent");
     element.style.display=element.style.display==="none" ? "flex": "none";
@@ -289,7 +306,6 @@ document.addEventListener('click', function (event) {
         hideSettingContent(event.target.parentElement.id);
     }
 });
-
 
 function reloadTaskList(jsonFile) {
 // 清空当前的任务列表内容
@@ -319,7 +335,6 @@ document.getElementById('saveList').addEventListener('click', async () => {
         bi: [],
         ot: []
     };
-
     // 遍历每个编辑列表区块
     document.querySelectorAll('.editListinner').forEach(section => {
         const key = section.id.replace('editList', '').toLowerCase();
@@ -328,18 +343,12 @@ document.getElementById('saveList').addEventListener('click', async () => {
         
         data[key] = values;
     });
-
     console.log('Final data to save:', data);
-
     await window.fileAPI.writeConfig('lists/list.json', data);
-
     console.log('Data saved successfully');
     reloadTaskList('list.json');
     reloadEditListContent('list.json');
 });
-
-
-
 
 function initializeSortable(container) {
     return new Sortable(container, {
@@ -485,7 +494,9 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const autoColseAfterSave = document.getElementById('autoColseAfterSave').checked;
     const reorderMethod = document.getElementById('reorderMethod').value;
     const autoLaunch = document.getElementById('autoLaunch').checked;
+    const autoMinimizeWhenAutoLaunch = document.getElementById('autoMinimizeWhenAutoLaunch').checked;
     const showClassList = document.getElementById('showClassList').checked;
+    const taskListHoverAnimine = document.getElementById('taskListHoverAnimine').checked;
     let background = '';
     if (backgroundSource === 'defaultLight') {
         background = '../resource/default.jpg';
@@ -513,7 +524,9 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         autoColseAfterSave: autoColseAfterSave,
         reorderMethod: reorderMethod,
         autoLaunch: autoLaunch,
-        showClassList: showClassList
+        autoMinimizeWhenAutoLaunch: autoMinimizeWhenAutoLaunch,
+        showClassList: showClassList,
+        taskListHoverAnimine: taskListHoverAnimine
     };
 
     console.log('Final config to save:', newConfig);
@@ -566,6 +579,16 @@ document.getElementById('showClassList').addEventListener('change', function() {
     }
 })
 
+document.getElementById('autoLaunch').addEventListener('change', function() {
+    const autoLaunch = document.getElementById('autoLaunch').checked;
+    if (autoLaunch) {
+        console.log('autoLaunch');
+        document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'flex';
+    } else {
+        console.log('no autoLaunch');
+        document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'none';
+    }
+})
 
 document.addEventListener("DOMContentLoaded", function () {
     // 通用的加减函数

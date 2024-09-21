@@ -7,12 +7,13 @@
   "configAnimine": true,
   "configBlur": "10",
   "configMask": "0",
+  "taskListHoverAnimine": true,
   "CheckboxAnimine": true,
   "showClassList": true,
   "showTime": true,
   "refreshTime": "1000",
   "autoColseAfterSave": false,
-  "reorderMethod": "button",
-  "autoLaunch": true,
+  "reorderMethod": "drag",
+  "autoLaunch": false,
   "autoMinimizeWhenAutoLaunch": false
 }

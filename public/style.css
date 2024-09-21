@@ -76,7 +76,7 @@ body::before {
 	color: #000;
 }
 
-.classList {
+#classTable {
 	height:100%;
 	width:5vw;
 	overflow:auto;
@@ -99,7 +99,7 @@ p.A {
 	width:100%;
 	text-align:center;
 }
-.classListBox {
+#classTableBox {
 	margin:0px;
 	width:100%;
 }
@@ -257,14 +257,14 @@ p.A {
 	overflow:scroll;
 	background-color: rgba(255, 255, 255, 0.3);
 }
-.taskList {
-	width:89vw;
+#taskList {
+	width:90vw;
 	height: 95.5vh;
 	overflow: scroll;
 	display:flex;
 	flex-direction:column;
 	align-items:center;
-	padding: 1vw 1vw 0 6.2vw;
+	padding: 1vw 1vw 0 6vw;
 }
 .listinfo {
 	width:100%;
@@ -278,8 +278,7 @@ p.A {
 	backdrop-filter:blur(5px)
 }
 .listinfo:hover {
-	background-color:#ffffff;
-	transform:scale(1.02);
+	transform:scale(1.018);
 }
 .listinfo p {
 	margin:0px;

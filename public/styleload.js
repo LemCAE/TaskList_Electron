@@ -137,15 +137,24 @@ async function loadStyle() {
     if (configJson.showClassList === false) {
         const showClassList = document.createElement('style');
         showClassList.textContent = `
-            .classList {
+            #classTable {
                 display: none;
             }
-            .taskList {
-                padding-left: 1vw;
+            #taskList {
+                padding: 1vw 1vw 0 1vw;
                 width: 95vw;
             }
         `
         document.head.appendChild(showClassList);
+    }
+    if (configJson.taskListHoverAnimine === false) {
+        const taskListHoverAnimine = document.createElement('style');
+        taskListHoverAnimine.textContent = `
+            .listinfo:hover {
+                transform:scale(1)
+            }
+        `
+        document.head.appendChild(taskListHoverAnimine);
     }
 }
 loadStyle();
