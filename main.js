@@ -220,9 +220,15 @@ ipcMain.handle("dialog:selectImage", async () => {
     if (canceled) {
         return null;
     } else {
-        return filePaths[0]; // 返回选择的文件路径
+        return filePaths[0];
     }
 });
+ipcMain.handle('select-folder', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory']
+    });
+    return result.filePaths;
+  });
 
 ipcMain.handle("dialog:showWarning", async (event, detailText) => {
     const result = await dialog.showMessageBox(mainWindow, {
@@ -294,4 +300,12 @@ ipcMain.handle("dialog:exportFile", async (event, data) => {
     } catch (error) {
         return { success: false, error: "Error writing JSON file" };
     }
+});
+
+
+ipcMain.handle('getMusic', (event, folderPath) => {
+    const supportedFormats = ['.mp3', '.wav', '.ogg', '.flac', '.m4a'];
+    const files = fs.readdirSync(folderPath);
+    const musicFiles = files.filter(file => supportedFormats.includes(path.extname(file).toLowerCase()));
+    return musicFiles.map(file => path.join(folderPath, file)); // 返回完整路径
 });

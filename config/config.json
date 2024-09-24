@@ -15,5 +15,14 @@
   "autoColseAfterSave": false,
   "reorderMethod": "drag",
   "autoLaunch": false,
-  "autoMinimizeWhenAutoLaunch": false
+  "autoMinimizeWhenAutoLaunch": false,
+  "extension": {
+    "writingBGM": {
+      "enable": true,
+      "lasting": "0.15",
+      "volume": "78",
+      "startTime": "13:14",
+      "BGMFolder": "D:\\Project\\TaskList_Electron\\resource\\audio"
+    }
+  }
 }

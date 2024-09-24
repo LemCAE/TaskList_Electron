@@ -78,6 +78,9 @@ async function loadStyle() {
             .moveUp, .moveDown {
                 color: #ffffff;
             }
+            input[type="time"]::-webkit-calendar-picker-indicator {
+                color: #ffffff;
+            }
         `;
         document.head.appendChild(darkMode);
     }

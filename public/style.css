@@ -519,6 +519,12 @@ p.subject-name {
 	overflow:hidden;
 	user-select: none;
 }
+#extend {
+	visibility:hidden;
+	height:0;
+	overflow:hidden;
+	user-select: none;
+}
 #info {
 	visibility:hidden;
 	height:0;
@@ -529,31 +535,31 @@ p.subject-name {
 	visibility:visible !important;
 	height:auto !important;
 }
-#setting {
+#setting ,#extend {
 	width:100%;
 	display:flex;
 	flex-direction:column;
 	justify-content:center;
 	box-sizing:border-box;
 }
-.settingPart {
+.settingPart ,.extendPart{
 	background-color:#ffffff4f;
 	border:1px solid #ffffff;
 	border-radius:0.3vw;
 	margin:1vh;
 }
-.settingTitle {
+.settingTitle ,.extendTitle {
 	padding-left:0.7vw;
 	font-size:1.35vw;
 	border-bottom:1px dashed #ffffff;
 }
-.settingInnerContainer {
+.settingInnerContainer ,.extendInnerContainer{
 	box-sizing:border-box;
 	position:relative;
 	max-height:94.2vh;
 	overflow:scroll;
 }
-.settingContent {
+.settingContent ,.extendContent {
 	box-sizing:border-box;
 	overflow:hidden;
 	width:100%;
@@ -662,7 +668,7 @@ input:checked + .slider:before {
 	display:flex;
 	align-items:center;
 }
-#backgroundLocal,#backgroundURLInput {
+#backgroundLocal,#backgroundURLInput,#BGMFolderInput {
 	font-size:1vw;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
@@ -674,18 +680,25 @@ input:checked + .slider:before {
 #backgroundLocal:focus,#backgroundURL:focus {
 	background-color:#ffffff2f;
 }
-#selectLocalImage {
+#selectLocalImage ,#selectBGMFolder {
 	font-size:1vw;
 	background-color:#ffffff4f;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
 	margin:1vh;
 }
-#selectLocalImage:hover {
+#selectLocalImage,#selectBGMFolder:hover {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }
-
+.timeInputer {
+	margin-left: 0.5vw;
+	font-size:1.2vw;
+	background-color:#ffffff4f;
+	border:1px solid #ffffff;
+	border-radius:0.3vw;
+	font-family: "Microsoft YaHei", sans-serif;
+}
 .configsButton {
 	font-size:1.2vw;
 	background-color:#ffffff4f;
@@ -716,7 +729,17 @@ input:checked + .slider:before {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }
-
+#saveExtensionSetting {
+	font-size:1.35vw;
+	background-color:#ffffff4f;
+	border:1px solid #ffffff;
+	border-radius:0.3vw;
+	margin:1vh;
+}
+#saveExtensionSetting:hover {
+	cursor:pointer;
+	background-color:#ffffffa1;
+}
 
 #info {
     padding-top: 3vh;
@@ -779,5 +802,25 @@ input:checked + .slider:before {
 	p{
 		padding: 0;
 		margin: 0;
+	}
+}
+#extraFunction {
+    margin-top: 20vh;
+}
+#writingBGMShow {
+	display: none;
+	p{
+		margin:0px;
+		font-size: 1.8vw;
+		text-align:center;
+	}
+	#writingBGMDetail {
+		font-size: 1.2vw;
+	}
+	#writingBGMTime{
+		margin: 0;
+		padding: 0;
+		margin-top:0.3vh;
+		font-size:1.8vw;
 	}
 }

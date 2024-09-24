@@ -64,8 +64,12 @@
                     <p class="A"></p>
                 </div>
             </div>
-            <div class="extraFunction">
-
+            <div id="extraFunction">
+                <div id="writingBGMShow">
+                    <p>练字</p>
+                    <p id="writingBGMDetail">即将开始</p>
+                    <p id="writingBGMTime"></p>
+                </div>
             </div>
         </div>
         <div id="taskList">
@@ -135,6 +139,11 @@
                             <path fill="currentColor" d="m2.845 16.136l1 1.73c.531.917 1.809 1.261 2.73.73l.529-.306A8 8 0 0 0 9 19.402V20c0 1.103.897 2 2 2h2c1.103 0 2-.897 2-2v-.598a8 8 0 0 0 1.896-1.111l.529.306c.923.53 2.198.188 2.731-.731l.999-1.729a2 2 0 0 0-.731-2.732l-.505-.292a7.7 7.7 0 0 0 0-2.224l.505-.292a2 2 0 0 0 .731-2.732l-.999-1.729c-.531-.92-1.808-1.265-2.731-.732l-.529.306A8 8 0 0 0 15 4.598V4c0-1.103-.897-2-2-2h-2c-1.103 0-2 .897-2 2v.598a8 8 0 0 0-1.896 1.111l-.529-.306c-.924-.531-2.2-.187-2.731.732l-.999 1.729a2 2 0 0 0 .731 2.732l.505.292a7.7 7.7 0 0 0 0 2.223l-.505.292a2.003 2.003 0 0 0-.731 2.733m3.326-2.758A5.7 5.7 0 0 1 6 12c0-.462.058-.926.17-1.378a1 1 0 0 0-.47-1.108l-1.123-.65l.998-1.729l1.145.662a1 1 0 0 0 1.188-.142a6.1 6.1 0 0 1 2.384-1.399A1 1 0 0 0 11 5.3V4h2v1.3a1 1 0 0 0 .708.956a6.1 6.1 0 0 1 2.384 1.399a1 1 0 0 0 1.188.142l1.144-.661l1 1.729l-1.124.649a1 1 0 0 0-.47 1.108c.112.452.17.916.17 1.378s-.058.925-.171 1.378a1 1 0 0 0 .471 1.108l1.123.649l-.998 1.729l-1.145-.661a1 1 0 0 0-1.188.142a6.1 6.1 0 0 1-2.384 1.399A1 1 0 0 0 13 18.7l.002 1.3H11v-1.3a1 1 0 0 0-.708-.956a6.1 6.1 0 0 1-2.384-1.399a.99.99 0 0 0-1.188-.141l-1.144.662l-1-1.729l1.124-.651a1 1 0 0 0 .471-1.108"/>
                         </svg>
                     </button>
+                    <button id="iconExtendDiv" class="iconDiv">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="menuIcon" id="iconExtend" viewBox="0 0 1024 1024" style="width: 100%; height: auto;">
+                            <path fill="currentColor" d="M629.87907 948.986047a73.346977 73.346977 0 0 1-73.108837-73.108838v-236.710697a73.346977 73.346977 0 0 1 73.108837-73.108838h236.710697a73.346977 73.346977 0 0 1 73.108838 73.108838v236.710697a73.346977 73.346977 0 0 1-73.108838 73.108838h-236.710697z m-5.715349-315.534884V881.116279h248.141395V633.451163zM156.695814 948.986047a73.346977 73.346977 0 0 1-73.108837-73.108838v-236.710697a73.346977 73.346977 0 0 1 73.108837-73.108838h236.710698a73.346977 73.346977 0 0 1 73.108837 73.108838v236.710697a73.346977 73.346977 0 0 1-73.108837 73.108838H156.695814zM151.218605 633.451163V881.116279h247.903255V633.451163zM748.234419 523.906977a71.44186 71.44186 0 0 1-51.676279-21.432558l-166.697675-166.697675a71.44186 71.44186 0 0 1-21.432558-51.676279 73.585116 73.585116 0 0 1 21.432558-51.676279l166.697675-166.697674a73.585116 73.585116 0 0 1 103.352558 0l166.697674 166.697674a73.108837 73.108837 0 0 1 0 103.114419l-166.697674 166.697674a71.44186 71.44186 0 0 1-51.676279 21.670698z m-175.508838-240.52093l175.508838 175.508837 175.270697-175.508837-175.508837-174.31814zM156.695814 476.27907a73.346977 73.346977 0 0 1-73.108837-72.870698V166.697674a73.346977 73.346977 0 0 1 73.108837-73.823255h236.710698A73.585116 73.585116 0 0 1 466.515349 166.697674v236.710698A73.346977 73.346977 0 0 1 393.406512 476.27907H156.695814zM151.218605 160.506047v247.903255h247.903255V160.267907z"></path>
+                        </svg>
+                    </button> 
                     <button id="iconInfoDiv" class="iconDiv">
                         <svg xmlns="http://www.w3.org/2000/svg" class="menuIcon" id="iconInfo" viewBox="0 0 24 24" style="width: 100%; height: auto;">
                             <path fill="currentColor" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8s8 3.589 8 8s-3.589 8-8 8"/>
@@ -213,7 +222,7 @@
                                         <div class="plus numberChange">+</div>
                                     </div>
                                 </div>
-                                <div class="enableChange singleSettingc" id="configAnimineChange">
+                                <div class="enableChange singleSetting" id="configAnimineChange">
                                     <label for="configAnimine">编辑窗格动画</label>
                                     <label class="switch">
                                         <input id="configAnimine" type="checkbox">
@@ -237,21 +246,21 @@
                                         <div class="plus numberChange">+</div>
                                     </div>
                                 </div>
-                                <div class="enableChange singleSettingc" id="taskListHoverAnimineChange">
+                                <div class="enableChange singleSetting" id="taskListHoverAnimineChange">
                                     <label for="taskListHoverAnimine">列表鼠标悬停效果</label>
                                     <label class="switch">
                                         <input id="taskListHoverAnimine" type="checkbox">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
-                                <div class="enableChange singleSettingc" id="CheckboxAnimineChange">
+                                <div class="enableChange singleSetting" id="CheckboxAnimineChange">
                                     <label for="CheckboxAnimine">按钮动画</label>
                                     <label class="switch">
                                         <input id="CheckboxAnimine" type="checkbox">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
-                                <div class="enableChange singleSettingc" id="darkModeChange">
+                                <div class="enableChange singleSetting" id="darkModeChange">
                                     <label for="darkMode">暗色背景适配</label>
                                     <label class="switch">
                                         <input id="darkMode" type="checkbox">
@@ -357,6 +366,52 @@
                     </div>
                     <button id="saveSetting">保存并更新</button>
                 </div>
+                <div id="extend">
+                    <div class="extendInnerContainer">
+                        <div class="extendPart" id="writingBGM">
+                            <div class="extendTitle">练字背景音乐</div>
+                            <div class="extendContent">
+                                <div class="enableChange singleSetting" id="enableWritingBGMChange">
+                                    <label for="enableWritingBGM">启用练字背景音乐</label>
+                                    <label class="switch">
+                                        <input id="enableWritingBGM" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="rangeChange singleSetting" id="writingBGMLastingChange">
+                                    <label for="writingBGMLasting">背景音乐时长</label>
+                                    <div class="numberInputClick" id="writingBGMLasting">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="30" step="1" value="10">
+                                        <div class="plus numberChange">+</div>
+                                        <p>min</p>
+                                    </div>
+                                </div>
+                                <div class="rangeChange singleSetting" id="writingBGMVolumeChange">
+                                    <label for="writingBGMVolume">背景音乐音量</label>
+                                    <div class="numberInputClick" id="writingBGMVolume">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="100" step="1" value="75">
+                                        <div class="plus numberChange">+</div>
+                                        <p>%</p>
+                                    </div>
+                                </div>
+                                <div class="singleSetting timeInput" id="writingBGMStartTimeChange">
+                                    <label for="writingBGMStartTime">练字背景音乐开始时间</label>
+                                    <input type="time" id="writingBGMStartTime" class="timeInputer">
+                                </div>
+                                <div class="inputChange singleSetting" id="BGMFloderChange">
+                                    <label for="writingBGMStartTime">背景音乐文件夹</label>
+                                    <div class="selectChangeContainer">
+                                        <input id="BGMFolderInput" type="text" placeholder="输入文件夹路径">
+                                        <button id="selectBGMFolder">选择文件夹</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="saveExtensionSetting">保存并更新</button>
+                </div>
                 <div id="info">
                     <img src="../resource/icon.ico">
                     <p id="name">TaskList v1.0.3 beta</p>
@@ -367,4 +422,5 @@
     </body>
     <script src="sortable.min.js"></script>
     <script src="script.js"></script>
+    <script src="writingBGM.js"></script>
 </html>

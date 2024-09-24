@@ -58,6 +58,10 @@ document.querySelectorAll(".settingContent").forEach(element=> {
     element.style.display='none';
     element.parentNode.querySelector(".settingTitle").style.borderBottom="none";
 });
+document.querySelectorAll(".extendContent").forEach(element=> {
+    element.style.display='none';
+    element.parentNode.querySelector(".extendTitle").style.borderBottom="none";
+});
 async function loadStyleSetting() {
     const configJson = await window.fileAPI.readConfig('config.json');
     document.getElementById('backgroundSource').value = configJson.backgroundSource;
@@ -139,7 +143,18 @@ async function loadStyleSetting() {
         document.getElementById('taskListHoverAnimine').checked = false;
     } else {
         document.getElementById('taskListHoverAnimine').checked = true;
-    }
+    };
+    //extension
+    if (configJson.extension.writingBGM.enable === true) {
+        document.getElementById('enableWritingBGM').checked = true;
+    } else {
+        document.getElementById('enableWritingBGM').checked = false;
+    };
+    document.getElementById('writingBGMLasting').querySelector('input').value = configJson.extension.writingBGM.lasting;
+    document.getElementById('writingBGMVolume').querySelector('input').value = configJson.extension.writingBGM.volume;
+    document.getElementById('writingBGMStartTime').value = configJson.extension.writingBGM.startTime;
+    document.getElementById('BGMFolderInput').value = configJson.extension.writingBGM.BGMFolder;
+    //
 }
 document.addEventListener('DOMContentLoaded', loadStyleSetting);
 
@@ -284,10 +299,10 @@ async function getListToEdit(jsonFile) {
 getListToEdit("list.json");
 
 function hideEditListContent(id) {
-var element=document.getElementById(id).querySelector(".editListContent");
-element.style.display=element.style.display==="none" ? "flex": "none";
-var titleElement=document.getElementById(id).querySelector(".editListTitle");
-titleElement.style.borderBottom=titleElement.style.borderBottom==="none" ? "1px dashed #ffffff": "none";
+    var element=document.getElementById(id).querySelector(".editListContent");
+    element.style.display=element.style.display==="none" ? "flex": "none";
+    var titleElement=document.getElementById(id).querySelector(".editListTitle");
+    titleElement.style.borderBottom=titleElement.style.borderBottom==="none" ? "1px dashed #ffffff": "none";
 }
 document.addEventListener('click', function (event) {
     if (event.target.matches('.editListTitle')) {
@@ -303,10 +318,22 @@ function hideSettingContent(id) {
 }
 document.addEventListener('click', function (event) {
     if (event.target.matches('.settingTitle')) {
+        console.log(event.target.parentElement.id);
         hideSettingContent(event.target.parentElement.id);
     }
 });
 
+function hideExtendContent(id) {
+    var element=document.getElementById(id).querySelector(".extendContent");
+    element.style.display=element.style.display==="none" ? "flex": "none";
+    var titleElement=document.getElementById(id).querySelector(".extendTitle");
+    titleElement.style.borderBottom=titleElement.style.borderBottom==="none" ? "1px dashed #ffffff": "none";
+}
+document.addEventListener('click', function (event) {
+    if (event.target.matches('.extendTitle')) {
+        hideExtendContent(event.target.parentElement.id);
+    }
+});
 function reloadTaskList(jsonFile) {
 // 清空当前的任务列表内容
 document.querySelectorAll('.listContent').forEach(container=> {
@@ -449,8 +476,8 @@ document.addEventListener('click', function (event) {
 });
 
 document.getElementById('iconEditDiv').addEventListener('click', function() {
-    for (let i = 0; i < 3; i++) {
-        let element = ["editList","setting","info"][i];
+    for (let i = 0; i < 4; i++) {
+        let element = ["editList","setting","extend","info"][i];
         if (document.getElementById(element).classList.contains("innerControlShow")) {
             document.getElementById(element).classList.remove("innerControlShow")
         }
@@ -458,17 +485,26 @@ document.getElementById('iconEditDiv').addEventListener('click', function() {
     document.getElementById("editList").classList.add("innerControlShow")
 })
 document.getElementById('iconSettingDiv').addEventListener('click', function() {
-    for (let i = 0; i < 3; i++) {
-        let element = ["editList","setting","info"][i];
+    for (let i = 0; i < 4; i++) {
+        let element = ["editList","setting","extend","info"][i];
         if (document.getElementById(element).classList.contains("innerControlShow")) {
             document.getElementById(element).classList.remove("innerControlShow")
         }
     };
     document.getElementById("setting").classList.add("innerControlShow")
 })
+document.getElementById('iconExtendDiv').addEventListener('click', function() {
+    for (let i = 0; i < 4; i++) {
+        let element = ["editList","setting","extend","info"][i];
+        if (document.getElementById(element).classList.contains("innerControlShow")) {
+            document.getElementById(element).classList.remove("innerControlShow")
+        }
+    };
+    document.getElementById("extend").classList.add("innerControlShow")
+})
 document.getElementById('iconInfoDiv').addEventListener('click', function() {
-    for (let i = 0; i < 3; i++) {
-        let element = ["editList","setting","info"][i];
+    for (let i = 0; i < 4; i++) {
+        let element = ["editList","setting","extend","info"][i];
         if (document.getElementById(element).classList.contains("innerControlShow")) {
             document.getElementById(element).classList.remove("innerControlShow")
         }
@@ -497,17 +533,19 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const autoMinimizeWhenAutoLaunch = document.getElementById('autoMinimizeWhenAutoLaunch').checked;
     const showClassList = document.getElementById('showClassList').checked;
     const taskListHoverAnimine = document.getElementById('taskListHoverAnimine').checked;
+    
     let background = '';
     if (backgroundSource === 'defaultLight') {
         background = '../resource/default.jpg';
     } else if (backgroundSource === 'defaultDark') {
         background = '../resource/defaultDark.jpg';
-    }else if (backgroundSource === 'local') {
+    } else if (backgroundSource === 'local') {
         background = "'" + encodeURI("file://" + document.getElementById('backgroundLocal').value.replace(/\\/g, '/')) + "'"; 
         console.log (background);
     } else if (backgroundSource === 'url') {
         background = document.getElementById('backgroundURLInput').value; // 读取URL链接
     }
+    // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
         fontSize: fontSize,
@@ -526,7 +564,10 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         autoLaunch: autoLaunch,
         autoMinimizeWhenAutoLaunch: autoMinimizeWhenAutoLaunch,
         showClassList: showClassList,
-        taskListHoverAnimine: taskListHoverAnimine
+        taskListHoverAnimine: taskListHoverAnimine,
+        extension: {
+            ...existingConfig.extension,
+        }
     };
 
     console.log('Final config to save:', newConfig);
@@ -540,6 +581,35 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     window.location.reload();
 });
 
+document.getElementById('saveExtensionSetting').addEventListener('click', async () => {
+    // 读取现有的 JSON 数据
+    const existingConfig = await window.fileAPI.readConfig('config.json') || {};
+    const writingBGMEnable = document.getElementById('enableWritingBGM').checked;
+    const writingBGMLasting = document.getElementById('writingBGMLasting').querySelector('input').value;
+    const writingBGMVolume = document.getElementById('writingBGMVolume').querySelector('input').value;
+    const writingBGMStartTime = document.getElementById('writingBGMStartTime').value;
+    const writingBGMBGMFolder = document.getElementById('BGMFolderInput').value;
+
+    // 合并新设置和现有的扩展设置（保持嵌套结构）
+    const newConfig = {
+        ...existingConfig,
+        extension: {
+            ...existingConfig.extension,  // 保持已有的 extension 设置
+            writingBGM: {
+                enable: writingBGMEnable,
+                lasting: writingBGMLasting,
+                volume: writingBGMVolume,
+                startTime: writingBGMStartTime,
+                BGMFolder: writingBGMBGMFolder
+            }
+        }
+    };
+
+    console.log('Final config to save:', newConfig);
+    await window.fileAPI.writeConfig('config.json', newConfig);
+    console.log('Config saved successfully');
+    window.location.reload();
+});
 document.getElementById('backgroundSource').addEventListener('change', function() {
     const selectedOption = this.value;
     const fileInputContainer = document.getElementById('fileInputContainer');
@@ -568,6 +638,12 @@ document.getElementById('selectLocalImage').addEventListener('click', async () =
     }
 });
 
+document.getElementById('selectBGMFolder').addEventListener('click', async () => {
+    const folderPaths = await window.fileAPI.selectFolder();
+    if (folderPaths) {
+        document.getElementById('BGMFolderInput').value = folderPaths; // 将路径显示在输入框中
+    }
+});
 document.getElementById('showClassList').addEventListener('change', function() {
     const showClassList = document.getElementById('showClassList').checked;
     if (showClassList) {
@@ -630,6 +706,8 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeNumberInput("configBlurChange");
     initializeNumberInput("configMaskChange");
     initializeNumberInput("refreshTimeChange");
+    initializeNumberInput("writingBGMLastingChange");
+    initializeNumberInput("writingBGMVolumeChange")
 });
 document.getElementById('clearTaskButton').addEventListener('click', async () => {
     const detailText = '现有任务列表将被清除';

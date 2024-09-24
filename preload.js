@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld("fileAPI", {
     selectImage: () => ipcRenderer.invoke("dialog:selectImage"),
     importFile: () => ipcRenderer.invoke("dialog:importFile"),
     exportFile: (data) => ipcRenderer.invoke("dialog:exportFile", data),
+    selectFolder: () => ipcRenderer.invoke('select-folder'),
+    getMusicFiles: (folderPath) => ipcRenderer.invoke('getMusic', folderPath),
 });
 
 contextBridge.exposeInMainWorld("wAPI", {
