@@ -1,198 +1,217 @@
-// 工具函数：将秒数格式化为 mm:ss
+//////预定义//////
+// 将秒数格式化为 mm:ss
 function formatTime(seconds) {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = Math.floor(seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
 }
-
-// 预倒计时设置
-const preCountdownDuration = 180; // 预倒计时持续时间（秒）
-const preMusicDuration = 10; // 预铃时间（秒）
-const preMusicMaxVolume = 0.05; // 预铃最大音量
-
-// 倒计时功能
-async function startCountdown(startTime, lastingTime, folder, preMusic) {
+// 所需参数
+let freshGap = 1; // 刷新间隔（秒）
+let audioOnPlay = false; // 是否正在播放音乐
+let currentAudio = null; // 当前播放的音乐
+//////倒计时部分//////
+async function startCountdown(startTime, lastingTime, musicFiles, preCountdownDuration, tempFolderPath, volume) {
     const startDateTime = new Date();
     const [startHour, startMin] = startTime.split(':').map(Number);
     startDateTime.setHours(startHour, startMin, 0, 0);
-
-    const checkInterval = setInterval(() => {
+    console.log('开始时间：', startDateTime);
+    let checkInterval = setInterval(() => {
         const currentTime = new Date();
         const timeDiff = (startDateTime - currentTime) / 1000;
+        console.log('距离开始时间：', timeDiff, '秒');
+        if (timeDiff <= preCountdownDuration + 3 * 60 + 45 && timeDiff > 0) {
+            //freshGap = 1;
+            //clearInterval(checkInterval);
+            //checkInterval = setInterval(arguments.callee, freshGap * 1000); // 重新设置定时器
+            //console.log('缩短刷新间隔以提高精度');
+        }
         if (timeDiff <= 0) {
             clearInterval(checkInterval);
+            console.log('不开始倒计时');
             return;
         }
         if (timeDiff < preCountdownDuration) {
             const adjustedPreCountdown = Math.max(timeDiff, 0);
-            startPreCountdown(adjustedPreCountdown, folder, preMusic, lastingTime);
+            startPreCountdown(adjustedPreCountdown, musicFiles, lastingTime, tempFolderPath, volume);
+            console.log('调整预倒计时时间：', adjustedPreCountdown);
             clearInterval(checkInterval);
         } else {
             if (timeDiff <= preCountdownDuration + 3 * 60) {
-                setTimeout(() => startPreCountdown(preCountdownDuration, folder, preMusic, lastingTime), (timeDiff - preCountdownDuration) * 1000);
+                setTimeout(() => startPreCountdown(preCountdownDuration, musicFiles, lastingTime, tempFolderPath, volume), (timeDiff - preCountdownDuration) * 1000);
                 clearInterval(checkInterval);
+                console.log('预倒计时开始');
             }
         }
-    }, 1000);
+    }, (freshGap * 1000));
 }
-
-// 预倒计时
-function startPreCountdown(adjustedDuration, folder, preMusic, lastingTime) {
-    let preCountdown = adjustedDuration;
+async function startPreCountdown(Duration, musicFiles, lastingTime, tempFolderPath, volume) {
+    let preCountdown = Duration;
     document.getElementById("writingBGMShow").style.display = "block";
     const preInterval = setInterval(() => {
         document.getElementById('writingBGMTime').innerText = formatTime(preCountdown);
         preCountdown--;
-
-        if (preCountdown === preMusicDuration) {
-            playPreMusic(preMusic);
-        }
-
         if (preCountdown < 0) {
             clearInterval(preInterval);
-            startMainCountdown(lastingTime, folder);
+            startMainCountdown(lastingTime, musicFiles, tempFolderPath, volume);
         }
     }, 1000);
 }
-
-// 播放预音乐并淡出
-function playPreMusic(preMusic) {
-    const audio = new Audio(preMusic);
-    audio.volume = preMusicMaxVolume; // 设置最大音量为 30%
-    audio.play().catch((error) => console.error('音频播放失败:', error));
-
-    setTimeout(() => {
-        const fadeInterval = setInterval(() => {
-            if (audio.volume > 0) {
-                audio.volume = Math.max(audio.volume - 0.1, 0);
-            } else {
-                clearInterval(fadeInterval);
-                audio.pause();
-                audio.currentTime = 0;
-            }
-        }, 100);
-    }, preMusicDuration * 1000);
-}
-
-// 正式倒计时与音乐播放
-async function startMainCountdown(lastingTime, folder) {
+async function startMainCountdown(lastingTime, musicFiles, tempFolderPath, volume) {
     let mainCountdown = lastingTime;
-    let currentAudio = await playRandomMusic(folder, mainCountdown);
-
-    const mainInterval = setInterval(() => {
+    audioOnPlay = true;
+    console.log('播放状态参数：', audioOnPlay);
+    console.log('主倒计时开始');
+    document.getElementById('writingBGMTime').innerText = formatTime(mainCountdown);
+    document.getElementById('writingBGMDetail').innerText = '正在进行';
+    document.getElementById("writingBGMShow").style.display = "block";
+    playAudioLoop(musicFiles, volume, 1000, 1000, tempFolderPath);
+    const mainInterval = setInterval(async () => {
         document.getElementById('writingBGMTime').innerText = formatTime(mainCountdown);
         mainCountdown--;
-
+        if (mainCountdown <= 3) {
+            audioOnPlay = false;
+            console.log('播放状态参数：', audioOnPlay);
+        }
         if (mainCountdown < 0) {
             clearInterval(mainInterval);
+            audioOnPlay = false;
             document.getElementById("writingBGMShow").style.display = "none";
-            if (currentAudio) {
-                fadeOutCurrentMusic(currentAudio, () => {
-                    console.log('倒计时结束，音乐已停止');
-                });
-                currentAudio = null; // 防止再次引用
-            }
+            stopCurrentAudio(1000);
+            console.log('倒计时结束');
         }
     }, 1000);
 }
 
-// 播放随机音乐并处理淡入淡出
-async function playRandomMusic(folder, mainCountdown) {
-    try {
-        const randomMusicFile = await pickRandomFileFromFolder(folder);
-        if (!randomMusicFile) {
-            console.error('未找到音乐文件');
-            return null;
-        }
-        const audio = new Audio(randomMusicFile);
-        audio.volume = 0;
-        audio.play().catch((error) => {
-            console.error('音频播放失败:', error);
-        });
-
-        audio.onerror = () => {
-            console.error('音频加载错误:', randomMusicFile);
-        };
-
-        const fadeInInterval = setInterval(() => {
-            if (audio.volume < 1) {
-                audio.volume = Math.min(audio.volume + 0.1, 1);
-            } else {
-                clearInterval(fadeInInterval);
-            }
-        }, 100);
-
-        audio.onended = async () => {
-            if (mainCountdown > 0) {
-                await fadeOutCurrentMusic(audio, () => {
-                    playRandomMusic(folder, mainCountdown);
-                });
-            }
-        };
-
-        return audio;
-
-    } catch (error) {
-        console.error('播放音乐时出错:', error);
-        return null;
-    }
-}
-
-// 淡出当前音乐
-function fadeOutCurrentMusic(audio, callback) {
-    if (!audio) {
-        console.error('audio 对象无效，无法淡出音乐');
-        return;
-    }
-
-    const fadeOutInterval = setInterval(() => {
-        if (audio.volume > 0) {
-            audio.volume = Math.max(audio.volume - 0.1, 0);
+//////音乐播放部分//////
+// 淡入
+function fadeInAudio(audioElement, volume, duration) {
+    let targetVolume = volume / 100;
+    let step = targetVolume / (duration / 100);
+    audioElement.volume = 0;
+    let fadeInterval = setInterval(() => {
+        if (audioElement.volume < targetVolume) {
+            audioElement.volume = Math.min(audioElement.volume + step, targetVolume);
         } else {
-            clearInterval(fadeOutInterval);
-            audio.pause();
-            audio.currentTime = 0;
-            if (callback) callback();
+            clearInterval(fadeInterval);
         }
     }, 100);
 }
-
-// 从文件夹中获取音乐文件列表
+// 淡出
+function fadeOutAudio(audioElement, duration) {
+    let step = audioElement.volume / (duration / 100);
+    let fadeInterval = setInterval(() => {
+        if (audioElement.volume > 0) {
+            audioElement.volume = Math.max(audioElement.volume - step, 0);
+        } else {
+            clearInterval(fadeInterval);
+            audioElement.pause();
+        }
+    }, 100);
+}
+// 音乐播放完时淡出
+function fadeOutOnEnd(audioElement, fadeDuration) {
+    const fadeStartTime = fadeDuration / 1000;
+    const onTimeUpdate = () => {
+        const remainingTime = audioElement.duration - audioElement.currentTime;
+        if (remainingTime <= fadeStartTime && !audioElement._fadingOut) {
+            audioElement._fadingOut = true;  
+            fadeOutAudio(audioElement, fadeDuration);
+        }
+    };
+    audioElement.addEventListener('timeupdate', onTimeUpdate);
+    audioElement._timeUpdateHandler = onTimeUpdate;
+}
+// 循环播放音乐
+async function playAudioLoop(musicFiles, volume, fadeInDuration, fadeOutDuration, tempFolderPath) {
+    if (currentAudio) {
+        fadeOutAudio(currentAudio, fadeOutDuration, () => {
+            console.log('上一个音频淡出完成');
+            currentAudio.removeEventListener('timeupdate', currentAudio._timeUpdateHandler);
+        });
+    }
+    const audioFile = await pickRandomFileFromFolder(musicFiles, tempFolderPath);
+    const audio = new Audio(audioFile);
+    currentAudio = audio;
+    audio.addEventListener('canplaythrough', () => {
+        audio.play();
+        fadeInAudio(audio, volume, fadeInDuration);
+        fadeOutOnEnd(audio, fadeOutDuration);
+    });
+    audio.addEventListener('ended', () => {
+        console.log('音频播放结束');
+        if (audioOnPlay) {
+            playAudioLoop(musicFiles, volume, fadeInDuration, fadeOutDuration, tempFolderPath);
+        } else {
+            console.log('停止播放');
+        }
+    });
+    audio.load();
+}
+// 停止当前音频
+function stopCurrentAudio(fadeOutDuration) {
+    if (currentAudio) {
+        fadeOutAudio(currentAudio, fadeOutDuration, () => {
+            console.log('音频已淡出并停止');
+            currentAudio = null;
+        });
+    } else {
+        console.log('当前没有音频在播放');
+    }
+}
+//////文件选择部分//////
+// 获取文件列表
 async function fetchMusicFiles(folderPath) {
     try {
-        const musicFiles = await window.fileAPI.getMusicFiles(folderPath);
-        console.log('音乐文件数组:', musicFiles);
-        return musicFiles;
+        const musicFilesList = await window.fileAPI.getMusicFiles(folderPath);
+        console.log('音乐文件列表:', musicFilesList);
+        return musicFilesList;
     } catch (error) {
         console.error('读取音乐文件失败:', error);
-        return [];
     }
-}
-
+};
 // 从文件夹中随机选取文件
-async function pickRandomFileFromFolder(folder) {
+async function pickRandomFileFromFolder(musicFiles, folderPath) {
     try {
-        const musicFiles = await fetchMusicFiles(folder);
         if (musicFiles.length === 0) {
-            console.error('音乐文件夹为空:', folder);
-            return null;
+            console.error('音乐文件夹为空，尝试重新获取音乐文件');
+            musicFiles = await fetchMusicFiles(folderPath);
+            if (musicFiles.length === 0) {
+                throw new Error('文件夹中没有音频文件');
+            }
         }
         const randomIndex = Math.floor(Math.random() * musicFiles.length);
-        console.log('随机选取的音乐文件:', musicFiles[randomIndex]);
-        return musicFiles[randomIndex];
+        const selectedFile = musicFiles[randomIndex];
+        musicFiles.splice(randomIndex, 1);
+        console.log('当前列表:', musicFiles);
+        return selectedFile;
     } catch (error) {
         console.error('获取音乐文件时出错:', error);
-        return null;
+        throw error;
     }
 }
 
-// 等待页面加载后启动倒计时
 document.addEventListener('DOMContentLoaded', async () => {
     const configJson = await window.fileAPI.readConfig('config.json');
-    const startTime = configJson.extension.writingBGM.startTime;
-    const lastingTime = configJson.extension.writingBGM.lasting * 60;
-    const folder = configJson.extension.writingBGM.BGMFolder;
-    const preMusic = '../resource/ringtone.mp3';
-
-    await startCountdown(startTime, lastingTime, folder, preMusic);
+    if (configJson.extension.writingBGM.enable) {
+        console.log('writingBGM is enabled');
+        const startTime = configJson.extension.writingBGM.startTime;
+        const lastingTime = configJson.extension.writingBGM.lasting * 60;
+        const folder = configJson.extension.writingBGM.BGMFolder;
+        const musicFiles = await fetchMusicFiles(folder);
+        const volume = configJson.extension.writingBGM.volume;
+        const preCountdownDuration = configJson.extension.writingBGM.preCountdownDuration * 60;
+        await startCountdown(startTime, lastingTime, musicFiles, preCountdownDuration, folder, volume);
+    }
 });
+
+//async function test() {
+//    const configJson = await window.fileAPI.readConfig('config.json');
+//    const lastingTime = configJson.extension.writingBGM.lasting * 60;
+//    const folder = configJson.extension.writingBGM.BGMFolder;
+//    const musicFiles = await fetchMusicFiles(folder);
+//    const tempFolderPath = folder; // 根据需要获取路径
+//    const volume = configJson.extension.writingBGM.volume;
+//    const preCountdownDuration = configJson.extension.writingBGM.preCountdownDuration * 60;
+//    await startMainCountdown(lastingTime, musicFiles, tempFolderPath, volume, preCountdownDuration);
+//}
+//test();

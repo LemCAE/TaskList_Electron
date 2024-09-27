@@ -278,7 +278,7 @@ ipcMain.handle("dialog:importFile", async () => {
 ipcMain.handle("dialog:exportFile", async (event, data) => {
     const { canceled, filePath } = await dialog.showSaveDialog({
         title: "Export JSON File",
-        defaultPath: "config.json", // 默认文件名
+        defaultPath: "list.json", // 默认文件名
         filters: [{ name: "JSON Files", extensions: ["json"] }],
     });
 

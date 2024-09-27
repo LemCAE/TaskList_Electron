@@ -589,7 +589,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const writingBGMVolume = document.getElementById('writingBGMVolume').querySelector('input').value;
     const writingBGMStartTime = document.getElementById('writingBGMStartTime').value;
     const writingBGMBGMFolder = document.getElementById('BGMFolderInput').value;
-
+    const preCountdownDuration = document.getElementById('preCountdownDuration').querySelector('input').value;
     // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
@@ -600,7 +600,8 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
                 lasting: writingBGMLasting,
                 volume: writingBGMVolume,
                 startTime: writingBGMStartTime,
-                BGMFolder: writingBGMBGMFolder
+                BGMFolder: writingBGMBGMFolder,
+                preCountdownDuration: preCountdownDuration
             }
         }
     };
@@ -707,7 +708,8 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeNumberInput("configMaskChange");
     initializeNumberInput("refreshTimeChange");
     initializeNumberInput("writingBGMLastingChange");
-    initializeNumberInput("writingBGMVolumeChange")
+    initializeNumberInput("writingBGMVolumeChange");
+    initializeNumberInput("preCountdownDurationChange");
 });
 document.getElementById('clearTaskButton').addEventListener('click', async () => {
     const detailText = '现有任务列表将被清除';

@@ -19,10 +19,11 @@
   "extension": {
     "writingBGM": {
       "enable": true,
-      "lasting": "0.15",
+      "lasting": "0.5",
       "volume": "78",
-      "startTime": "13:14",
-      "BGMFolder": "D:\\Project\\TaskList_Electron\\resource\\audio"
+      "startTime": "00:15",
+      "BGMFolder": "I:\\Microsoft Edge下载\\.mp3,mp4.. 媒体文件\\.mp3.. 音频文件\\新建文件夹",
+      "preCountdownDuration": "3"
     }
   }
 }
