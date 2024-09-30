@@ -222,6 +222,15 @@
                                         <div class="plus numberChange">+</div>
                                     </div>
                                 </div>
+                                <div class="rangeChange singleSetting" id="listBlurChange">
+                                    <label for="listBlur">任务列表模糊</label>
+                                    <div class="numberInputClick" id="listBlur">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="10" step="1" value="3">
+                                        <div class="plus numberChange">+</div>
+                                        <p>px</p>
+                                    </div>
+                                </div>
                                 <div class="enableChange singleSetting" id="configAnimineChange">
                                     <label for="configAnimine">编辑窗格动画</label>
                                     <label class="switch">
@@ -361,6 +370,9 @@
                                 <div class="singleSetting" id="clearTask">
                                     <button class="configsButton" id="clearTaskButton">清空任务列表</button>
                                 </div>
+                                <div class="singleSetting" id="quitApp">
+                                    <button class="configsButton" id="quitAppButton">退出程序</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -400,13 +412,6 @@
                                     <label for="writingBGMStartTime">练字背景音乐开始时间</label>
                                     <input type="time" id="writingBGMStartTime" class="timeInputer">
                                 </div>
-                                <div class="inputChange singleSetting" id="BGMFloderChange">
-                                    <label for="writingBGMStartTime">背景音乐文件夹</label>
-                                    <div class="selectChangeContainer">
-                                        <input id="BGMFolderInput" type="text" placeholder="输入文件夹路径">
-                                        <button id="selectBGMFolder">选择文件夹</button>
-                                    </div>
-                                </div>
                                 <div class="rangeChange singleSetting" id="preCountdownDurationChange">
                                     <label for="preCountdownDuration">预倒计时时长</label>
                                     <div class="numberInputClick" id="preCountdownDuration">
@@ -414,6 +419,29 @@
                                         <input type="number" min="0" max="5" step="1" value="3">
                                         <div class="plus numberChange">+</div>
                                         <p>min</p>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSetting" id="systemVolumeSetChange">
+                                    <label for="systemVolumeSet">开始时自动设置系统音量</label>
+                                    <label class="switch">
+                                        <input id="systemVolumeSet" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="rangeChange singleSetting" id="systemVolumeChange">
+                                    <label for="systemVolume">系统音量</label>
+                                    <div class="numberInputClick" id="systemVolume">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="100" step="1" value="45">
+                                        <div class="plus numberChange">+</div>
+                                        <p>%</p>
+                                    </div>
+                                </div>
+                                <div class="inputChange singleSetting" id="BGMFloderChange">
+                                    <label for="writingBGMStartTime">背景音乐文件夹</label>
+                                    <div class="selectChangeContainer">
+                                        <input id="BGMFolderInput" type="text" placeholder="输入文件夹路径">
+                                        <button id="selectBGMFolder">选择文件夹</button>
                                     </div>
                                 </div>
                             </div>

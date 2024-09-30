@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog, Tray, Menu } = require("electron");
 const path = require("path");
 const WinReg = require("winreg");
 const fs = require("fs");
+const loudness = require('loudness');
 
 let mainWindow;
 let tray;
@@ -15,7 +16,6 @@ function readConfig() {
     }
     return {};
 }
-
 readConfig();
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -31,7 +31,6 @@ if (!gotTheLock) {
             mainWindow.focus(); // 确保窗口获得焦点
         }
     });
-
     function createWindow() {
         mainWindow = new BrowserWindow({
             width: 1280,
@@ -47,9 +46,7 @@ if (!gotTheLock) {
                 nodeIntegration: false,
             },
         });
-
         mainWindow.loadFile(path.join(__dirname, "public", "index.html"));
-
         tray = new Tray(path.join(__dirname, "./resource/icon.ico"));
         const contextMenu = Menu.buildFromTemplate([
             {
@@ -67,18 +64,15 @@ if (!gotTheLock) {
         ]);
         tray.setToolTip("TaskList");
         tray.setContextMenu(contextMenu);
-
         mainWindow.on("close", (event) => {
             if (!app.isQuiting) {
                 event.preventDefault();
                 mainWindow.hide();
             }
         });
-
         tray.on("click", () => {
             mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
         });
-
         ipcMain.on("minimize", () => {
             mainWindow.minimize();
         });
@@ -92,46 +86,36 @@ if (!gotTheLock) {
         ipcMain.on("close", () => {
             mainWindow.close();
         });
-
         mainWindow.on("maximize", () => {
             mainWindow.webContents.send("window-maximized");
         });
         mainWindow.on("unmaximize", () => {
             mainWindow.webContents.send("window-unmaximized");
         });
-
         // 处理设置自动启动的 IPC 事件
         ipcMain.on("toggle-auto-launch", (event, enable) => {
             setStartup(enable);
         });
     }
-
     const configFilePath = path.join(__dirname, "./config/config.json");
-
     app.whenReady().then(() => {
         createWindow();
-
         // 读取配置文件
         fs.readFile(configFilePath, "utf8", (err, data) => {
             if (err) {
                 console.error("failed to read config file:", err);
                 return;
             }
-
             const config = JSON.parse(data);
             const ifMinimize = config.autoMinimizeWhenAutoLaunch;
-
             // 检查命令行参数是否包含 --autostart
             const isCommandLineAutoStart = process.argv.includes("--autostart");
-
             if (ifMinimize && isCommandLineAutoStart) {
                 mainWindow.hide();
             }
         });
-
         // 程序启动时设置自动启动
         setStartup(config.autoLaunch);
-
         app.on("activate", () => {
             if (BrowserWindow.getAllWindows().length === 0) {
                 createWindow();
@@ -144,10 +128,8 @@ if (!gotTheLock) {
             hive: WinReg.HKCU,
             key: "\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
         });
-
         const appName = "TaskList";
         const exePath = `"${app.getPath("exe")} --autostart"`;
-
         if (enable) {
             key.set(appName, WinReg.REG_SZ, exePath, (err) => {
                 if (err) {
@@ -166,13 +148,11 @@ if (!gotTheLock) {
             });
         }
     }
-
     app.on("window-all-closed", () => {
         if (process.platform !== "darwin") {
             app.quit();
         }
     });
-
     app.on("before-quit", () => {
         app.isQuiting = true;
     });
@@ -223,6 +203,7 @@ ipcMain.handle("dialog:selectImage", async () => {
         return filePaths[0];
     }
 });
+
 ipcMain.handle('select-folder', async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
       properties: ['openDirectory']
@@ -240,7 +221,6 @@ ipcMain.handle("dialog:showWarning", async (event, detailText) => {
         message: "确定要继续吗？",
         detail: detailText,
     });
-
     return result.response;
 });
 
@@ -249,13 +229,10 @@ ipcMain.handle("dialog:importFile", async () => {
         properties: ["openFile"],
         filters: [{ name: "JSON Files", extensions: ["json"] }],
     });
-
     if (canceled || filePaths.length === 0) {
         return { success: false, error: "No file selected" };
     }
-
     const filePath = filePaths[0];
-
     try {
         const fileContent = await fs.promises.readFile(filePath, "utf-8");
         const data = JSON.parse(fileContent);
@@ -281,14 +258,12 @@ ipcMain.handle("dialog:exportFile", async (event, data) => {
         defaultPath: "list.json", // 默认文件名
         filters: [{ name: "JSON Files", extensions: ["json"] }],
     });
-
     if (canceled || !filePath) {
         return {
             success: false,
             error: "Export canceled or no file path selected",
         };
     }
-
     try {
         // 将数据写入选定的文件路径
         await fs.promises.writeFile(
@@ -302,10 +277,31 @@ ipcMain.handle("dialog:exportFile", async (event, data) => {
     }
 });
 
-
 ipcMain.handle('getMusic', (event, folderPath) => {
     const supportedFormats = ['.mp3', '.wav', '.ogg', '.flac', '.m4a'];
     const files = fs.readdirSync(folderPath);
     const musicFiles = files.filter(file => supportedFormats.includes(path.extname(file).toLowerCase()));
     return musicFiles.map(file => path.join(folderPath, file)); // 返回完整路径
 });
+
+ipcMain.on('exit-app', () => {
+    app.quit();
+});
+
+ipcMain.handle('setSystemVolume', async (event, volume) => {
+    await loudness.setVolume(volume);
+});
+
+ipcMain.handle('getSystemVolume', async (event) => {
+    const volume = await loudness.getVolume();
+    return volume;
+})
+
+ipcMain.handle('setMuted', async (event, muted) => {
+    await loudness.setMuted(muted);
+});
+
+ipcMain.handle('getMuted', async (event) => {
+    const muted = await loudness.getMuted();
+    return muted;
+})

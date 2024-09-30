@@ -18,6 +18,9 @@ async function loadStyle() {
         .listContent {
             font-size: ${configJson.fontSize}vw; 
         }
+        .listinfo {
+            backdrop-filter: blur(${configJson.listBlur}px);
+        }
         .configs{
             backdrop-filter: blur(${configJson.configBlur}px);
         }

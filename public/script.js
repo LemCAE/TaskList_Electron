@@ -70,7 +70,8 @@ async function loadStyleSetting() {
     const fileInputText = document.getElementById('backgroundLocal');
     const urlInputText = document.getElementById('backgroundURLInput');
     document.getElementById('backgroundMask').querySelector('input').value = configJson.backgroundMask;
-    document.getElementById('fontSize').querySelector('input').value = configJson.fontSize;backgroundMask;
+    document.getElementById('fontSize').querySelector('input').value = configJson.fontSize;
+    document.getElementById('listBlurChange').querySelector('input').value = configJson.listBlur;
     document.getElementById('refreshTimeChange').querySelector('input').value = configJson.refreshTime;
     document.getElementById('configBlurChange').querySelector('input').value = configJson.configBlur;
     document.getElementById('configMaskChange').querySelector('input').value = configJson.configMask;
@@ -154,7 +155,14 @@ async function loadStyleSetting() {
     document.getElementById('writingBGMVolume').querySelector('input').value = configJson.extension.writingBGM.volume;
     document.getElementById('writingBGMStartTime').value = configJson.extension.writingBGM.startTime;
     document.getElementById('BGMFolderInput').value = configJson.extension.writingBGM.BGMFolder;
-    //
+    document.getElementById('preCountdownDuration').querySelector('input').value = configJson.extension.writingBGM.preCountdownDuration;
+    if (configJson.extension.writingBGM.systemVolumeSet === false) {
+        document.getElementById('systemVolumeSet').checked = false;
+        document.getElementById('systemVolumeChange').style.display = 'none';
+    } else {
+        document.getElementById('systemVolumeSet').checked = true;
+    };
+    document.getElementById('systemVolume').querySelector('input').value = configJson.extension.writingBGM.systemVolume;
 }
 document.addEventListener('DOMContentLoaded', loadStyleSetting);
 
@@ -318,7 +326,6 @@ function hideSettingContent(id) {
 }
 document.addEventListener('click', function (event) {
     if (event.target.matches('.settingTitle')) {
-        console.log(event.target.parentElement.id);
         hideSettingContent(event.target.parentElement.id);
     }
 });
@@ -533,6 +540,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const autoMinimizeWhenAutoLaunch = document.getElementById('autoMinimizeWhenAutoLaunch').checked;
     const showClassList = document.getElementById('showClassList').checked;
     const taskListHoverAnimine = document.getElementById('taskListHoverAnimine').checked;
+    const listBlur = document.getElementById('listBlur').querySelector('input').value;
     
     let background = '';
     if (backgroundSource === 'defaultLight') {
@@ -565,6 +573,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         autoMinimizeWhenAutoLaunch: autoMinimizeWhenAutoLaunch,
         showClassList: showClassList,
         taskListHoverAnimine: taskListHoverAnimine,
+        listBlur: listBlur,
         extension: {
             ...existingConfig.extension,
         }
@@ -590,6 +599,8 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const writingBGMStartTime = document.getElementById('writingBGMStartTime').value;
     const writingBGMBGMFolder = document.getElementById('BGMFolderInput').value;
     const preCountdownDuration = document.getElementById('preCountdownDuration').querySelector('input').value;
+    const systemVolumeSet = document.getElementById('systemVolumeSet').checked;
+    const systemVolume = document.getElementById('systemVolume').querySelector('input').value;
     // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
@@ -601,7 +612,9 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
                 volume: writingBGMVolume,
                 startTime: writingBGMStartTime,
                 BGMFolder: writingBGMBGMFolder,
-                preCountdownDuration: preCountdownDuration
+                preCountdownDuration: preCountdownDuration,
+                systemVolumeSet: systemVolumeSet,
+                systemVolume: systemVolume
             }
         }
     };
@@ -667,6 +680,14 @@ document.getElementById('autoLaunch').addEventListener('change', function() {
     }
 })
 
+document.getElementById('systemVolumeSet').addEventListener('change', function() {
+    const systemVolumeSet = document.getElementById('systemVolumeSet').checked;
+    if (systemVolumeSet) {
+        document.getElementById('systemVolumeChange').style.display = 'flex';
+    } else {
+        document.getElementById('systemVolumeChange').style.display = 'none';
+    }
+})
 document.addEventListener("DOMContentLoaded", function () {
     // 通用的加减函数
     function initializeNumberInput(containerId) {
@@ -710,6 +731,8 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeNumberInput("writingBGMLastingChange");
     initializeNumberInput("writingBGMVolumeChange");
     initializeNumberInput("preCountdownDurationChange");
+    initializeNumberInput("listBlurChange");
+    initializeNumberInput("systemVolume");
 });
 document.getElementById('clearTaskButton').addEventListener('click', async () => {
     const detailText = '现有任务列表将被清除';
@@ -767,5 +790,14 @@ document.getElementById('exportTaskButton').addEventListener('click', async () =
         alert('文件导出成功！');
     } else {
         alert(`导出失败: ${result.error}`);
+    }
+});
+document.getElementById('quitAppButton').addEventListener('click', async () => {
+    const detailText = '';
+    const ifContinue = await window.infoAPI.showWarningDialog(detailText);
+    if (ifContinue === 0) {
+        window.wAPI.exit();
+    } else {
+        null
     }
 });

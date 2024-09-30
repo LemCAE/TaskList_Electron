@@ -709,11 +709,11 @@ input:checked + .slider:before {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }
-#clearTaskButton {
+#clearTaskButton, #quitAppButton {
 	background-color:#ff00001e;
 	border:1px solid #ff000075;
 }
-#clearTaskButton:hover {
+#clearTaskButton:hover, #quitAppButton:hover {
 	background-color:#ff00003a;
 }
 

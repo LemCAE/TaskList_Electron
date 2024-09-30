@@ -17,7 +17,12 @@ contextBridge.exposeInMainWorld("wAPI", {
     close: () => ipcRenderer.send("close"),
     onWindowMaximized: (callback) => ipcRenderer.on("window-maximized", callback),
     onWindowUnmaximized: (callback) => ipcRenderer.on("window-unmaximized", callback),
-    toggleAutoLaunch: (autoLaunch) => ipcRenderer.send("toggle-auto-launch", autoLaunch), // 保持不变
+    toggleAutoLaunch: (autoLaunch) => ipcRenderer.send("toggle-auto-launch", autoLaunch),
+    exit: () => ipcRenderer.send("exit-app"),
+    getVolume: () => ipcRenderer.invoke('getSystemVolume'),
+    setVolume: (volume) => ipcRenderer.invoke('setSystemVolume', volume),
+    setMuted: (muted) => ipcRenderer.invoke('setMuted', muted),
+    getMuted: () => ipcRenderer.invoke('getMuted'),
 });
 
 contextBridge.exposeInMainWorld("infoAPI", {
