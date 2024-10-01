@@ -32,11 +32,11 @@ jobs:
       - name: Build
         run: npm run dist
 
-      # Publish to GitHub Releases
-      #- name: Publish Release
-      #  uses: ncipollo/release-action@v1
-      #  with:
-      #    #tag: ${{ github.ref }}  # 使用当前推送的标签
-      #    artifacts: "dist/*.exe,dist/*.nupkg,dist/latest.yml"  # 发布的文件
-      #    bodyFile: "body.md"  # 发布说明文件，如果有的话
-      #    token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
+      #Publish to GitHub Releases
+      - name: Publish Release
+        uses: ncipollo/release-action@v1
+        with:
+          #tag: ${{ github.ref }}  # 使用当前推送的标签
+          artifacts: "dist/*.exe,dist/*.nupkg,dist/latest.yml"  # 发布的文件
+          bodyFile: "body.md"  # 发布说明文件，如果有的话
+          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token

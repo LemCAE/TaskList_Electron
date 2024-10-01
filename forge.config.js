@@ -8,7 +8,9 @@ module.exports = {
       "forge.config.js",
       "package-lock.json",
       "server.js",
-      ".gitignore"
+      ".gitignore",
+      "tempNote.md",
+      ".github/workflows/*"
     ],
   },
   rebuildConfig: {},
