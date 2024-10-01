@@ -17,6 +17,9 @@
   "reorderMethod": "button",
   "autoLaunch": false,
   "autoMinimizeWhenAutoLaunch": false,
+  "updateSource": "GitHub",
+  "autoCheckUpdate": true,
+  "autoDownloadUpdate": true,
   "extension": {
     "writingBGM": {
       "enable": true,

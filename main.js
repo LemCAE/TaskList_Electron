@@ -3,7 +3,14 @@ const path = require("path");
 const WinReg = require("winreg");
 const fs = require("fs");
 const loudness = require('loudness');
-
+const { autoUpdater } = require('electron-updater');
+async function loadInput() {
+    const isDev = await import('electron-is-dev');
+};
+let isDev;
+loadInput().then(dev => {
+    isDev = dev.default; // 这里使用 dev.default 获取 isDev
+});
 let mainWindow;
 let tray;
 let config;
@@ -17,6 +24,73 @@ function readConfig() {
     return {};
 }
 readConfig();
+
+const updateSource = config.updateSource
+function configureUpdater() {
+    if (updateSource === 'gitee') {
+        autoUpdater.setFeedURL({
+            provider: 'generic',
+            url: 'https://gitee.com/LemCAE/TaskList_Electron/releases/latest/download/'
+        });
+    } else if (updateSource === 'github') {
+        autoUpdater.setFeedURL({
+            provider: 'github',
+            owner: 'LemCAE',
+            repo: 'TaskList_Electron'
+        });
+    }
+}
+
+// 监听更新事件
+autoUpdater.on('update-available', (info) => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update Available',
+        message: 'A new version is available. Do you want to update now?',
+        buttons: ['Yes', 'No']
+    }).then(result => {
+        if (result.response === 0) { // 如果用户点击“是”
+            autoUpdater.downloadUpdate(); // 下载更新
+        }
+    });
+});
+
+autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update Ready',
+        message: 'Update downloaded. It will be installed on restart.',
+        buttons: ['Restart Now', 'Later']
+    }).then(result => {
+        if (result.response === 0) { // 如果用户选择“现在重启”
+            autoUpdater.quitAndInstall(); // 重启并安装更新
+        }
+    });
+});
+
+// 启动时检查更新
+app.on('ready', () => {
+    if (!isDev) {
+        configureUpdater(); // 配置更新源
+        autoUpdater.checkForUpdates(); // 检查更新
+    }
+});
+
+// 处理渲染进程的请求
+ipcMain.handle('checkUpdates', async () => {
+    try {
+        const updateCheckResult = await autoUpdater.checkForUpdates();
+        if (updateCheckResult && updateCheckResult.updateInfo) {
+            return { success: true, hasUpdate: true, message: '有可用更新' };
+        } else {
+            return { success: true, hasUpdate: false, message: '暂无可用更新' };
+        }
+    } catch (error) {
+        return { success: false, message: `Error initiating update check: ${error.message}` };
+    }
+});
+
+
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {

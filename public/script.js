@@ -1,12 +1,9 @@
-document.getElementById('minimize').addEventListener('click', () => {
-    window.wAPI.minimize();
+['minimize', 'maximize', 'close'].forEach(action => {
+    document.getElementById(action).addEventListener('click', () => {
+        window.wAPI[action]();
+    });
 });
-document.getElementById('maximize').addEventListener('click', () => {
-    window.wAPI.maximize();
-});
-document.getElementById('close').addEventListener('click', () => {
-    window.wAPI.close();
-});
+
 const maximizeSVG = `
 <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
     <path d="M836.224 917.333333h-644.266667a85.589333 85.589333 0 0 1-85.333333-85.333333V187.733333a85.589333 85.589333 0 0 1 85.333333-85.333333h644.266667a85.589333 85.589333 0 0 1 85.333333 85.333333v644.266667a91.690667 91.690667 0 0 1-85.333333 85.333333zM191.957333 170.666667a22.869333 22.869333 0 0 0-21.333333 21.333333v644.266667a22.869333 22.869333 0 0 0 21.333333 21.333333h644.266667a22.869333 22.869333 0 0 0 21.333333-21.333333V192a22.869333 22.869333 0 0 0-21.333333-21.333333z" p-id="4130"></path>
@@ -16,65 +13,84 @@ const unmaximizeSVG = `
     <path d="M836.224 106.666667h-490.666667a85.589333 85.589333 0 0 0-85.333333 85.333333V256h-64a85.589333 85.589333 0 0 0-85.333333 85.333333v490.666667a85.589333 85.589333 0 0 0 85.333333 85.333333h490.666667a85.589333 85.589333 0 0 0 85.333333-85.333333V768h64a85.589333 85.589333 0 0 0 85.333333-85.333333V192a85.589333 85.589333 0 0 0-85.333333-85.333333z m-132.266667 725.333333a20.138667 20.138667 0 0 1-21.333333 21.333333h-490.666667a20.138667 20.138667 0 0 1-21.333333-21.333333V341.333333a20.138667 20.138667 0 0 1 21.333333-21.333333h494.933334a20.138667 20.138667 0 0 1 21.333333 21.333333v490.666667z m153.6-149.333333a20.138667 20.138667 0 0 1-21.333333 21.333333h-64V341.333333a85.589333 85.589333 0 0 0-85.333333-85.333333h-362.666667V192a20.138667 20.138667 0 0 1 21.333333-21.333333h490.666667a20.138667 20.138667 0 0 1 21.333333 21.333333z" p-id="4294"></path>
 </svg>`;
 
+
+const maximizeButton = document.getElementById('maximize');
+
 window.wAPI.onWindowMaximized(() => {
-    document.getElementById('maximize').innerHTML = unmaximizeSVG;
-    document.getElementById('maximize').querySelector('svg').style.height = '20px';
-    document.getElementById('maximize').querySelector('svg').style.width = '20px';
+    maximizeButton.innerHTML = unmaximizeSVG;
+    const svg = maximizeButton.querySelector('svg');
+    svg.style.height = '20px';
+    svg.style.width = '20px';
 });
+
 window.wAPI.onWindowUnmaximized(() => {
-    document.getElementById('maximize').innerHTML = maximizeSVG;
-    document.getElementById('maximize').querySelector('svg').style.height = '20px';
-    document.getElementById('maximize').querySelector('svg').style.width = '20px';
+    maximizeButton.innerHTML = maximizeSVG;
+    const svg = maximizeButton.querySelector('svg');
+    svg.style.height = '20px';
+    svg.style.width = '20px';
 });
-document.querySelector('.titlebar').style.height = `25px`;
-document.getElementById('classTable').style.marginTop = `26px`;
-document.querySelector('.configs').style.marginTop = `26px`;
-document.getElementById('minimize').querySelector('svg').style.height = '20px';
-document.getElementById('maximize').querySelector('svg').style.height = '20px';
-document.getElementById('close').querySelector('svg').style.height = '20px';
-document.getElementById('minimize').querySelector('svg').style.width = '20px';
-document.getElementById('maximize').querySelector('svg').style.width = '20px';
-document.getElementById('close').querySelector('svg').style.width = '20px';
-document.getElementById('taskList').style.marginTop = `26px`;
+
+['minimize', 'maximize', 'close'].forEach(action => {
+    const svg = document.getElementById(action).querySelector('svg');
+    if (svg) {
+        svg.style.width = '20px';
+        svg.style.height = '20px';
+    }
+});
+
+const styleElements = [
+    { selector: '.titlebar', style: { height: '25px' } },
+    { selector: '#classTable', style: { marginTop: '26px' } },
+    { selector: '.configs', style: { marginTop: '26px' } },
+    { selector: '#taskList', style: { marginTop: '26px' } }
+];
+styleElements.forEach(({ selector, style }) => {
+    Object.assign(document.querySelector(selector).style, style);
+});
 
 function updateTime() {
     const now = new Date();
-    let hours = now.getHours();
-    let minutes = now.getMinutes();
-    hours = hours < 10 ? '0' + hours : hours;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    const timeString = `${hours}:${minutes}`;
+    const formatTime = time => (time < 10 ? '0' + time : time);
+    const timeString = `${formatTime(now.getHours())}:${formatTime(now.getMinutes())}`;
     document.getElementById('time').textContent = timeString;
 }
 
 // 样式处理及预加载
+function hideTitles(elements, titleSelector) {
+    elements.forEach(element => {
+        element.style.display = 'none';
+        element.parentNode.querySelector(titleSelector).style.borderBottom = 'none';
+    });
+}
+
+function setCheckbox(id, checked) {
+    document.getElementById(id).checked = checked;
+}
+function setInputValue(id, value) {
+    document.getElementById(id).querySelector('input').value = value;
+}
+
 document.getElementById("editList").classList.add("innerControlShow");
-document.getElementById('configsBox').style.transform='translateX(95%)';
-document.querySelectorAll(".editListContent").forEach(element=> {
-    element.style.display='none';
-    element.parentNode.querySelector(".editListTitle").style.borderBottom="none";
-});
-document.querySelectorAll(".settingContent").forEach(element=> {
-    element.style.display='none';
-    element.parentNode.querySelector(".settingTitle").style.borderBottom="none";
-});
-document.querySelectorAll(".extendContent").forEach(element=> {
-    element.style.display='none';
-    element.parentNode.querySelector(".extendTitle").style.borderBottom="none";
-});
+document.getElementById('configsBox').style.transform = 'translateX(95%)';
+hideTitles(document.querySelectorAll(".editListContent"), ".editListTitle");
+hideTitles(document.querySelectorAll(".settingContent"), ".settingTitle");
+hideTitles(document.querySelectorAll(".extendContent"), ".extendTitle");
 async function loadStyleSetting() {
     const configJson = await window.fileAPI.readConfig('config.json');
+
     document.getElementById('backgroundSource').value = configJson.backgroundSource;
     const fileInput = document.getElementById('fileInputContainerLocal');
     const urlInput = document.getElementById('fileInputContainerURL');
     const fileInputText = document.getElementById('backgroundLocal');
     const urlInputText = document.getElementById('backgroundURLInput');
-    document.getElementById('backgroundMask').querySelector('input').value = configJson.backgroundMask;
-    document.getElementById('fontSize').querySelector('input').value = configJson.fontSize;
-    document.getElementById('listBlurChange').querySelector('input').value = configJson.listBlur;
-    document.getElementById('refreshTimeChange').querySelector('input').value = configJson.refreshTime;
-    document.getElementById('configBlurChange').querySelector('input').value = configJson.configBlur;
-    document.getElementById('configMaskChange').querySelector('input').value = configJson.configMask;
+
+    setInputValue('backgroundMask', configJson.backgroundMask);
+    setInputValue('fontSize', configJson.fontSize);
+    setInputValue('listBlurChange', configJson.listBlur);
+    setInputValue('refreshTimeChange', configJson.refreshTime);
+    setInputValue('configBlurChange', configJson.configBlur);
+    setInputValue('configMaskChange', configJson.configMask);
+
     if (configJson.backgroundSource === 'local'){
         fileInputContainer.classList.remove('hidden');
         fileInput.classList.remove('hidden');
@@ -84,32 +100,16 @@ async function loadStyleSetting() {
         urlInput.classList.remove('hidden');
         urlInputText.value = decodeURIComponent(configJson.background.replace(/^'(.*)'$/, '$1').replace(/^file:\/\//, ''));
     };
-    if (configJson.darkMode === false) {
-        document.getElementById('darkMode').checked = false;
-    } else {
-        document.getElementById('darkMode').checked = true;
-    };
-    if (configJson.showTime === false) {
-        document.getElementById('showTime').checked = false;
-    } else {
-        document.getElementById('showTime').checked = true;
+    setCheckbox('darkMode', configJson.darkMode);
+    setCheckbox('showTime', configJson.showTime);
+    if (configJson.showTime) {
         updateTime();
         setInterval(updateTime, configJson.refreshTime);
     };
-    if (configJson.CheckboxAnimine === false) {
-        document.getElementById('CheckboxAnimine').checked = false;
-    } else {
-        document.getElementById('CheckboxAnimine').checked = true;
-    };
-    if (configJson.configAnimine === false) {
-        document.getElementById('configAnimine').checked = false;
-    } else {
-        document.getElementById('configAnimine').checked = true;
-    };
-    if (configJson.autoColseAfterSave === false) {
-        document.getElementById('autoColseAfterSave').checked = false;
-    } else {
-        document.getElementById('autoColseAfterSave').checked = true;
+    setCheckbox('CheckboxAnimine', configJson.CheckboxAnimine);
+    setCheckbox('configAnimine', configJson.configAnimine);
+    setCheckbox('autoColseAfterSave', configJson.autoColseAfterSave);   
+    if (configJson.autoColseAfterSave) {
         document.getElementById('saveList').addEventListener('click', function () {
             var element=document.getElementById('configsBox');
             element.style.transform==='translateX(95%)' ? element.style.transform='translateX(0)': element.style.transform='translateX(95%)';
@@ -117,50 +117,30 @@ async function loadStyleSetting() {
             icons.classList.toggle('show');
         })
     };
-    if (configJson.reorderMethod === 'drag') {
-        document.getElementById('reorderMethod').value = 'drag';
-    } else if (configJson.reorderMethod === 'button'){
-        document.getElementById('reorderMethod').value = 'button';
-    };
-    if (configJson.autoLaunch === false) {
-        document.getElementById('autoLaunch').checked = false;
+    document.getElementById('reorderMethod').value = configJson.reorderMethod;//拖动方式
+    setCheckbox('autoLaunch', configJson.autoLaunch);
+    if (!configJson.autoLaunch) {
         document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'none';
-    } else {
-        document.getElementById('autoLaunch').checked = true;
     };
-    if (configJson.autoMinimizeWhenAutoLaunch === false) {
-        document.getElementById('autoMinimizeWhenAutoLaunch').checked = false;
-    } else {
-        document.getElementById('autoMinimizeWhenAutoLaunch').checked = true;
-    };
-    if (configJson.showClassList === false) {
-        document.getElementById('showClassList').checked = false;
+    setCheckbox('autoMinimizeWhenAutoLaunch',configJson.autoMinimizeWhenAutoLaunch)
+    setCheckbox('showClassList', configJson.showClassList);
+    if (!configJson.showClassList) {
         document.getElementById('showTimeChange').style.display = 'none';
         document.getElementById('refreshTimeChange').style.display = 'none';
-    } else {
-        document.getElementById('showClassList').checked = true;
     };
-    if (configJson.taskListHoverAnimine === false) {
-        document.getElementById('taskListHoverAnimine').checked = false;
-    } else {
-        document.getElementById('taskListHoverAnimine').checked = true;
-    };
-    //extension
-    if (configJson.extension.writingBGM.enable === true) {
-        document.getElementById('enableWritingBGM').checked = true;
-    } else {
-        document.getElementById('enableWritingBGM').checked = false;
-    };
-    document.getElementById('writingBGMLasting').querySelector('input').value = configJson.extension.writingBGM.lasting;
-    document.getElementById('writingBGMVolume').querySelector('input').value = configJson.extension.writingBGM.volume;
+    setCheckbox('taskListHoverAnimine', configJson.taskListHoverAnimine);
+    setCheckbox('autoCheckUpdate', configJson.autoDownloadUpdate);
+    document.getElementById('updateSource').value = configJson.updateSource;
+    //拓展部分
+    setCheckbox('enableWritingBGM', configJson.extension.writingBGM.enable);
+    setInputValue('writingBGMLasting', configJson.extension.writingBGM.lasting);
+    setInputValue('writingBGMVolume', configJson.extension.writingBGM.volume); 
+    setInputValue('preCountdownDuration', configJson.extension.writingBGM.preCountdownDuration);
+    setCheckbox('systemVolumeSet', configJson.extension.writingBGM.systemVolumeSet);
     document.getElementById('writingBGMStartTime').value = configJson.extension.writingBGM.startTime;
     document.getElementById('BGMFolderInput').value = configJson.extension.writingBGM.BGMFolder;
-    document.getElementById('preCountdownDuration').querySelector('input').value = configJson.extension.writingBGM.preCountdownDuration;
-    if (configJson.extension.writingBGM.systemVolumeSet === false) {
-        document.getElementById('systemVolumeSet').checked = false;
+    if (!configJson.extension.writingBGM.systemVolumeSet) {
         document.getElementById('systemVolumeChange').style.display = 'none';
-    } else {
-        document.getElementById('systemVolumeSet').checked = true;
     };
     document.getElementById('systemVolume').querySelector('input').value = configJson.extension.writingBGM.systemVolume;
 }
@@ -541,6 +521,8 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const showClassList = document.getElementById('showClassList').checked;
     const taskListHoverAnimine = document.getElementById('taskListHoverAnimine').checked;
     const listBlur = document.getElementById('listBlur').querySelector('input').value;
+    const updateSource = document.getElementById('updateSource').value;
+    const autoCheckUpdate = document.getElementById('autoCheckUpdate').checked;
     
     let background = '';
     if (backgroundSource === 'defaultLight') {
@@ -574,6 +556,8 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         showClassList: showClassList,
         taskListHoverAnimine: taskListHoverAnimine,
         listBlur: listBlur,
+        updateSource: updateSource,
+        autoCheckUpdate: autoCheckUpdate,
         extension: {
             ...existingConfig.extension,
         }
@@ -801,3 +785,22 @@ document.getElementById('quitAppButton').addEventListener('click', async () => {
         null
     }
 });
+
+document.getElementById('checkUpdateButton').addEventListener('click', async () => {
+    const result = await window.wAPI.checkForUpdates();
+    if (result.success) {
+        if (result.hasUpdate) {
+            // 显示有更新可用的通知
+            console.log('Update check completed:', result.message);
+            alert(result.message); // 或使用其他通知方式
+        } else {
+            // 显示没有更新的通知
+            console.log('Update check completed:', result.message);
+            alert(result.message); // 或使用其他通知方式
+        }
+    } else {
+        console.error('Update check failed:', result.message);
+        alert('Error checking for updates: ' + result.message);
+    }
+});
+

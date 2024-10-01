@@ -361,6 +361,25 @@
                         <div class="settingPart" id="settingOthers">
                             <div class="settingTitle">其他设置</div>
                             <div class="settingContent">
+                                <div class="selectChange singleSetting" id="updateSourceChange">
+                                    <div class="selectChangeContainer">
+                                        <label for="updateSource">更新源</label>
+                                        <select id="updateSource">
+                                            <option value="GitHub">GitHub</option>
+                                            <option value="Gitee">Gitee</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSetting" id="autoCheckUpdateChange">
+                                    <label for="autoCheckUpdate">自动检查更新</label>
+                                    <label class="switch">
+                                        <input id="autoCheckUpdate" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="singleSetting" id="checkUpdate">
+                                    <button class="configsButton" id="checkUpdateButton">检查更新</button>
+                                </div>
                                 <div class="singleSetting" id="importTask">
                                     <button class="configsButton" id="importTaskButton">导入任务列表</button>
                                 </div>

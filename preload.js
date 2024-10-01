@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld("wAPI", {
     setVolume: (volume) => ipcRenderer.invoke('setSystemVolume', volume),
     setMuted: (muted) => ipcRenderer.invoke('setMuted', muted),
     getMuted: () => ipcRenderer.invoke('getMuted'),
+    checkForUpdates: () => ipcRenderer.invoke('checkUpdates'),
 });
 
 contextBridge.exposeInMainWorld("infoAPI", {
