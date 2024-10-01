@@ -8,7 +8,8 @@
     "start": "electron .",
     "start-forge": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "electron-is-dev": "^3.0.1",

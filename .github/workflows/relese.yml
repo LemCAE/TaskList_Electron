@@ -22,11 +22,13 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: |
+            npm install
+            npm install --save-dev electron-builder
 
       # Set ELECTRON_MIRROR to speed up Electron downloads
-      - name: Set ELECTRON_MIRROR
-        run: echo "ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/" >> $GITHUB_ENV
+      #- name: Set ELECTRON_MIRROR
+      #  run: echo "ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/" >> $GITHUB_ENV
 
       # Build the application using electron-builder
       - name: Build and publish
