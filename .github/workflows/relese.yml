@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write  # 确保有写入内容的权限
 
     steps:
       # Checkout the repository
@@ -23,21 +25,18 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: |
-            npm install
-            npm install --save-dev electron-builder
+          npm install
+          npm install --save-dev electron-builder
 
       # Build the application using electron-builder
-      - name: Build and publish
+      - name: Build
         run: npm run dist
 
-      # Upload the artifacts to GitHub Release
-      - name: Publish to GitHub Releases
-        uses: softprops/action-gh-release@v1
+      # Publish to GitHub Releases
+      - name: Publish Release
+        uses: ncipollo/release-action@v1
         with:
-            files: |
-                    dist/*.exe
-                    dist/*.nupkg
-                    dist/latest.yml
-        env:
-            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-    
+          #tag: ${{ github.ref }}  # 使用当前推送的标签
+          artifacts: "dist/*.exe,dist/*.nupkg,dist/latest.yml"  # 发布的文件
+          bodyFile: "body.md"  # 发布说明文件，如果有的话
+          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
