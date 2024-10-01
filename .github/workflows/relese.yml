@@ -39,4 +39,4 @@ jobs:
             dist/*.nupkg
             dist/latest.yml
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GitHub Token
+            GITHUB_TOKEN: ${{ secrets.SELF_GITHUB_TOKEN }} 
