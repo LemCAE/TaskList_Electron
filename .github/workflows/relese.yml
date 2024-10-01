@@ -26,10 +26,6 @@ jobs:
             npm install
             npm install --save-dev electron-builder
 
-      # Set ELECTRON_MIRROR to speed up Electron downloads (optional)
-      #- name: Set ELECTRON_MIRROR
-      #  run: echo "ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/" >> $GITHUB_ENV
-
       # Build the application using electron-builder
       - name: Build and publish
         run: npm run dist
@@ -43,4 +39,4 @@ jobs:
             dist/*.nupkg
             dist/latest.yml
         env:
-            GITHUB_TOKEN:  ${{ secrets.GITHUB_TOKEN }} 
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GitHub Token
