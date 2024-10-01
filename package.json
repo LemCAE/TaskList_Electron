@@ -9,7 +9,7 @@
     "start-forge": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "dist": "electron-builder"
+    "dist": "electron-builder --win --x64"
   },
   "dependencies": {
     "electron-is-dev": "^3.0.1",
