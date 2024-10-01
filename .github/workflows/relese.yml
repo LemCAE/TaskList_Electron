@@ -12,21 +12,19 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # 使用最新版本
 
       # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: '20'  # 使用 Node.js 20
 
       # Install dependencies
       - name: Install dependencies
-        run: |
-            npm install
-            npm install --save-dev electron-builder
+        run: npm install
 
-      # Set ELECTRON_MIRROR to speed up Electron downloads
+      # Set ELECTRON_MIRROR to speed up Electron downloads (optional)
       #- name: Set ELECTRON_MIRROR
       #  run: echo "ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/" >> $GITHUB_ENV
 
