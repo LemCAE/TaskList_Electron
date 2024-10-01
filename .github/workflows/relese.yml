@@ -34,9 +34,10 @@ jobs:
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            dist/*.exe
-            dist/*.nupkg
-            dist/latest.yml
+            files: |
+                    dist/*.exe
+                    dist/*.nupkg
+                    dist/latest.yml
         env:
-            GITHUB_TOKEN: ${{ secrets.SELF_GITHUB_TOKEN }} 
+            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    
