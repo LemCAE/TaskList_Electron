@@ -233,7 +233,7 @@ function createlist(inner) {
 
 async function readTaskList(jsonFile) {
     try {
-        const tasklist=await window.fileAPI.readConfig(`lists/${jsonFile}`);
+        const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
         for (const key in tasklist) {
             if (tasklist.hasOwnProperty(key)) {
                 const listElement=document.getElementById(`${key}list`);
@@ -261,7 +261,7 @@ readTaskList("list.json");
 
 async function getListToEdit(jsonFile) {
     try {
-        const tasklist=await window.fileAPI.readConfig(`lists/${jsonFile}`);
+        const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
         if ( !tasklist) return;
         for (const key in tasklist) {
             if (tasklist.hasOwnProperty(key)) {
@@ -358,7 +358,7 @@ document.getElementById('saveList').addEventListener('click', async () => {
         data[key] = values;
     });
     console.log('Final data to save:', data);
-    await window.fileAPI.writeConfig('lists/list.json', data);
+    await window.fileAPI.writeConfig('list.json', data);
     console.log('Data saved successfully');
     reloadTaskList('list.json');
     reloadEditListContent('list.json');
@@ -731,7 +731,7 @@ document.getElementById('clearTaskButton').addEventListener('click', async () =>
             bi: [],
             ot: []
         };
-        await window.fileAPI.writeConfig('lists/list.json', data);
+        await window.fileAPI.writeConfig('list.json', data);
         reloadTaskList('list.json');
         reloadEditListContent('list.json');
     } else {
@@ -744,7 +744,7 @@ document.getElementById('importTaskButton').addEventListener('click', async () =
         const detailText = '现有任务列表将被覆盖';
         const ifContinue = await window.infoAPI.showWarningDialog(detailText);
         if (ifContinue === 0) {
-            await window.fileAPI.writeConfig('lists/list.json', result.data);
+            await window.fileAPI.writeConfig('list.json', result.data);
             reloadTaskList('list.json');
             reloadEditListContent('list.json');
             alert('文件导入成功！');
@@ -765,7 +765,7 @@ document.getElementById('exportTaskButton').addEventListener('click', async () =
         bi: [],
         ot: []
     };
-    const data = await window.fileAPI.readConfig('lists/list.json');
+    const data = await window.fileAPI.readConfig('list.json');
     for (const key in data) {
         dataToExport[key] = data[key];
     }
@@ -790,13 +790,10 @@ document.getElementById('checkUpdateButton').addEventListener('click', async () 
     const result = await window.wAPI.checkForUpdates();
     if (result.success) {
         if (result.hasUpdate) {
-            // 显示有更新可用的通知
             console.log('Update check completed:', result.message);
-            alert(result.message); // 或使用其他通知方式
         } else {
-            // 显示没有更新的通知
             console.log('Update check completed:', result.message);
-            alert(result.message); // 或使用其他通知方式
+            alert(result.message);
         }
     } else {
         console.error('Update check failed:', result.message);
@@ -804,3 +801,6 @@ document.getElementById('checkUpdateButton').addEventListener('click', async () 
     }
 });
 
+window.wAPI.onUpdateProgress((percent) => {
+    document.getElementById('progress-bar').style.width = `${percent}%`;
+});

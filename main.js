@@ -4,35 +4,44 @@ const WinReg = require("winreg");
 const fs = require("fs");
 const loudness = require('loudness');
 const { autoUpdater } = require('electron-updater');
+const { checkAndReadConfig } = require('./config');
 async function loadInput() {
-    const isDev = await import('electron-is-dev');
-};
+    const dev = await import('electron-is-dev');
+    return dev.default; // 返回 isDev 值
+}
 let isDev;
+autoUpdater.forceDevUpdateConfig = true;
 loadInput().then(dev => {
-    isDev = dev.default; // 这里使用 dev.default 获取 isDev
+    isDev = dev; 
+}).catch(error => {
+    console.error('Failed to load isDev:', error);
 });
+
 let mainWindow;
 let tray;
 let config;
 
-// 读取配置文件
-function readConfig() {
-    const configPath = path.join(__dirname, "./config/config.json");
-    if (fs.existsSync(configPath)) {
-        config = JSON.parse(fs.readFileSync(configPath)); 
-    }
-    return {};
-}
-readConfig();
+config = checkAndReadConfig('config')
+classlist = checkAndReadConfig('classlist')
+list = checkAndReadConfig('list');
 
 const updateSource = config.updateSource
+function showUpdateDialog(title, message) {
+    return dialog.showMessageBox({
+        type: 'info',
+        title: title,
+        message: message,
+        buttons: ['是', '否']
+    });
+}
+
 function configureUpdater() {
-    if (updateSource === 'gitee') {
+    if (updateSource === 'Gitee') {
         autoUpdater.setFeedURL({
             provider: 'generic',
-            url: 'https://gitee.com/LemCAE/TaskList_Electron/releases/latest/download/'
+            url: 'https://gitee.com/LemCAE/TaskList_Electron/releases'
         });
-    } else if (updateSource === 'github') {
+    } else if (updateSource === 'GitHub') {
         autoUpdater.setFeedURL({
             provider: 'github',
             owner: 'LemCAE',
@@ -40,47 +49,48 @@ function configureUpdater() {
         });
     }
 }
+configureUpdater()
 
-// 监听更新事件
-autoUpdater.on('update-available', (info) => {
-    dialog.showMessageBox({
-        type: 'info',
-        title: 'Update Available',
-        message: 'A new version is available. Do you want to update now?',
-        buttons: ['Yes', 'No']
-    }).then(result => {
-        if (result.response === 0) { // 如果用户点击“是”
-            autoUpdater.downloadUpdate(); // 下载更新
-        }
-    });
+autoUpdater.on('update-available', async () => {
+    const result = await showUpdateDialog('可用更新', '检测到新版本，是否立即更新？');
+    if (result.response === 0) {
+        autoUpdater.downloadUpdate();
+    }
 });
 
-autoUpdater.on('update-downloaded', () => {
-    dialog.showMessageBox({
-        type: 'info',
-        title: 'Update Ready',
-        message: 'Update downloaded. It will be installed on restart.',
-        buttons: ['Restart Now', 'Later']
-    }).then(result => {
-        if (result.response === 0) { // 如果用户选择“现在重启”
-            autoUpdater.quitAndInstall(); // 重启并安装更新
-        }
-    });
+autoUpdater.on('download-progress', (progressObj) => {
+    const { percent } = progressObj;
+    console.log(`Download progress: ${percent}%`);
+    mainWindow.webContents.send('update-progress', percent);
+});
+
+autoUpdater.on('update-downloaded', async () => {
+    const result = await showUpdateDialog('更新已下载', '新版本已下载，是否立即安装？');
+    if (result.response === 0) {
+        autoUpdater.quitAndInstall();
+    }
+});
+
+autoUpdater.on('error', (error) => {
+    console.error('Update error:', error);
+    dialog.showErrorBox('Update Error', error.message);
 });
 
 // 启动时检查更新
 app.on('ready', () => {
     if (!isDev) {
-        configureUpdater(); // 配置更新源
-        autoUpdater.checkForUpdates(); // 检查更新
+        autoUpdater.checkForUpdates();
     }
 });
-
 // 处理渲染进程的请求
 ipcMain.handle('checkUpdates', async () => {
     try {
         const updateCheckResult = await autoUpdater.checkForUpdates();
         if (updateCheckResult && updateCheckResult.updateInfo) {
+            const result = await showUpdateDialog('可用更新', '检测到新版本，是否立即更新？');
+            if (result.response === 0) {
+                autoUpdater.downloadUpdate();
+            }
             return { success: true, hasUpdate: true, message: '有可用更新' };
         } else {
             return { success: true, hasUpdate: false, message: '暂无可用更新' };
@@ -171,7 +181,7 @@ if (!gotTheLock) {
             setStartup(enable);
         });
     }
-    const configFilePath = path.join(__dirname, "./config/config.json");
+    const configFilePath = path.join(process.cwd(), "./config/config.json");
     app.whenReady().then(() => {
         createWindow();
         // 读取配置文件
@@ -234,7 +244,7 @@ if (!gotTheLock) {
 
 ipcMain.handle("read-config", async (event, fileName) => {
     try {
-        const filePath = path.join(__dirname, "config", fileName);
+        const filePath = path.join(process.cwd(), "config", fileName);
         const data = await fs.promises.readFile(filePath, "utf-8");
         return JSON.parse(data);
     } catch (error) {
@@ -243,9 +253,11 @@ ipcMain.handle("read-config", async (event, fileName) => {
     }
 });
 
+
 ipcMain.handle("write-config", async (event, { fileName, data }) => {
     try {
-        const filePath = path.join(__dirname, "config", fileName);
+        // 使用 process.cwd() 构建文件路径
+        const filePath = path.join(process.cwd(), "config", fileName);
         await fs.promises.writeFile(
             filePath,
             JSON.stringify(data, null, 2),
@@ -257,8 +269,9 @@ ipcMain.handle("write-config", async (event, { fileName, data }) => {
     }
 });
 
+
 ipcMain.handle("get-resource-path", (event, fileName) => {
-    return path.join(__dirname, "resource", fileName);
+    return path.join(process.cwd(), "resource", fileName);
 });
 
 ipcMain.handle("dialog:selectImage", async () => {

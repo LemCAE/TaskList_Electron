@@ -24,6 +24,9 @@ contextBridge.exposeInMainWorld("wAPI", {
     setMuted: (muted) => ipcRenderer.invoke('setMuted', muted),
     getMuted: () => ipcRenderer.invoke('getMuted'),
     checkForUpdates: () => ipcRenderer.invoke('checkUpdates'),
+    onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => {
+        callback(percent);
+    }),
 });
 
 contextBridge.exposeInMainWorld("infoAPI", {
