@@ -1,42 +1,36 @@
-name: Build and Release
+name: Release
 
 on:
   push:
     tags:
-      - 'v*'  # 当推送包含 "v" 前缀的标签时触发，例如 v1.0.0
+      - 'v*' # 触发条件：推送以 'v' 开头的标签
 
 jobs:
   build:
     runs-on: windows-latest
-    permissions:
-      contents: write  # 确保有写入内容的权限
 
     steps:
-      # Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v3  # 使用最新版本
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Set up Node.js environment
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: '20'  # 使用 Node.js 20
+          node-version: '20' # 设置 Node.js 版本
 
-      # Install dependencies
       - name: Install dependencies
         run: |
           npm install
-          npm install --save-dev electron-builder
 
-      # Build the application using electron-builder
-      - name: Build
-        run: npm run dist
+      - name: Build the Electron app
+        run: |
+          npm run dist # 根据您的 package.json 文件运行构建命令
 
-      #Publish to GitHub Releases
-      - name: Publish Release
-        uses: ncipollo/release-action@v1
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          #tag: ${{ github.ref }}  # 使用当前推送的标签
-          artifacts: "dist/*.exe,dist/*.nupkg,dist/latest.yml"  # 发布的文件
-          bodyFile: "body.md"  # 发布说明文件，如果有的话
-          token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GitHub 提供的 token
+          tag_name: ${{ github.ref }} # 使用当前 GitHub 标签
+          files: |
+            dist/*.exe # 根据您的打包输出调整路径和文件名
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 自动使用 GitHub 提供的访问令牌

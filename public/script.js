@@ -129,7 +129,11 @@ async function loadStyleSetting() {
         document.getElementById('refreshTimeChange').style.display = 'none';
     };
     setCheckbox('taskListHoverAnimine', configJson.taskListHoverAnimine);
-    setCheckbox('autoCheckUpdate', configJson.autoDownloadUpdate);
+    setCheckbox('autoCheckUpdate', configJson.autoCheckUpdate);
+    if (!configJson.autoCheckUpdate) {
+            document.getElementById('autoDownloadUpdateChange').style.display = 'none';
+    };
+    setCheckbox('autoDownloadUpdate', configJson.autoDownloadUpdate)
     document.getElementById('updateSource').value = configJson.updateSource;
     //拓展部分
     setCheckbox('enableWritingBGM', configJson.extension.writingBGM.enable);
@@ -523,6 +527,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const listBlur = document.getElementById('listBlur').querySelector('input').value;
     const updateSource = document.getElementById('updateSource').value;
     const autoCheckUpdate = document.getElementById('autoCheckUpdate').checked;
+    const autoDownloadUpdate = document.getElementById('autoDownloadUpdate').checked;
     
     let background = '';
     if (backgroundSource === 'defaultLight') {
@@ -558,6 +563,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         listBlur: listBlur,
         updateSource: updateSource,
         autoCheckUpdate: autoCheckUpdate,
+        autoDownloadUpdate: autoDownloadUpdate,
         extension: {
             ...existingConfig.extension,
         }
@@ -661,6 +667,15 @@ document.getElementById('autoLaunch').addEventListener('change', function() {
     } else {
         console.log('no autoLaunch');
         document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'none';
+    }
+})
+
+document.getElementById('autoCheckUpdate').addEventListener('change', function() {
+    const autoCheckUpdate = document.getElementById('autoCheckUpdate').checked;
+    if (autoCheckUpdate) {
+        document.getElementById('autoDownloadUpdateChange').style.display = 'flex';
+    } else {
+        document.getElementById('autoDownloadUpdateChange').style.display = 'none';
     }
 })
 

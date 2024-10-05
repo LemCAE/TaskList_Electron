@@ -1,8 +1,14 @@
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 
-// 配置文件目录
-const configDir = path.join(__dirname, "./config");
+
+const appDataDir = path.join(os.homedir(), 'AppData', 'Roaming', 'TaskList');
+if (!fs.existsSync(appDataDir)) {
+    fs.mkdirSync(appDataDir, { recursive: true });
+}
+
+const configDir = appDataDir;
 
 // 默认配置
 const defaultConfigs = {
@@ -26,8 +32,8 @@ const defaultConfigs = {
         "autoLaunch": false,
         "autoMinimizeWhenAutoLaunch": false,
         "updateSource": "GitHub",
-        "autoCheckUpdate": true,
-        "autoDownloadUpdate": true,
+        "autoCheckUpdate": false,
+        "autoDownloadUpdate": false,
         "extension": {
           "writingBGM": {
             "enable": false,
@@ -87,18 +93,38 @@ const defaultConfigs = {
 };
 
 // 读取单个配置文件
+
+// 递归检查和添加默认键值对
+function mergeDefaults(target, defaults) {
+    for (const key in defaults) {
+        if (typeof defaults[key] === 'object' && defaults[key] !== null) {
+            if (!target[key]) {
+                target[key] = {};
+            }
+            mergeDefaults(target[key], defaults[key]);
+        } else {
+            if (!target.hasOwnProperty(key)) {
+                target[key] = defaults[key];
+            }
+        }
+    }
+}
+
+// 读取单个配置文件
 function checkAndReadConfig(fileName) {
-    // 使用相对路径来指向根目录下的 config 文件夹
-    const configPath = path.join(process.cwd(), `./config/${fileName}.json`); // 修改此行
+    const configPath = path.join(configDir, `./config/${fileName}.json`);
     if (fs.existsSync(configPath)) {
-        return JSON.parse(fs.readFileSync(configPath));
+        const config = JSON.parse(fs.readFileSync(configPath));
+        const defaultConfig = defaultConfigs[fileName] || {};
+        mergeDefaults(config, defaultConfig); // 合并默认配置
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+        return config;
     } else {
         const defaultConfig = defaultConfigs[fileName] || {};
         fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
         return defaultConfig;
     }
 }
-
 module.exports = {
     checkAndReadConfig,
 };

@@ -1,6 +1,6 @@
 {
-  "backgroundSource": "local",
-  "background": "'file://C:/Users/tenge/Desktop/%E7%BB%98%E7%94%BB%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0%E5%BA%93/GWZ_786bUAAD_tC.jpg'",
+  "backgroundSource": "defaultDark",
+  "background": "../resource/defaultDark.jpg",
   "darkMode": true,
   "backgroundMask": "0.4",
   "fontSize": "1.6",
@@ -14,20 +14,20 @@
   "showTime": true,
   "refreshTime": "1000",
   "autoColseAfterSave": true,
-  "reorderMethod": "button",
+  "reorderMethod": "drag",
   "autoLaunch": false,
   "autoMinimizeWhenAutoLaunch": false,
   "updateSource": "GitHub",
-  "autoCheckUpdate": true,
-  "autoDownloadUpdate": true,
+  "autoCheckUpdate": false,
+  "autoDownloadUpdate": false,
   "extension": {
     "writingBGM": {
-      "enable": true,
-      "lasting": "1",
+      "enable": false,
+      "lasting": "10",
       "volume": "100",
-      "startTime": "13:08",
-      "BGMFolder": "D:\\Project\\testAudio",
-      "preCountdownDuration": "1",
+      "startTime": "19:00",
+      "BGMFolder": "",
+      "preCountdownDuration": "3",
       "systemVolumeSet": true,
       "systemVolume": "20"
     }

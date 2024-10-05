@@ -5,10 +5,12 @@ const fs = require("fs");
 const loudness = require('loudness');
 const { autoUpdater } = require('electron-updater');
 const { checkAndReadConfig } = require('./config');
+
 async function loadInput() {
     const dev = await import('electron-is-dev');
     return dev.default; // 返回 isDev 值
 }
+
 let isDev;
 autoUpdater.forceDevUpdateConfig = true;
 loadInput().then(dev => {
@@ -21,11 +23,13 @@ let mainWindow;
 let tray;
 let config;
 
-config = checkAndReadConfig('config')
-classlist = checkAndReadConfig('classlist')
-list = checkAndReadConfig('list');
+config = checkAndReadConfig('config');
+checkAndReadConfig('list');
+checkAndReadConfig('classlist');
 
-const updateSource = config.updateSource
+const updateSource = config.updateSource;
+const currentVersion = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'))).version;
+
 function showUpdateDialog(title, message) {
     return dialog.showMessageBox({
         type: 'info',
@@ -36,6 +40,7 @@ function showUpdateDialog(title, message) {
 }
 
 function configureUpdater() {
+    autoUpdater.autoDownload = false;
     if (updateSource === 'Gitee') {
         autoUpdater.setFeedURL({
             provider: 'generic',
@@ -49,12 +54,18 @@ function configureUpdater() {
         });
     }
 }
-configureUpdater()
 
 autoUpdater.on('update-available', async () => {
-    const result = await showUpdateDialog('可用更新', '检测到新版本，是否立即更新？');
-    if (result.response === 0) {
-        autoUpdater.downloadUpdate();
+    console.log('update-avi')
+    if (!config.autoDownloadUpdate) {
+        const result = await showUpdateDialog('可用更新', '检测到新版本，是否立即更新？');
+        if (result.response === 0) {
+            autoUpdater.downloadUpdate(); // 用户确认后才下载
+        } else {
+            console.log('canceled');
+        }
+    } else {
+        autoUpdater.downloadUpdate()
     }
 });
 
@@ -78,19 +89,27 @@ autoUpdater.on('error', (error) => {
 
 // 启动时检查更新
 app.on('ready', () => {
-    if (!isDev) {
-        autoUpdater.checkForUpdates();
+    configureUpdater();
+    console.log('autoUpdater.autoDownload',autoUpdater.autoDownload);
+    if (!isDev && config.autoCheckUpdate) {
+        console.log(config.autoCheckUpdate);
+        const checkUpdates = async () => {
+            try {
+                const updateCheckResult = await autoUpdater.checkForUpdates();
+                console.log(updateCheckResult.updateInfo.version , currentVersion);
+            } catch (error) {
+                console.error('Update check error:', error);
+            }
+        };
+        checkUpdates();
     }
 });
+
 // 处理渲染进程的请求
 ipcMain.handle('checkUpdates', async () => {
     try {
         const updateCheckResult = await autoUpdater.checkForUpdates();
-        if (updateCheckResult && updateCheckResult.updateInfo) {
-            const result = await showUpdateDialog('可用更新', '检测到新版本，是否立即更新？');
-            if (result.response === 0) {
-                autoUpdater.downloadUpdate();
-            }
+        if (updateCheckResult && updateCheckResult.updateInfo && updateCheckResult.updateInfo.version !== currentVersion) {
             return { success: true, hasUpdate: true, message: '有可用更新' };
         } else {
             return { success: true, hasUpdate: false, message: '暂无可用更新' };
@@ -181,7 +200,7 @@ if (!gotTheLock) {
             setStartup(enable);
         });
     }
-    const configFilePath = path.join(process.cwd(), "./config/config.json");
+    const configFilePath = path.join(app.getPath('appData'), "TaskList/config/config.json");
     app.whenReady().then(() => {
         createWindow();
         // 读取配置文件
@@ -244,7 +263,7 @@ if (!gotTheLock) {
 
 ipcMain.handle("read-config", async (event, fileName) => {
     try {
-        const filePath = path.join(process.cwd(), "config", fileName);
+        const filePath = path.join(app.getPath('appData'), "TaskList/config", fileName);
         const data = await fs.promises.readFile(filePath, "utf-8");
         return JSON.parse(data);
     } catch (error) {
@@ -256,8 +275,7 @@ ipcMain.handle("read-config", async (event, fileName) => {
 
 ipcMain.handle("write-config", async (event, { fileName, data }) => {
     try {
-        // 使用 process.cwd() 构建文件路径
-        const filePath = path.join(process.cwd(), "config", fileName);
+        const filePath = path.join(app.getPath('appData'), "TaskList/config", fileName);
         await fs.promises.writeFile(
             filePath,
             JSON.stringify(data, null, 2),

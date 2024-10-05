@@ -14,7 +14,7 @@
     "start-forge": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "dist": "electron-builder"
+    "dist": "electron-builder -c"
   },
   "dependencies": {
     "electron-is-dev": "^3.0.1",
@@ -36,7 +36,6 @@
   "build": {
     "appId": "com.lemcae.tasklist",
     "productName": "TaskList",
-    "copyright": "1.0.4",
     "directories": {
       "output": "dist"
     },
@@ -57,20 +56,12 @@
       "!.gitignore",
       "!.github/workflows/*"
     ],
-    "extraFiles": [
-      {
-        "from": "config",
-        "to": "config",
-        "filter": ["**/*"]
-      }
-    ],
     "asar": {
       "smartUnpack": true
     },
     "icon": "resource/icon.ico",
     "win": {
       "target": [
-        "portable",
         "nsis"
       ]
     },
@@ -80,20 +71,16 @@
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "resource/icon.ico",
       "uninstallerIcon": "resource/uninstall.ico",
-      "runAfterFinish": false
+      "allowElevation": true,
+      "runAfterFinish": false,
+      "packElevateHelper": true,
+      "include": "installer.nsh"
     },
-    "differential": true,
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "LemCAE",
-        "repo": "TaskList_Electron",
-        "releaseType": "release"
-      },
-      {
-        "provider": "generic",
-        "url": "https://gitee.com/LemCAE/TaskList_Electron/releases/download/"
-      }
-    ]
+    "publish": {
+      "provider": "github",
+      "owner": "LemCAE",
+      "repo": "TaskList_Electron",
+      "releaseType": "release"
+    }
   }
 }
