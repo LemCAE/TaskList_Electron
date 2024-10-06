@@ -3,7 +3,7 @@ const path = require("path");
 const os = require("os");
 
 
-const appDataDir = path.join(os.homedir(), 'AppData', 'Roaming', 'TaskList');
+const appDataDir = path.join(os.homedir(), 'AppData', 'Roaming', 'TaskList', 'config');
 if (!fs.existsSync(appDataDir)) {
     fs.mkdirSync(appDataDir, { recursive: true });
 }
@@ -81,13 +81,13 @@ const defaultConfigs = {
             "cm": "班会"
         },
         "classlist": {
-            "Monday": ["cn", "cn", "ph", "bi", "ma", "pe", "en", "ch"],
-            "Tuesday": ["ph", "ph", "cn", "en", "ma", "bi", "ch", "ls"],
-            "Wednesday": ["cn", "en", "ma", "ma", "ch", "pe", "bi", "ph"],
-            "Thursday": ["cn", "ph", "bi", "ch", "me", "en", "ma", "sl"],
-            "Friday": ["cn", "cn", "en", "ma", "bi", "ph", "ch", "cm"], 
-            "Saturday": ["en", "en", "ma", "ma", "ch", "ph", "bi", "cn"],
-            "Sunday": ["", "", "", "", "sl", "sl", "sl", "sl"]
+            "Monday": ["","","","","","","",""],
+            "Tuesday": ["","","","","","","",""],
+            "Wednesday": ["","","","","","","",""],
+            "Thursday": ["","","","","","","",""],
+            "Friday": ["","","","","","","",""],
+            "Saturday": ["","","","","","","",""],
+            "Sunday": ["","","","","","","",""]
         }
     }
 };
@@ -112,7 +112,7 @@ function mergeDefaults(target, defaults) {
 
 // 读取单个配置文件
 function checkAndReadConfig(fileName) {
-    const configPath = path.join(configDir, `./config/${fileName}.json`);
+    const configPath = path.join(configDir, `./${fileName}.json`);
     if (fs.existsSync(configPath)) {
         const config = JSON.parse(fs.readFileSync(configPath));
         const defaultConfig = defaultConfigs[fileName] || {};

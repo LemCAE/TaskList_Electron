@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskList - 倒计时</title>
+</head>
+<script>
+    async function loadStyle() {
+        const configJson = await window.fileAPI.readConfig('config.json');
+        console.log(configJson);
+        const style = document.createElement('style');
+        style.textContent = `
+            body {
+                background-image: url(${configJson.background});
+            }
+            body::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,${configJson.backgroundMask}); 
+                z-index: -1;
+            }
+        `;
+        document.head.appendChild(style);
+        if (configJson.darkMode === true) {
+            console.log('Dark mode enabled');
+            const darkMode = document.createElement('style');
+            darkMode.textContent = `
+                * {
+                    color: #dddddd;
+                }
+                .titlebar .title {
+                    color: #eeeeee;
+                }.titlebar .controls button {
+                    svg {
+                        fill: #eeeeee;
+                    }
+                    svg:hover {
+                        fill: #ffffff;
+                    }
+                }
+                .icons {
+                    fill:#ffffff
+                }
+                #openMenu {
+                    background-color: #ffffff;
+                    border-top: 0.20vw solid #ffffff;
+                    border-bottom: 0.20vw solid #ffffff;
+                }
+            `;
+            document.head.appendChild(darkMode);
+        }
+    }
+    loadStyle();
+</script>
+
+<style>
+    body {
+        background-size:cover;
+        background-attachment:fixed;
+        background-position:center;
+        background-repeat:no-repeat;
+        height:100%;
+        margin:0px;
+        overflow: hidden;
+    }
+    body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.3); 
+        z-index: -1;
+    }
+    ::-webkit-scrollbar {
+        display:none;
+    }
+    .titlebar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 30px;
+        padding: 0 10px;
+        background: rgba(255, 255, 255, 0.178);
+        backdrop-filter: blur(10px);
+        border-bottom:1px solid #ffffff4f ;
+        -webkit-app-region: drag;
+        user-select: none;
+    }
+    .titlebar .icon {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .titlebar .icon img {
+        width: 20px;
+        height: 20px;
+    }
+    .titlebar .title {
+        font-size: 16px;
+        flex-grow: 1;
+        text-align: center;
+        color: #333333;
+    }
+    .titlebar .controls {
+        display: flex;
+        gap: 0.5vw;
+        padding-right: 15px;
+    }
+    .titlebar .controls button {
+        background: none !important;
+        border: none !important;
+        margin-top: 0 !important;
+        box-shadow: none !important;
+        color: #333333;
+        padding: 0;
+        cursor: pointer;
+        -webkit-app-region: no-drag; /* 使控件可点击 */
+        svg {
+            margin: auto;
+            fill: #333333;
+        }
+        svg:hover {
+            fill: #555555;
+        }
+    }
+    .titlebar .controls button:hover {
+        color: #000;
+    }
+</style>
+<body>
+    <div class="titlebar">
+        <div class="icon">
+        <img src="../../resource/icon.ico" alt="App Icon">
+        </div>
+        <div class="title">TaskList - 倒计时</div>
+        <div class="controls">
+            <button id="minimize">
+                <svg t="1725463744988" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4231" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                    <path d="M98.23 451.003l829.685-1.992 0.154 64-829.685 1.992z" fill="" p-id="4232"></path>
+                </svg>
+            </button>
+            <button id="maximize">
+                <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
+                    <path d="M836.224 917.333333h-644.266667a85.589333 85.589333 0 0 1-85.333333-85.333333V187.733333a85.589333 85.589333 0 0 1 85.333333-85.333333h644.266667a85.589333 85.589333 0 0 1 85.333333 85.333333v644.266667a91.690667 91.690667 0 0 1-85.333333 85.333333zM191.957333 170.666667a22.869333 22.869333 0 0 0-21.333333 21.333333v644.266667a22.869333 22.869333 0 0 0 21.333333 21.333333h644.266667a22.869333 22.869333 0 0 0 21.333333-21.333333V192a22.869333 22.869333 0 0 0-21.333333-21.333333z" p-id="4130"></path>
+                </svg>
+            </button>
+            <button id="close">
+                <svg t="1725463516138" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3260" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                    <path d="M548.992 503.744L885.44 167.328a31.968 31.968 0 1 0-45.248-45.248L503.744 458.496 167.328 122.08a31.968 31.968 0 1 0-45.248 45.248l336.416 336.416L122.08 840.16a31.968 31.968 0 1 0 45.248 45.248l336.416-336.416L840.16 885.44a31.968 31.968 0 1 0 45.248-45.248L548.992 503.744z" p-id="3261"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="countdown" id="countdown">00:00:00</div>
+        <audio class="audio" id="audio" src="../../resource/ringtone.mp3" preload="auto"></audio>
+    </div>
+    <div id="control-box">
+        <div id="out-control">
+            <div id="change">
+                <div class="menu"></div>
+            </div>
+        </div>
+        <div id="control">
+            <div class="time-input">
+                <input type="number" id="hours" name="hours" min="0" max="23" value="0">
+                <label for="hours">小时</label>
+                <input type="number" id="minutes" name="minutes" min="0" max="59" value="10">
+                <label for="minutes">分钟</label>
+                <input type="number" id="seconds" name="seconds" min="0" max="59" value="0">
+                <label for="seconds">秒</label>
+            </div>
+                <div class="button-container">
+                    <button class="button" id="start-button">开始</button>
+                    <button class="button" id="pause-button">暂停</button>
+                    <button class="button" id="resume-button">继续</button>
+                    <button class="button" id="reset-button">重置</button>
+                </div>
+                <a href="tools.html"><button class="button" id="return">返回</button></a>
+            </div>
+            
+        </div>
+    </div>
+    <style>
+        body {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .countdown {
+            display: flex;
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: max(35%,128px);
+            width: max(35%, 347px);
+            backdrop-filter: blur(5px);
+            border-radius:10px;
+            border: 1px solid #ffffffa1;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #control-box {
+            height: 100%;
+            width: min(100%,400px);
+            overflow: auto;
+            position: fixed;
+            display: flex;
+            flex-direction: row;
+            top: 0px;
+            right: 0;
+            z-index: 999;
+            line-height: 1.5;
+            transform: translateX(90%);
+            transition: transform 0.5s;
+            backdrop-filter: blur(10px);
+            border-left: 1px solid #ffffffa1;
+        }
+        #control {
+            width: 90%;
+            margin-left: auto;
+        }
+        #out-control {
+            width: 10%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #change {
+            margin-top: 3%;
+            margin-left: 1%;
+            backdrop-filter: blur(5px);
+            border-radius:3px;
+            margin: 5px;
+        }
+        #time {
+            bottom: 20px;
+            font-size: 9px;
+            color: #ffffff;
+            margin-top: auto;
+        }
+        .menu{
+            padding: 7px 0;
+            width: 30px;
+            height: 3px;
+            background: rgb(255, 255, 255);
+            background-clip: content-box; 
+            border-top: 3px solid rgb(255, 255, 255);
+            border-bottom: 3px solid rgb(255, 255, 255);
+        }
+        .time-input {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+        }
+        input[type="number"] {
+            padding: 2px;
+            font-size: 20px;
+            border: 2px solid #b6b6b6a1;
+            border-radius: 5px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="number"]:focus {
+            border-color: #007bff; 
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
+        }
+        label {
+            font-size: 1rem;
+            color: #ffffff;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px;
+        }
+        button {
+            margin-top: 0.2604vw;
+            padding: 5px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ffffffa1;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: none;
+            background-color: #ffffffa1;
+            color: #000000;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ffffff;
+        }
+        #return {
+            position: fixed;
+            bottom: 35px;
+            right: 1%;
+            width: 100px;
+        }
+    </style>
+    <script>
+        ['minimize', 'maximize', 'close'].forEach(action => {
+            document.getElementById(action).addEventListener('click', () => {
+                window.subwAPI[action]();
+            });
+        });
+        const maximizeSVG = `
+        <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
+            <path d="M836.224 917.333333h-644.266667a85.589333 85.589333 0 0 1-85.333333-85.333333V187.733333a85.589333 85.589333 0 0 1 85.333333-85.333333h644.266667a85.589333 85.589333 0 0 1 85.333333 85.333333v644.266667a91.690667 91.690667 0 0 1-85.333333 85.333333zM191.957333 170.666667a22.869333 22.869333 0 0 0-21.333333 21.333333v644.266667a22.869333 22.869333 0 0 0 21.333333 21.333333h644.266667a22.869333 22.869333 0 0 0 21.333333-21.333333V192a22.869333 22.869333 0 0 0-21.333333-21.333333z" p-id="4130"></path>
+        </svg>`;
+        const unmaximizeSVG = `
+        <svg t="1725463429338" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4293" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+            <path d="M836.224 106.666667h-490.666667a85.589333 85.589333 0 0 0-85.333333 85.333333V256h-64a85.589333 85.589333 0 0 0-85.333333 85.333333v490.666667a85.589333 85.589333 0 0 0 85.333333 85.333333h490.666667a85.589333 85.589333 0 0 0 85.333333-85.333333V768h64a85.589333 85.589333 0 0 0 85.333333-85.333333V192a85.589333 85.589333 0 0 0-85.333333-85.333333z m-132.266667 725.333333a20.138667 20.138667 0 0 1-21.333333 21.333333h-490.666667a20.138667 20.138667 0 0 1-21.333333-21.333333V341.333333a20.138667 20.138667 0 0 1 21.333333-21.333333h494.933334a20.138667 20.138667 0 0 1 21.333333 21.333333v490.666667z m153.6-149.333333a20.138667 20.138667 0 0 1-21.333333 21.333333h-64V341.333333a85.589333 85.589333 0 0 0-85.333333-85.333333h-362.666667V192a20.138667 20.138667 0 0 1 21.333333-21.333333h490.666667a20.138667 20.138667 0 0 1 21.333333 21.333333z" p-id="4294"></path>
+        </svg>`;
+        const maximizeButton = document.getElementById('maximize');
+        document.addEventListener('DOMContentLoaded', () => {
+            window.subwAPI.isWindowMaximized().then(isMaximized => {
+                if (isMaximized) {
+                    maximizeButton.innerHTML = unmaximizeSVG;
+                    const svg = maximizeButton.querySelector('svg');
+                    svg.style.height = '20px';
+                    svg.style.width = '20px';
+                } else {
+                    maximizeButton.innerHTML = maximizeSVG;
+                    const svg = maximizeButton.querySelector('svg');
+                    svg.style.height = '20px';
+                    svg.style.width = '20px';
+                }
+            });
+        });
+        window.subwAPI.onWindowMaximized(() => {
+            maximizeButton.innerHTML = unmaximizeSVG;
+            const svg = maximizeButton.querySelector('svg');
+            svg.style.height = '20px';
+            svg.style.width = '20px';
+        });
+
+        window.subwAPI.onWindowUnmaximized(() => {
+            maximizeButton.innerHTML = maximizeSVG;
+            const svg = maximizeButton.querySelector('svg');
+            svg.style.height = '20px';
+            svg.style.width = '20px';
+        });
+        ['minimize', 'maximize', 'close'].forEach(action => {
+            const svg = document.getElementById(action).querySelector('svg');
+            if (svg) {
+                svg.style.width = '20px';
+                svg.style.height = '20px';
+            }
+        });
+        const styleElements = [
+            { selector: '.titlebar', style: { height: '25px' } },
+            { selector: '#control-box', style: { marginTop: '26px' } },
+        ];
+        styleElements.forEach(({ selector, style }) => {
+            Object.assign(document.querySelector(selector).style, style);
+        });
+    </script>
+    <script>
+        document.getElementById('control-box').style.transform = 'translateX(90%)'
+        let timecount;
+        function getSetTime() {
+            const hoursvalue = parseInt(document.getElementById('hours').value, 10);
+            const minutesvalue = parseInt(document.getElementById('minutes').value, 10);
+            const secondsvalue = parseInt(document.getElementById('seconds').value, 10);
+            return (hoursvalue * 3600 + minutesvalue * 60 + secondsvalue) * 1000;
+        }
+        function lastTime(timeLeft) {
+            const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
+            const seconds = Math.floor((timeLeft / 1000) % 60);
+            return { hours, minutes, seconds };
+        }
+        function newTime(time) {
+            const [hours, minutes, seconds] = time.split(':').map(Number);
+            return ((hours * 3600) + (minutes * 60) + seconds) * 1000;
+        }
+        function countdown() {
+            let timeLeft = newTime(document.getElementById('countdown').innerHTML);
+            timeLeft -= 1000;
+            document.getElementById('countdown').innerHTML = `${lastTime(timeLeft).hours.toString().padStart(2, '0')}:${lastTime(timeLeft).minutes.toString().padStart(2, '0')}:${lastTime(timeLeft).seconds.toString().padStart(2, '0')}`;
+            if (timeLeft <= 3000 && getSetTime() > 3000) {
+                document.getElementById('countdown').style.color = '#eb1515';
+            }
+            if (timeLeft <= 0) {
+                document.getElementById('audio').play();
+                clearInterval(timecount);
+            }
+        }
+        function startCountdown() {
+            document.getElementById('audio').load();
+            let timeLeft = getSetTime();
+            if (timeLeft > 0) {
+                document.getElementById('countdown').innerHTML = `${lastTime(timeLeft).hours.toString().padStart(2, '0')}:${lastTime(timeLeft).minutes.toString().padStart(2, '0')}:${lastTime(timeLeft).seconds.toString().padStart(2, '0')}`;
+                timecount = setInterval(countdown, 1000);
+                document.getElementById('countdown').style.color = '';
+            }
+            else {
+                alert('请输入有效时间');
+            }
+        }
+        function pauseCountdown() {
+            clearInterval(timecount);
+        }
+        function resumeCountdown() {
+            if (getSetTime() > 0 && timecount != null && timecount >= 1000) {
+                timecount = setInterval(countdown, 1000);
+            }
+            else {
+                alert('倒计时已结束或未开始');
+            }
+        }
+        function resetCountdown() {
+            clearInterval(timecount);
+            document.getElementById('countdown').innerHTML = '00:00:00';
+            document.getElementById('countdown').style.color = '';
+            document.getElementById('audio').load();
+        }
+        document.getElementById('start-button').addEventListener('click', startCountdown);
+        document.getElementById('pause-button').addEventListener('click', pauseCountdown);
+        document.getElementById('resume-button').addEventListener('click', resumeCountdown);
+        document.getElementById('reset-button').addEventListener('click', resetCountdown);
+        function changeMenuShow(){
+            var element = document.getElementById('control-box');
+            if (element.style.transform === 'translateX(90%)') {
+                element.style.transform = 'translateX(0)';                    
+            }
+            else {
+                element.style.transform = 'translateX(90%)';
+            }
+        }
+        document.getElementById('change').addEventListener('click', changeMenuShow);
+        document.addEventListener('keydown', function(event) {
+            if (event.keyCode === 77) {
+                //77:M,m
+                changeMenuShow()
+            }
+        });
+        var divElement = document.getElementById('control-box');
+        document.addEventListener('click', function(event) {
+            var targetElement = event.target;
+            if (!divElement.contains(targetElement)) {
+                if (divElement.style.transform != 'translateX(90%)') {
+                    divElement.style.transform = 'translateX(90%)';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

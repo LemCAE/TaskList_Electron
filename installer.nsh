@@ -8,8 +8,8 @@ Function .onVerifyInstDir
 FunctionEnd
 
 Section "Install"
-  ; 在这里添加 WriteUninstaller
-  WriteUninstaller "$INSTDIR\Uninstall.exe"
+  Exec 'taskkill /F /IM "TaskList.exe"'
+  WriteUninstaller "$INSTDIR\Uninstall TaskList.exe"
 SectionEnd
 
 Section "Uninstall"

@@ -29,6 +29,18 @@ contextBridge.exposeInMainWorld("wAPI", {
     }),
 });
 
+contextBridge.exposeInMainWorld("subwAPI", {
+    create: (fileName) => ipcRenderer.invoke("createToolWindow", fileName),
+    minimize: () => ipcRenderer.send("subminimize"),
+    maximize: () => ipcRenderer.send("submaximize"),
+    close: () => ipcRenderer.send("subclose"),
+    onWindowMaximized: (callback) => ipcRenderer.on("subwindow-maximized", callback),
+    onWindowUnmaximized: (callback) => ipcRenderer.on("subwindow-unmaximized", callback),
+    isWindowMaximized: () => {
+        return ipcRenderer.invoke('isWindowMaximized');
+    },
+})
+
 contextBridge.exposeInMainWorld("infoAPI", {
     showWarningDialog: (detailText) => ipcRenderer.invoke("dialog:showWarning", detailText),
 });

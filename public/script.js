@@ -314,6 +314,12 @@ document.addEventListener('click', function (event) {
     }
 });
 
+document.addEventListener('click', async function (event) {
+    if (event.target.matches('.extendTitle') && event.target.parentElement.id==="tools") {
+        await window.subwAPI.create('tools.html');
+    }
+});
+
 function hideExtendContent(id) {
     var element=document.getElementById(id).querySelector(".extendContent");
     element.style.display=element.style.display==="none" ? "flex": "none";

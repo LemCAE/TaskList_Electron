@@ -8,7 +8,7 @@ const { checkAndReadConfig } = require('./config');
 
 async function loadInput() {
     const dev = await import('electron-is-dev');
-    return dev.default; // 返回 isDev 值
+    return dev.default;
 }
 
 let isDev;
@@ -158,6 +158,31 @@ if (!gotTheLock) {
                     mainWindow.show();
                 },
             },
+            { type: 'separator' }, 
+            {
+                label: '小工具',
+                enabled: false,
+            },
+            {
+                label: '倒计时',
+                click: () => {
+                    createToolWindow('countdown.html')
+                }
+            },
+            {
+                label: '随机抽取',
+                click: () => {
+                    createToolWindow('randomchoose.html')
+                }
+            },
+            { type: 'separator' },
+            {
+                label: "重启应用",
+                click: () => {
+                    app.relaunch();
+                    app.exit(0);
+                }
+            },
             {
                 label: "退出应用",
                 click: () => {
@@ -260,6 +285,74 @@ if (!gotTheLock) {
         app.isQuiting = true;
     });
 }
+
+
+let toolWindow; // 声明在外部作用域以便于跟踪窗口状态
+
+function createToolWindow(fileName) {
+  // 如果窗口已经存在，直接聚焦
+  if (toolWindow) {
+    toolWindow.focus();
+    return;
+  }
+  toolWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    frame: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+    },
+  });
+  toolWindow.loadFile(path.join(__dirname, "public", "subpage", fileName)); // 加载子窗口的 HTML 文件
+  // 绑定窗口关闭事件
+  toolWindow.on("closed", () => {
+    toolWindow = null; // 清空引用，防止内存泄漏
+    ipcMain.removeAllListeners("subminimize"); // 清理事件监听
+    ipcMain.removeAllListeners("submaximize");
+    ipcMain.removeAllListeners("subclose");
+  });
+  // 监听 IPC 事件
+  ipcMain.on("subminimize", () => {
+    if (toolWindow) {
+      toolWindow.minimize();
+    }
+  });
+  ipcMain.on("submaximize", () => {
+    if (toolWindow) {
+      if (toolWindow.isMaximized()) {
+        toolWindow.unmaximize();
+      } else {
+        toolWindow.maximize();
+      }
+    }
+  });
+  ipcMain.on("subclose", () => {
+    if (toolWindow) {
+      toolWindow.close();
+    }
+  });
+  toolWindow.on("maximize", () => {
+    if (toolWindow) {
+      toolWindow.webContents.send("subwindow-maximized");
+    }
+  });
+  toolWindow.on("unmaximize", () => {
+    if (toolWindow) {
+      toolWindow.webContents.send("subwindow-unmaximized");
+    }
+  });
+}
+
+ipcMain.handle('createToolWindow', async (event, fileName) => {
+  createToolWindow(fileName);
+});
+ipcMain.handle('isWindowMaximized', async (event) => {
+    return toolWindow.isMaximized(); 
+});
 
 ipcMain.handle("read-config", async (event, fileName) => {
     try {

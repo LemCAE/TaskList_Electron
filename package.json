@@ -48,13 +48,7 @@
       "preload.js",
       "config.js",
       "resource/**/*",
-      "public/**/*",
-      "!tempNote.md",
-      "!forge.config.js",
-      "!server.js",
-      "!package-lock.json",
-      "!.gitignore",
-      "!.github/workflows/*"
+      "public/**/*"
     ],
     "asar": {
       "smartUnpack": true
