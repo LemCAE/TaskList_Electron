@@ -48,7 +48,9 @@
       "preload.js",
       "config.js",
       "resource/**/*",
-      "public/**/*"
+      "public/**/*",
+      "LICENSE.txt",
+      "!resource/icons/**/*"
     ],
     "asar": {
       "smartUnpack": true

@@ -824,3 +824,15 @@ input:checked + .slider:before {
 		font-size:1.8vw;
 	}
 }
+#progress-container{
+	width: 100%; 
+	background: #00000000;
+}
+#progress-bar{
+    z-index: 1000;
+	width: 0;
+	bottom: 0px;
+	position: absolute;
+	height: 5px;
+	background: #4c7aaf;
+}

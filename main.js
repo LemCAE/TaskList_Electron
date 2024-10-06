@@ -90,7 +90,6 @@ autoUpdater.on('error', (error) => {
 // 启动时检查更新
 app.on('ready', () => {
     configureUpdater();
-    console.log('autoUpdater.autoDownload',autoUpdater.autoDownload);
     if (!isDev && config.autoCheckUpdate) {
         console.log(config.autoCheckUpdate);
         const checkUpdates = async () => {
@@ -162,6 +161,12 @@ if (!gotTheLock) {
             {
                 label: '小工具',
                 enabled: false,
+            },
+            {
+                label: '工具页',
+                click: () => {
+                    createToolWindow('tools.html')
+                }
             },
             {
                 label: '倒计时',
