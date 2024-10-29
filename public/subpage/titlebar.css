@@ -29,7 +29,7 @@ body::before {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 30px;
+    height: 25px;
     padding: 0 10px;
     background: rgba(255, 255, 255, 0.178);
     backdrop-filter: blur(10px);

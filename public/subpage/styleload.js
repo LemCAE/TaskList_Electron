@@ -1,4 +1,3 @@
-
 async function loadStyle() {
     const configJson = await window.fileAPI.readConfig('config.json');
     if (configJson.background === '../resource/default.jpg') {

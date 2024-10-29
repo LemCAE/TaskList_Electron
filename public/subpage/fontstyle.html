@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="LemCAE">
+        <title>TaskList - 字体编辑</title>
+        <link rel="stylesheet" href="./titlebar.css">
+        <script src="./styleload.js"></script>
+    </head>
+    <body>
+        <div class="titlebar">
+            <div class="icon">
+            <img src="../../resource/icon.ico" alt="App Icon">
+            </div>
+            <div class="title">TaskList - 字体编辑</div>
+            <div class="controls">
+                <button id="minimize">
+                    <svg t="1725463744988" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4231" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path d="M98.23 451.003l829.685-1.992 0.154 64-829.685 1.992z" fill="" p-id="4232"></path>
+                    </svg>
+                </button>
+                <button id="maximize">
+                    <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
+                        <path d="M836.224 917.333333h-644.266667a85.589333 85.589333 0 0 1-85.333333-85.333333V187.733333a85.589333 85.589333 0 0 1 85.333333-85.333333h644.266667a85.589333 85.589333 0 0 1 85.333333 85.333333v644.266667a91.690667 91.690667 0 0 1-85.333333 85.333333zM191.957333 170.666667a22.869333 22.869333 0 0 0-21.333333 21.333333v644.266667a22.869333 22.869333 0 0 0 21.333333 21.333333h644.266667a22.869333 22.869333 0 0 0 21.333333-21.333333V192a22.869333 22.869333 0 0 0-21.333333-21.333333z" p-id="4130"></path>
+                    </svg>
+                </button>
+                <button id="close">
+                    <svg t="1725463516138" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3260" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+                        <path d="M548.992 503.744L885.44 167.328a31.968 31.968 0 1 0-45.248-45.248L503.744 458.496 167.328 122.08a31.968 31.968 0 1 0-45.248 45.248l336.416 336.416L122.08 840.16a31.968 31.968 0 1 0 45.248 45.248l336.416-336.416L840.16 885.44a31.968 31.968 0 1 0 45.248-45.248L548.992 503.744z" p-id="3261"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="container">
+            <div id="content">
+                <div class="rangeChange singleSetting" id="fontSizeChange">
+                    <label for="fontSize">字体大小</label>
+                    <div class="numberInputClick" id="fontSize">
+                        <div class="minus numberChange">-</div>
+                        <input id="fontSizeValue" type="number" min="1" max="10" step="0.1" value="1.6">
+                        <div class="plus numberChange">+</div>
+                        <p class="extraInfo">注:字体大小使用vw(窗口宽度)为单位,1vw为窗口宽度的百分之一</p>
+                    </div>
+                </div>
+                <div class="enableChange singleSetting" id="fontBoldChange">
+                    <label for="fontBold">粗体</label>
+                    <label class="switch">
+                        <input id="fontBold" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="enableChange singleSetting" id="fontItalicChange">
+                    <label for="fontItalic">斜体</label>
+                    <label class="switch">
+                        <input id="fontItalic" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="enableChange singleSetting" id="fontUnderlineChange">
+                    <label for="fontUnderline">下划线</label>
+                    <label class="switch">
+                        <input id="fontUnderline" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="enableChange singleSetting" id="fontDeletelineChange">
+                    <label for="fontDeleteline">删除线</label>
+                    <label class="switch">
+                        <input id="fontDeleteline" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="colorChange singleSetting" id="fontColorChange">
+                    <label for="fontColor">字体颜色</label>
+                    <input type="color" id="fontColor" value="#000000"/>
+                </div>
+                <input type="text" id="fontText" placeholder="请输入文本" />
+                <div class="preview">
+                    <p id="fontPreview"></p>
+                    <button id="copyButton">复制文本</button>
+                </div> 
+            </div>
+        </div>
+        <a href="tools.html"><button class="button" id="return">返回</button></a>
+    </body>
+        <style>
+            #container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+            }
+            #content {
+                display: flex;
+                font-size: 20px;
+                margin: 1vw;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                height: fit-content;
+                width: 91vw;
+                backdrop-filter: blur(5px);
+                border-radius:10px;
+                border: 1px solid #ffffffa1;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+            .extraInfo {
+                font-size: 12px;
+            }
+            .settingContent {
+                box-sizing:border-box;
+                overflow:hidden;
+                width:100%;
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+            }
+            .singleSetting {
+                width:98%;
+                display:flex;
+                align-items:center;
+                margin-top:0.35vw;
+                margin-bottom:0.35vw;
+            }
+            .rangeChange {
+                font-size:20px;
+                border-radius:0.3vw;
+                margin-top:0.35vw;
+                margin-bottom:0.35vw;
+                width:98%;
+                white-space:nowrap;
+            }
+            .rangeValue {
+                margin-left:1vw;
+                font-size:1vw;
+            }
+            .colorChange {
+                display:flex;
+                align-items:center;
+                width:98%;
+                margin-top:0.35vw;
+                margin-bottom:0.35vw;
+                font-size:20px;
+            }
+            /* 调整 .enableChange 的样式以适配新的结构 */
+            .enableChange {
+                display:flex;
+                align-items:center;
+                width:98%;
+                margin-top:0.35vw;
+                margin-bottom:0.35vw;
+                font-size:20px;
+            }
+            /* 开关外层容器 */
+            .switch {
+                margin-left:1vw;
+                position:relative;
+                display:inline-block;
+                width:40px;
+                height:20px;
+            }
+            /* 隐藏默认的 checkbox */
+            .switch input {
+                opacity:0;
+                width:0;
+                height:0;
+            }
+            /* 滑动按钮的样式 */
+            .slider {
+                position:absolute;
+                cursor:pointer;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                background-color:#ccc;
+                transition: 0.2s;
+                border-radius:3.2px;
+                /* 圆角设置为方形 */
+            }
+            /* 滑动按钮中的圆点 */
+            .slider:before {
+                position:absolute;
+                content:"";
+                height:16px;
+                width:16px;
+                left:2px;
+                bottom:2px;
+                background-color:white;
+                transition: transform 0.25s ease;
+                border-radius:3.2px;
+                /* 圆角设置为方形 */
+            }
+            /* 当 checkbox 被选中时改变滑块的背景色 */
+            input:checked + .slider {
+                background-color:#29a9e4;
+            }
+            /* 当 checkbox 被选中时，滑块中的圆点向右移动 */
+            input:checked + .slider:before {
+                transform:translateX(20px);
+            }
+            .button-container {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                padding: 10px;
+            }
+            button {
+                margin-top: 0.2604vw;
+                padding: 5px 20px;
+                font-size: 1rem;
+                border-radius: 5px;
+                border: 1px solid #ffffffa1;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                border: none;
+                background-color: #ffffffa1;
+                color: #000000;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            button:hover {
+                background-color: #ffffff;
+            }
+            .numberInputClick {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                font-size: 20px;
+                input{
+                    width: 55px;
+                    font-size: 20px;
+                    border: 1px solid #ffffff;
+                    border-radius: 0.4vw;
+                    background-color: transparent;
+                    text-align: center;
+                }
+                input[type=number]::-webkit-inner-spin-button{
+                    -webkit-appearance: none
+                }
+                input[type=number]::-webkit-outer-spin-button {
+                    margin: 0
+                }
+                .numberChange{
+                    border: 1px solid #ffffff;
+                    border-radius: 3.2px;
+                    background-color: #ffffff21;
+                    margin-left: 8.3px;
+                    margin-right: 8.3px;
+                    padding-left: 8.3px;
+                    padding-right: 8.3px;
+                    font-size: 20px;
+                    user-select: none;
+                }
+                .plus{
+                    padding-left: 7.3px;
+                    padding-right: 7.3px;
+                }
+                .numberChange:hover{
+                    cursor: pointer;
+                    background-color: #ffffffa1;
+                }
+                p{
+                    padding: 0;
+                    margin: 0;
+                }
+            }
+            #return {
+                position: fixed;
+                bottom: 35px;
+                right: 1%;
+                width: 100px;
+            }
+            #copyButton {
+                margin-top:0;
+                margin-bottom: 20px;
+            }
+            input[type="color"]{
+                margin-left: 1vw;
+            }
+            input[type="text"]{
+                width: 98%;
+                font-size: 20px;
+                border: 1px solid #ffffff;
+                border-radius: 3.2px;
+                background-color: transparent;
+                margin-top: 5px;
+            }
+            .preview{
+                display: flex;
+                flex-direction: column;
+
+                align-items: center;
+            }
+            #fontPreview {
+                text-align: center;
+            }
+        </style>
+    </body>
+    <script src="./titlebar.js"></script>
+    <script>
+        async function loadConfig() {
+        const configJson = await window.fileAPI.readConfig('config.json');
+            document.getElementById('fontSizeValue').value = configJson.fontSize
+            if (configJson.darkMode) {
+                document.getElementById('fontColor').value = "#ffffff";
+            } else {
+                document.getElementById('fontColor').value = "#000000";
+            }
+        };
+        loadConfig()
+        document.addEventListener("DOMContentLoaded", function () {
+            // 通用的加减函数
+            function initializeNumberInput(containerId) {
+                const container = document.querySelector(`#${containerId}`);
+                const input = container.querySelector("input[type='number']");
+                const plusButton = container.querySelector(".plus");
+                const minusButton = container.querySelector(".minus");
+                // 增加输入框的数值
+                plusButton.addEventListener("click", function () {
+                    let currentSize = parseFloat(input.value);
+                    let step = parseFloat(input.step);
+                    let newSize = parseFloat((currentSize + step).toFixed(2));
+                    if (newSize <= parseFloat(input.max)) {
+                        input.value = newSize;
+                    }
+                });
+                // 减少输入框的数值
+                minusButton.addEventListener("click", function () {
+                    let currentSize = parseFloat(input.value);
+                    let step = parseFloat(input.step);
+                    let newSize = parseFloat((currentSize - step).toFixed(2));
+                    if (newSize >= parseFloat(input.min)) {
+                        input.value = newSize;
+                    }
+                });
+                // 输入框直接修改数值
+                input.addEventListener("input", function () {
+                    let currentSize = parseFloat(input.value);
+                    if (currentSize > parseFloat(input.max)) {
+                        input.value = input.max;
+                    } else if (currentSize < parseFloat(input.min)) {
+                        input.value = input.min;
+                    }
+                });
+            }
+            initializeNumberInput("fontSizeChange");
+        });
+        const inputElements = document.querySelectorAll('input');
+        let textToCopy = "";
+        inputElements.forEach(input => {
+            input.addEventListener('input', function () {
+                let styleValue = "";
+                if (document.getElementById('fontBold').checked) {
+                    styleValue += "font-weight: bold;";
+                }
+                if (document.getElementById('fontItalic').checked) {
+                    styleValue += "font-style: italic;";
+                }
+                if (document.getElementById('fontUnderline').checked) {
+                    styleValue += "text-decoration: underline;";
+                }
+                if (document.getElementById('fontDeleteline').checked) {
+                    styleValue += "text-decoration: line-through;";
+                }
+                styleValue += `color: ${document.getElementById('fontColor').value};`;
+                styleValue += `font-size: ${document.getElementById('fontSizeValue').value}vw;`;
+                let fontText = document.getElementById('fontText').value;
+                document.getElementById('fontPreview').innerHTML = `<span style="${styleValue}">${fontText}</span>`;
+                textToCopy = `<span style="${styleValue}">${fontText}</span>`;
+            });
+        });
+        const numberChangeClick = document.querySelectorAll('.numberChange');
+        numberChangeClick.forEach(numberChange => {
+            numberChange.addEventListener('click', function () {
+                let styleValue = "";
+                if (document.getElementById('fontBold').checked) {
+                    styleValue += "font-weight: bold;";
+                }
+                if (document.getElementById('fontItalic').checked) {
+                    styleValue += "font-style: italic;";
+                }
+                if (document.getElementById('fontUnderline').checked) {
+                    styleValue += "text-decoration: underline;";
+                }
+                if (document.getElementById('fontDeleteline').checked) {
+                    styleValue += "text-decoration: line-through;";
+                }
+                styleValue += `color: ${document.getElementById('fontColor').value};`;
+                styleValue += `font-size: ${document.getElementById('fontSizeValue').value}vw;`;
+                let fontText = document.getElementById('fontText').value;
+                document.getElementById('fontPreview').innerHTML = `<span style="${styleValue}">${fontText}</span>`;
+                textToCopy = `<span style="${styleValue}">${fontText}</span>`;
+            });
+        });
+        function copyText() {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('复制成功');
+            }).catch(err => {
+                console.error('复制失败', err);
+            })
+        };
+        document.getElementById('copyButton').addEventListener('click', copyText);
+        </script>
+    </script>
+</html>

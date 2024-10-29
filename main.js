@@ -180,6 +180,12 @@ if (!gotTheLock) {
                     createToolWindow('randomchoose.html')
                 }
             },
+            {
+                label: '字体编辑',
+                click: () => {
+                    createToolWindow('fontstyle.html')
+                }
+            },
             { type: 'separator' },
             {
                 label: "重启应用",
