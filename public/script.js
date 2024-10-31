@@ -72,12 +72,18 @@ function setInputValue(id, value) {
 
 document.getElementById("editList").classList.add("innerControlShow");
 document.getElementById('configsBox').style.transform = 'translateX(95%)';
-hideTitles(document.querySelectorAll(".editListContent"), ".editListTitle");
+hideTitles(document.querySelectorAll(".editListContent"), ".editListTitle"); //貌似移到load.js里面才有效
 hideTitles(document.querySelectorAll(".settingContent"), ".settingTitle");
 hideTitles(document.querySelectorAll(".extendContent"), ".extendTitle");
 async function loadStyleSetting() {
     const configJson = await window.fileAPI.readConfig('config.json');
 
+    let allSubjects = ["cn", "ma", "en", "ph", "ch", "bi", "po" , "hi" , "ge" ,"ot"];
+    for (subject of allSubjects) {
+        if (configJson.enabledSubject.includes(subject)) {
+            document.getElementById(subject + "Enable").checked = true;
+        }
+    }
     document.getElementById('backgroundSource').value = configJson.backgroundSource;
     const fileInput = document.getElementById('fileInputContainerLocal');
     const urlInput = document.getElementById('fileInputContainerURL');
@@ -239,7 +245,7 @@ async function readTaskList(jsonFile) {
     try {
         const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
         for (const key in tasklist) {
-            if (tasklist.hasOwnProperty(key)) {
+            if (tasklist.hasOwnProperty(key) && configJson.enabledSubject.includes(key)) {
                 const listElement=document.getElementById(`${key}list`);
                 if ( !listElement) {
                     console.error(`无法找到元素: ${key}list`);
@@ -268,7 +274,7 @@ async function getListToEdit(jsonFile) {
         const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
         if ( !tasklist) return;
         for (const key in tasklist) {
-            if (tasklist.hasOwnProperty(key)) {
+            if (tasklist.hasOwnProperty(key) && configJson.enabledSubject.includes(key)) {
                 const container=document.getElementById(`editList${key}`).querySelector(".editListContent");
                 // 清空现有的输入框，但保留 "createNewTask" 按钮
                 container.innerHTML='<div draggable="false" class="createNewTask">+</div>';
@@ -357,7 +363,10 @@ document.getElementById('saveList').addEventListener('click', async () => {
         ph: [],
         ch: [],
         bi: [],
-        ot: []
+        ot: [],
+        po: [],
+        hi: [],
+        ge: []
     };
     // 遍历每个编辑列表区块
     document.querySelectorAll('.editListinner').forEach(section => {
@@ -535,6 +544,14 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const autoCheckUpdate = document.getElementById('autoCheckUpdate').checked;
     const autoDownloadUpdate = document.getElementById('autoDownloadUpdate').checked;
     
+    let allSubjects = ["cn", "ma", "en", "ph", "ch", "bi", "po" , "hi" , "ge" ,"ot"];
+    let enabledSubjects = [];
+    for (subject of allSubjects) {
+        if (document.getElementById(subject + "Enable").checked) {
+            enabledSubjects.push(subject);
+        }
+    }
+
     let background = '';
     if (backgroundSource === 'defaultLight') {
         background = '../resource/default.jpg';
@@ -558,6 +575,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         configAnimine: configAnimine,
         configBlur: configBlur,
         configMask: configMask,
+        enabledSubject: enabledSubjects,
         CheckboxAnimine: CheckboxAnimine,
         refreshTime: refreshTime,
         autoColseAfterSave: autoColseAfterSave,
@@ -750,7 +768,10 @@ document.getElementById('clearTaskButton').addEventListener('click', async () =>
             ph: [],
             ch: [],
             bi: [],
-            ot: []
+            ot: [],
+            po: [],
+            hi: [],
+            ge: []
         };
         await window.fileAPI.writeConfig('list.json', data);
         reloadTaskList('list.json');
@@ -784,7 +805,10 @@ document.getElementById('exportTaskButton').addEventListener('click', async () =
         ph: [],
         ch: [],
         bi: [],
-        ot: []
+        ot: [],
+        po: [],
+        hi: [],
+        ge: []
     };
     const data = await window.fileAPI.readConfig('list.json');
     for (const key in data) {

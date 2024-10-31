@@ -134,50 +134,6 @@ p.A {
 	border:1px solid #ffffff;
 	background-color:#ffffff4f;
 }
-.cn {
-	border:1px solid #f1c739;
-	background-color:#f1c6394f;
-}
-.ma {
-	border:1px solid #3c64e7;
-	background-color:#3c64e74f;
-}
-.en {
-	border:1px solid #3498db;
-	background-color:#3498db4f;
-}
-.ph {
-	border:1px solid #e67e22;
-	background-color:#e67e224f;
-}
-.ch {
-	border:1px solid #9b59b6;
-	background-color:#9b59b64f;
-}
-.sl {
-	border:1px solid #32dbdb;
-	background-color:#32dbdb4f;
-}
-.bi {
-	border:1px solid #1abc9c;
-	background-color:#1abc9c4f;
-}
-.pe {
-	border:1px solid #34495e;
-	background-color:#34495e4f;
-}
-.cm {
-	border:1px solid #f1c739;
-	background-color:#f1c6394f;
-}
-.me {
-	border:1px solid #3c64e7;
-	background-color:#3c64e74f;
-}
-.ls {
-	border:1px solid #3498db;
-	background-color:#3498db4f;
-}
 .configs {
 	height:100%;
 	width:60vw;
@@ -314,77 +270,8 @@ p.subject-name {
 	margin-bottom:0.35vh;
 	padding-left:0.5vw;
 }
-#cnlist {
-	border:1px solid #f1c639;
-	background-color:#f1c63917;
-	.listTitle {
-	background-color:#f1c6394f;
-	border-right:1px dashed #f1c639;
-}
-.singleLine {
-	border-left:0.25vw solid #f1c639;
-}
-}#malist {
-	border:1px solid #3c64e7;
-	background-color:#3c64e717;
-	.listTitle {
-	background-color:#3c64e74f;
-	border-right:1px dashed #3c64e7;
-}
-.singleLine {
-	border-left:0.25vw solid #3c64e7;
-}
-}#enlist {
-	border:1px solid #3498db;
-	background-color:#3498db17;
-	.listTitle {
-	background-color:#3498db4f;
-	border-right:1px dashed #3498db;
-}
-.singleLine {
-	border-left:0.25vw solid #3498db;
-}
-}#phlist {
-	border:1px solid #e67e22;
-	background-color:#e67e2217;
-	.listTitle {
-	background-color:#e67e224f;
-	border-right:1px dashed #e67e22;
-}
-.singleLine {
-	border-left:0.25vw solid #e67e22;
-}
-}#chlist {
-	border:1px solid #9b59b6;
-	background-color:#9b59b617;
-	.listTitle {
-	background-color:#9b59b64f;
-	border-right:1px dashed #9b59b6;
-}
-.singleLine {
-	border-left:0.25vw solid #9b59b6;
-}
-}#bilist {
-	border:1px solid #1abc9c;
-	background-color:#1abc9c17;
-	.listTitle {
-	background-color:#1abc9c4f;
-	border-right:1px dashed #1abc9c;
-}
-.singleLine {
-	border-left:0.25vw solid #1abc9c;
-}
-}#otlist {
-	border:1px solid #32dbdb;
-	background-color:#32dbdb17;
-	.listTitle {
-	background-color:#32dbdb4f;
-	border-right:1px dashed #32dbdb;
-}
-.singleLine {
-	border-left:0.25vw solid #32dbdb;
-}
-}#editList {
+
+#editList {
 	width:100%;
 	display:flex;
 	flex-direction:column;
@@ -392,7 +279,7 @@ p.subject-name {
 	box-sizing:border-box;
 }
 .editListinner {
-	background-color:#ffffff4f;
+	background-color:#ffffff2e;
 	border:1px solid #ffffff;
 	border-radius:0.3vw;
 	margin:1vh;
@@ -543,7 +430,7 @@ p.subject-name {
 	box-sizing:border-box;
 }
 .settingPart ,.extendPart{
-	background-color:#ffffff4f;
+	background-color:#ffffff21;
 	border:1px solid #ffffff;
 	border-radius:0.3vw;
 	margin:1vh;
@@ -687,7 +574,7 @@ input:checked + .slider:before {
 	border-radius:0.2vw;
 	margin:1vh;
 }
-#selectLocalImage,#selectBGMFolder:hover {
+#selectLocalImage:hover,#selectBGMFolder:hover {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }

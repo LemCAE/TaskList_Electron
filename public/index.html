@@ -35,35 +35,10 @@
             </div>
           </div>
         <div id="classTable">
-            <p id="time" class="A">11:45</p>
-            <p id="date" class="A">8/19</p>
+            <p id="time" class="A">12:00</p>
+            <p id="date" class="A">1/1</p>
             <p id="weekdays" class="A"></p>
-            <div id="classTableBox">
-                <div class="className" id="name1">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name2">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name3">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name4">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name5">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name6">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name7">
-                    <p class="A"></p>
-                </div>
-                <div class="className" id="name8">
-                    <p class="A"></p>
-                </div>
-            </div>
+            <div id="classTableBox"></div>
             <div id="extraFunction">
                 <div id="writingBGMShow">
                     <p>练字</p>
@@ -72,57 +47,7 @@
                 </div>
             </div>
         </div>
-        <div id="taskList">
-            <div id="cnlist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">语文</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-            <div id="malist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">数学</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-            <div id="enlist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">英语</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-            <div id="phlist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">物理</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-            <div id="chlist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">化学</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-            <div id="bilist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">生物</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-            <div id="otlist" class="listinfo">
-                <div class="listTitle">
-                    <p class="subject-name">其他</p>
-                </div>
-                <div class="listContent">
-                </div>
-            </div>
-        </div>
+        <div id="taskList"></div>
         <div class="configs" id="configsBox">
             <div id="outControl">
                 <div id="openMenu"></div>
@@ -154,54 +79,86 @@
             </div>
             <div id="inControl">
                 <div id="editList">
-                    <div class="editListInnerContainer">
-                        <div id="editListcn" class="editListinner">
-                            <div class="editListTitle">语文</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                        <div id="editListma" class="editListinner">
-                            <div class="editListTitle">数学</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                        <div id="editListen" class="editListinner">
-                            <div class="editListTitle">英语</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                        <div id="editListph" class="editListinner">
-                            <div class="editListTitle">物理</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                        <div id="editListch" class="editListinner">
-                            <div class="editListTitle">化学</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                        <div id="editListbi" class="editListinner">
-                            <div class="editListTitle">生物</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                        <div id="editListot" class="editListinner">
-                            <div class="editListTitle">其他</div>
-                            <div class="editListContent">
-                                <div  draggable="false" class="createNewTask">+</div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="editListInnerContainer"></div>
                     <button id="saveList">保存并更新</button>
                 </div>
                 <div id="setting">
                     <div class="settingInnerContainer">
+                        <div class="settingPart" id="settingenabledSubject">
+                            <div class="settingTitle">列表显示设置</div>
+                            <div class="settingContent">
+                                <div class="enableChange singleSetting" id="cnEnableChange">
+                                    <label for="cnEnable">语文</label>
+                                    <label class="switch">
+                                        <input id="cnEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="maEnableChange">
+                                    <label for="maEnable">数学</label>
+                                    <label class="switch">
+                                        <input id="maEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="enEnableChange">
+                                    <label for="enEnable">英语</label>
+                                    <label class="switch">
+                                        <input id="enEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="phEnableChange">
+                                    <label for="phEnable">物理</label>
+                                    <label class="switch">
+                                        <input id="phEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="chEnableChange">
+                                    <label for="chEnable">化学</label>
+                                    <label class="switch">
+                                        <input id="chEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="biEnableChange">
+                                    <label for="biEnable">生物</label>
+                                    <label class="switch">
+                                        <input id="biEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="poEnableChange">
+                                    <label for="poEnable">政治</label>
+                                    <label class="switch">
+                                        <input id="poEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="hiEnableChange">
+                                    <label for="hiEnable">历史</label>
+                                    <label class="switch">
+                                        <input id="hiEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="geEnableChange">
+                                    <label for="geEnable">地理</label>
+                                    <label class="switch">
+                                        <input id="geEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="enableChange singleSetting" id="otEnableChange">
+                                    <label for="otEnable">其他</label>
+                                    <label class="switch">
+                                        <input id="otEnable" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="settingPart" id="settingAppearance">
                             <div class="settingTitle">外观设置</div>
                             <div class="settingContent">
@@ -498,6 +455,7 @@
             }
         </style>
     </body>
+    <script src="load.js"></script>
     <script src="sortable.min.js"></script>
     <script src="script.js"></script>
     <script src="writingBGM.js"></script>

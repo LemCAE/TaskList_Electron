@@ -22,6 +22,7 @@ const defaultConfigs = {
         "configAnimine": true,
         "configBlur": "10",
         "configMask": "0",
+        "enabledSubject": [],
         "taskListHoverAnimine": true,
         "CheckboxAnimine": true,
         "showClassList": true,
@@ -54,7 +55,10 @@ const defaultConfigs = {
         "ph": [],
         "ch": [],
         "bi": [],
-        "ot": []
+        "ot": [],
+        "po": [],
+        "hi": [],
+        "ge": []
     },
     classlist: {
         "time": {
@@ -74,6 +78,9 @@ const defaultConfigs = {
             "ph": "物理",
             "ch": "化学",
             "bi": "生物",
+            "po": "政治",
+            "hi": "历史",
+            "ge": "地理",
             "sl": "自习",
             "pe": "体育",
             "me": "心理",
