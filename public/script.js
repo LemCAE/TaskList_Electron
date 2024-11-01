@@ -521,6 +521,7 @@ document.getElementById('iconInfoDiv').addEventListener('click', function() {
 document.getElementById('saveSetting').addEventListener('click', async () => {
     // 读取现有的 JSON 数据
     const existingConfig = await window.fileAPI.readConfig('config.json') || {};
+    const existingClassList = await window.fileAPI.readConfig('classList.json') || {};
     
     // 获取设置值
     const fontSize = document.getElementById('fontSize').querySelector('input').value;
@@ -593,10 +594,16 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         }
     };
 
+    const newClassList = {
+        ...existingClassList,
+        classlist: schedule
+    }
     console.log('Final config to save:', newConfig);
+    console.log('Final classList to save:', newClassList);
 
     // 保存数据并在写入完成后再执行操作
     await window.fileAPI.writeConfig('config.json', newConfig);
+    await window.fileAPI.writeConfig('classlist.json', newClassList);
     console.log('Config saved successfully');
 
 
@@ -849,3 +856,55 @@ document.getElementById('checkUpdateButton').addEventListener('click', async () 
 window.wAPI.onUpdateProgress((percent) => {
     document.getElementById('progress-bar').style.width = `${percent}%`;
 });
+
+
+//课程表设置
+let schedule
+let currentDay = "";
+function showDay(day, button) {
+    document.getElementById("classListWeekdays").querySelectorAll("button").forEach(btn => btn.style.backgroundColor = "");
+    button.style.backgroundColor = "#a5e0fd9a";
+    currentDay = day;
+    const container = document.getElementById("scheduleContainer");
+    container.innerHTML = "";
+    schedule[day].forEach((subject, index) => {
+        const label = document.createElement("label");
+        label.textContent = `${index + 1}`;
+        const select = document.createElement("select");
+        select.innerHTML = `
+            <option value="">空</option>
+            <option value="cn">语文</option>
+            <option value="ma">数学</option>
+            <option value="en">英语</option>
+            <option value="ph">物理</option>
+            <option value="ch">化学</option>
+            <option value="bi">生物</option>
+            <option value="po">政治</option>
+            <option value="hi">历史</option>
+            <option value="ge">地理</option>
+            <option value="sl">自习</option>
+            <option value="pe">体育</option>
+            <option value="me">心理</option>
+            <option value="ls">文体</option>
+            <option value="cm">班会</option>
+        `;
+        select.value = subject;
+        select.onchange = () => updateSchedule(day, index, select.value);
+        container.appendChild(label);
+        container.appendChild(select);
+        container.appendChild(document.createElement("br"));
+        function updateSchedule(day, period, subject) {
+            schedule[day][period] = subject;
+        }
+    });
+}
+function updateSchedule(day, period, subject) {
+    schedule[day][period] = subject;
+}
+// 示例 JSON 数据
+async function loadClassList() {
+    schedule = await window.fileAPI.readConfig('classlist.json');
+    schedule = schedule.classlist;
+    showDay("Monday", document.getElementById("defaultDay"));
+}
+loadClassList()

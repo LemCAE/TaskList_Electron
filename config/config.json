@@ -8,7 +8,7 @@
   "configAnimine": true,
   "configBlur": "10",
   "configMask": "0",
-  "showList": ["cn","ma","en","ph","ch","bi","ot"],
+  "showList": ["cn","ma","en","ph","ch","bi","po","hi","ge","ot"],
   "taskListHoverAnimine": true,
   "CheckboxAnimine": true,
   "showClassList": true,

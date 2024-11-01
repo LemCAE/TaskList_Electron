@@ -10,9 +10,9 @@ const subjectsColor = [
     { prefix: "hi", color: "#fa7e23" },
     { prefix: "ge", color: "#158bb8" },
     { prefix: "sl", color: "#66a9c9" },//自习
-    { prefix: "pe", color: "#34495e" },//体育
-    { prefix: "cm", color: "#f1c739" },//班会
-    { prefix: "me", color: "#57c3c2" },//心理
+    { prefix: "pe", color: "#eea2a4" },//体育
+    { prefix: "cm", color: "#ddc871" },//班会
+    { prefix: "me", color: "#ed556a" },//心理
     { prefix: "ls", color: "#3498db" },//文体
     { prefix: "ot", color: "#32dbdb" } //其他
 ];

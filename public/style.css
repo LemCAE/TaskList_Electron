@@ -536,7 +536,10 @@ input:checked + .slider:before {
 	height:0;
 	overflow:hidden;
 }
-.selectChangeContainer {
+select option {
+	color: #000000;
+}
+.selectChangeContainer,#scheduleContainer {
 	select {
 		background-color:#ffffff4f;
 		border:1px solid #ffffff;
@@ -547,6 +550,36 @@ input:checked + .slider:before {
 	select:hover {
 		cursor:pointer;
 		background-color:#ffffff2f
+	}
+}
+#scheduleContainer {
+	display:flex;
+	justify-content: center;
+	align-items:center;
+	width:100%;
+	height:100%;
+	overflow:hidden;
+	margin-bottom: 1vh;
+	font-size: 1vw;
+	select {
+		margin: 0 1vw 0 0.3vw;
+	}
+}
+#classListWeekdays {
+	margin: 1vh 0 1vh 0;
+	button {
+		font-size:1.2vw;
+		background-color:#ffffff4f;
+		border:1px solid #ffffff;
+		border-radius:0.3vw;
+		padding: 0;
+	}
+	button:hover {
+		cursor:pointer;
+		background-color:#ffffffa1;
+	}
+	button:active {
+		background-color:#ffffff;
 	}
 }
 #fileInputContainerLocal,#fileInputContainerURL {
