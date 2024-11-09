@@ -22,7 +22,7 @@ const defaultConfigs = {
         "configAnimine": true,
         "configBlur": "10",
         "configMask": "0",
-        "enabledSubject": ["cn","ma","en","ph","ch","bi","po","hi","ge","ot"],
+        "enabledSubject": [{"cn": true}, {"ma": true}, {"en": true}, {"ph": true}, {"ch": true}, {"bi": true}, {"po": true}, {"hi": true}, {"ge": true}, {"ot": true}],
         "taskListHoverAnimine": true,
         "CheckboxAnimine": true,
         "showClassList": true,

@@ -251,6 +251,7 @@ p.subject-name {
 	text-orientation:upright;
 	font-size:1.5vw;
 	align-content:center;
+	user-select: none;
 }
 .listContent {
 	font-size:1.6vw;

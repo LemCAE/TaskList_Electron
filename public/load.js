@@ -78,13 +78,21 @@ async function loadConfig() {
     ];
 
     const taskList = document.getElementById("taskList");
-    const includedPrefixes = configJson.enabledSubject; // ["cn", "ot"]等
+    const enabledSubjectList = configJson.enabledSubject; // ["cn", "ot"]等
+    let enabledSubject = [];
+    enabledSubjectList.forEach((subjectObj, index) => {
+        let key = Object.keys(subjectObj)[0];
+        let value = subjectObj[key];
+        if (value) {
+            enabledSubject.push(key);
+        }
+      });
     // 循环生成每个科目的 div
     subjects.forEach((subject) => {
         // 获取科目 ID 的前两位字符
         const prefix = subject.id.slice(0, 2); // 获取前两个字符
-        // 检查前缀是否在 includedPrefixes 数组中
-        if (includedPrefixes.includes(prefix)) {
+        // 检查前缀是否在 enabledSubject 数组中
+        if (enabledSubject.includes(prefix)) {
             const listDiv = document.createElement("div");
             listDiv.id = subject.id;
             listDiv.className = "listinfo";
@@ -122,8 +130,8 @@ async function loadConfig() {
     // 动态生成每个科目的编辑列表
     editSubjects.forEach((subject) => {
         const prefix = subject.id.slice(-2); // 获取后两个字符
-        // 检查后缀是否在 includedPrefixes 数组中
-        if (includedPrefixes.includes(prefix)) {
+        // 检查后缀是否在 enabledSubject 数组中
+        if (enabledSubject.includes(prefix)) {
             // 创建外层 div
             const editDiv = document.createElement("div");
             editDiv.id = subject.id;

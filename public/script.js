@@ -79,8 +79,18 @@ async function loadStyleSetting() {
     const configJson = await window.fileAPI.readConfig('config.json');
 
     let allSubjects = ["cn", "ma", "en", "ph", "ch", "bi", "po" , "hi" , "ge" ,"ot"];
+    const enabledSubjectList = configJson.enabledSubject; // ["cn", "ot"]等
+    let enabledSubject = [];
+    enabledSubjectList.forEach((subjectObj, index) => {
+        let key = Object.keys(subjectObj)[0];
+        let value = subjectObj[key];
+        if (value) {
+            enabledSubject.push(key);
+        }
+      });
+
     for (subject of allSubjects) {
-        if (configJson.enabledSubject.includes(subject)) {
+        if (enabledSubject.includes(subject)) {
             document.getElementById(subject + "Enable").checked = true;
         }
     }
@@ -242,10 +252,20 @@ function createlist(inner) {
 }
 
 async function readTaskList(jsonFile) {
+    const configJson = await window.fileAPI.readConfig('config.json');
+    const enabledSubjectList = configJson.enabledSubject; // ["cn", "ot"]等
+    let enabledSubject = [];
+    enabledSubjectList.forEach((subjectObj, index) => {
+        let key = Object.keys(subjectObj)[0];
+        let value = subjectObj[key];
+        if (value) {
+            enabledSubject.push(key);
+        }
+    });
     try {
         const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
         for (const key in tasklist) {
-            if (tasklist.hasOwnProperty(key) && configJson.enabledSubject.includes(key)) {
+            if (tasklist.hasOwnProperty(key) && enabledSubject.includes(key)) {
                 const listElement=document.getElementById(`${key}list`);
                 if ( !listElement) {
                     console.error(`无法找到元素: ${key}list`);
@@ -272,9 +292,19 @@ readTaskList("list.json");
 async function getListToEdit(jsonFile) {
     try {
         const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
+        const configJson = await window.fileAPI.readConfig('config.json');
+        const enabledSubjectList = configJson.enabledSubject; // ["cn", "ot"]等
+        let enabledSubject = [];
+        enabledSubjectList.forEach((subjectObj, index) => {
+            let key = Object.keys(subjectObj)[0];
+            let value = subjectObj[key];
+            if (value) {
+                enabledSubject.push(key);
+            }
+        });
         if ( !tasklist) return;
         for (const key in tasklist) {
-            if (tasklist.hasOwnProperty(key) && configJson.enabledSubject.includes(key)) {
+            if (tasklist.hasOwnProperty(key) && enabledSubject.includes(key)) {
                 const container=document.getElementById(`editList${key}`).querySelector(".editListContent");
                 // 清空现有的输入框，但保留 "createNewTask" 按钮
                 container.innerHTML='<div draggable="false" class="createNewTask">+</div>';
@@ -547,9 +577,10 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     
     let allSubjects = ["cn", "ma", "en", "ph", "ch", "bi", "po" , "hi" , "ge" ,"ot"];
     let enabledSubjects = [];
-    for (subject of allSubjects) {
+    for (let subject of allSubjects) {
+        enabledSubjects.push({ [subject]: false });
         if (document.getElementById(subject + "Enable").checked) {
-            enabledSubjects.push(subject);
+            enabledSubjects[enabledSubjects.length - 1][subject] = true;
         }
     }
 
@@ -599,7 +630,6 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         classlist: schedule
     }
     console.log('Final config to save:', newConfig);
-    console.log('Final classList to save:', newClassList);
 
     // 保存数据并在写入完成后再执行操作
     await window.fileAPI.writeConfig('config.json', newConfig);
