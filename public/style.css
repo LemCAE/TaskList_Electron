@@ -306,36 +306,43 @@ p.subject-name {
 	justify-content:center;
 	align-items:center;
 	.editListContentInput {
-	font-size:1.2vw;
-	border:1px solid #ffffff;
-	border-radius:0.3vw;
-	background-color:#ffffff4f;
-	margin-top:0.35vw;
-	margin-bottom:0.35vw;
-	width:98%;
+		font-family: inherit ;
+		font-size:1.2vw;
+		border:1px solid #ffffff;
+		border-radius:0.3vw;
+		background-color:#ffffff4f;
+		margin-top:0.35vw;
+		margin-bottom:0.35vw;
+		width:98%;
+	}
+	textarea {
+		line-height: normal;
+		padding: 0;
+		resize: none;
+	}
+	.editListContentInput:focus {
+		outline:none;
+		background-color:#ffffffa1;
+	}
+	.createNewTask {
+		font-size:1.1vw;
+		border:1px solid #ffffff;
+		border-radius:0.3vw;
+		background-color:#ffffff4f;
+		margin-top:0.35vw;
+		margin-bottom:0.35vw;
+		width:98%;
+		display:flex;
+		justify-content:center;
+		position:relative;
+		bottom:0;
+	}
+	.createNewTask:hover {
+		cursor:pointer;
+		background-color:#ffffffa1;
+	}
 }
-.editListContentInput:focus {
-	outline:none;
-	background-color:#ffffffa1;
-}
-.createNewTask {
-	font-size:1.1vw;
-	border:1px solid #ffffff;
-	border-radius:0.3vw;
-	background-color:#ffffff4f;
-	margin-top:0.35vw;
-	margin-bottom:0.35vw;
-	width:98%;
-	display:flex;
-	justify-content:center;
-	position:relative;
-	bottom:0;
-}
-.createNewTask:hover {
-	cursor:pointer;
-	background-color:#ffffffa1;
-}
-}#saveList {
+#saveList {
 	font-size:1.35vw;
 	background-color:#ffffff4f;
 	border:1px solid #ffffff;

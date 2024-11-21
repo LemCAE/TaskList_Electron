@@ -291,39 +291,94 @@ readTaskList("list.json");
 
 async function getListToEdit(jsonFile) {
     try {
-        const tasklist=await window.fileAPI.readConfig(`${jsonFile}`);
+        // 读取 JSON 数据
+        const tasklist = await window.fileAPI.readConfig(jsonFile);
         const configJson = await window.fileAPI.readConfig('config.json');
-        const enabledSubjectList = configJson.enabledSubject; // ["cn", "ot"]等
-        let enabledSubject = [];
-        enabledSubjectList.forEach((subjectObj, index) => {
-            let key = Object.keys(subjectObj)[0];
-            let value = subjectObj[key];
-            if (value) {
-                enabledSubject.push(key);
-            }
-        });
-        if ( !tasklist) return;
+        const enabledSubjectList = configJson.enabledSubject;
+        if (!tasklist || !enabledSubjectList) {
+            console.warn("Tasklist or enabledSubjectList is empty");
+            return;
+        }
+        // 获取启用的学科列表
+        const enabledSubject = enabledSubjectList
+            .filter(subjectObj => Object.values(subjectObj)[0]) // 过滤值为 true 的对象
+            .map(subjectObj => Object.keys(subjectObj)[0]); // 获取对应的键
+        // 遍历任务列表，生成动态内容
         for (const key in tasklist) {
             if (tasklist.hasOwnProperty(key) && enabledSubject.includes(key)) {
-                const container=document.getElementById(`editList${key}`).querySelector(".editListContent");
-                // 清空现有的输入框，但保留 "createNewTask" 按钮
-                container.innerHTML='<div draggable="false" class="createNewTask">+</div>';
-                tasklist[key].forEach(element=> {
-                    element = element.replace(/"/g, '&quot;');
-                    const inputWrapper=document.createElement('div');
-                    inputWrapper.classList.add("input-wrapper");
-                    inputWrapper.innerHTML=` <span class="handle" >⁝⁝</span> <input value="${element}" class="editListContentInput" > <span class="removeTask" >⨉</span> `;
+                const container = document.getElementById(`editList${key}`).querySelector(".editListContent");
+                if (!container) {
+                    console.warn(`Container for key ${key} not found.`);
+                    continue;
+                }
+                // 清空容器并添加 "createNewTask" 按钮
+                container.innerHTML = '<div draggable="false" class="createNewTask">+</div>';
+                // 动态生成任务输入框
+                tasklist[key].forEach((element) => {
+                    const sanitizedElement = element.replace(/"/g, '&quot;'); 
+                    const inputWrapper = createTaskInput(sanitizedElement);
                     container.insertBefore(inputWrapper, container.querySelector('.createNewTask'));
                 });
+                // 初始化拖拽排序
                 initializeSortable(container);
             }
         }
-    }
-    catch (error) {
+        monitorVisibilityAndAdjustTextareaHeight();
+        // 监控 textarea 可见性并调整高度
+    } catch (error) {
         console.error('处理任务数据时出错:', error);
     }
 }
 
+// 创建任务输入框
+function createTaskInput(content) {
+    const inputWrapper = document.createElement('div');
+    inputWrapper.classList.add("input-wrapper");
+    inputWrapper.innerHTML = `
+        <span class="handle">⁝⁝</span>
+        <textarea class="editListContentInput" rows="1">${content}</textarea>
+        <span class="removeTask">⨉</span>
+    `;
+    const textarea = inputWrapper.querySelector('.editListContentInput');
+    // 自动调整 textarea 高度
+    adjustTextareaHeight(textarea);
+    textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
+
+    return inputWrapper;
+}
+
+// 调整 textarea 高度
+function adjustTextareaHeight(textarea) {
+    textarea.style.height = 'auto'; // 重置高度
+    console.log(textarea.scrollHeight);
+    textarea.style.height = `${textarea.scrollHeight + 2}px`; // 设置新高度
+}
+// 监控 textarea 可见性并调整高度
+function monitorVisibilityAndAdjustTextareaHeight() {
+    const textareas = document.querySelectorAll('.editListContentInput');
+    if (!textareas.length) {
+        console.warn("No textareas found to monitor.");
+        return;
+    }
+    textareas.forEach((textarea) => {
+        const parentElement = textarea.parentElement.parentElement;
+        // 检查父元素的显示状态
+        const observer = new MutationObserver(() => {
+            const isVisible = window.getComputedStyle(parentElement).display !== 'none';
+            if (isVisible) {
+                console.log(`Element for ${textarea} is now visible`);
+                adjustTextareaHeight(textarea);
+                observer.disconnect(); // 停止观察
+            }
+        });
+        observer.observe(parentElement, {
+            attributes: true, // 监听属性变化
+            attributeFilter: ['style'], // 仅监听 style 属性
+        });
+    });
+}
+
+// 执行任务列表初始化
 getListToEdit("list.json");
 
 function hideEditListContent(id) {
@@ -411,6 +466,7 @@ document.getElementById('saveList').addEventListener('click', async () => {
     console.log('Data saved successfully');
     reloadTaskList('list.json');
     reloadEditListContent('list.json');
+    hideTitles(document.querySelectorAll(".editListContent"), ".editListTitle")
 });
 
 function initializeSortable(container) {
@@ -431,24 +487,32 @@ function initializeSortable(container) {
     });
 }
 function initializeButtonSorting(container) {
-    container.querySelectorAll('.input-wrapper').forEach(wrapper => {
-        // 添加向上和向下按钮
-        const upButton = document.createElement('button');
-        upButton.innerText = '∧';
-        upButton.classList.add('moveUp');
-        
-        const downButton = document.createElement('button');
-        downButton.innerText = '∨';
-        downButton.classList.add('moveDown');
+    setTimeout(() => {
+        const wrappers = container.querySelectorAll('.input-wrapper');
+        if (wrappers.length === 0) {
+            console.warn("No input-wrapper found, skipping initialization.");
+            return;
+        }
+        wrappers.forEach(wrapper => {
+            // 添加向上和向下按钮
+            const upButton = document.createElement('button');
+            upButton.innerText = '∧';
+            upButton.classList.add('moveUp');
 
-        wrapper.insertBefore(downButton, wrapper.firstChild);
-        wrapper.insertBefore(upButton, wrapper.firstChild);
+            const downButton = document.createElement('button');
+            downButton.innerText = '∨';
+            downButton.classList.add('moveDown');
 
-        // 添加点击事件处理
-        upButton.addEventListener('click', () => moveUp(wrapper));
-        downButton.addEventListener('click', () => moveDown(wrapper));
-    });
+            wrapper.insertBefore(downButton, wrapper.firstChild);
+            wrapper.insertBefore(upButton, wrapper.firstChild);
+
+            // 添加点击事件处理
+            upButton.addEventListener('click', () => moveUp(wrapper));
+            downButton.addEventListener('click', () => moveDown(wrapper));
+        });
+    }, 50);
 }
+
 function moveUp(wrapper) {
     const prev = wrapper.previousElementSibling;
     if (prev && prev.classList.contains('input-wrapper')) {
@@ -479,14 +543,17 @@ document.addEventListener('DOMContentLoaded', async function () {
     initializeSorting()
 });
 
-
 document.addEventListener('click', function (event) {
     if (event.target.matches('.createNewTask')) {
-        const container=event.target.closest('.editListContent');
+        const container = event.target.closest('.editListContent');
         if (container) {
-            const inputWrapper=document.createElement('div');
+            const inputWrapper = document.createElement('div');
             inputWrapper.classList.add('input-wrapper');
-            inputWrapper.innerHTML=` <span class="handle">⁝⁝</span> <input value="" class="editListContentInput" > <span class="removeTask" >⨉</span> `;
+            inputWrapper.innerHTML = `
+                <span class="handle">⁝⁝</span>
+                <textarea class="editListContentInput" rows="1"></textarea>
+                <span class="removeTask">⨉</span>
+            `;
             container.insertBefore(inputWrapper, event.target);
             const upButton = document.createElement('button');
             upButton.innerText = '∧';
@@ -495,13 +562,17 @@ document.addEventListener('click', function (event) {
             downButton.innerText = '∨';
             downButton.classList.add('moveDown');
             inputWrapper.insertBefore(downButton, inputWrapper.firstChild);
-            inputWrapper.insertBefore(upButton,inputWrapper.firstChild);
+            inputWrapper.insertBefore(upButton, inputWrapper.firstChild);
             upButton.addEventListener('click', () => moveUp(inputWrapper));
             downButton.addEventListener('click', () => moveDown(inputWrapper));
+            // 获取 textarea 并应用自动高度设置
+            const textarea = inputWrapper.querySelector('.editListContentInput');
+            adjustTextareaHeight(textarea);  // 调用函数应用自动高度
+            // 监听 textarea 输入事件，实时调整高度
+            textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
         }
     }
 });
-
 document.addEventListener('click', function (event) {
     if (event.target.matches('.removeTask')) {
         const inputWrapper=event.target.closest('.input-wrapper');
