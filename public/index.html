@@ -436,11 +436,52 @@
                                     </div>
                                 </div>
                                 <div class="inputChange singleSetting" id="BGMFloderChange">
-                                    <label for="writingBGMStartTime">背景音乐文件夹</label>
+                                    <label for="BGMFolderInput">背景音乐文件夹</label>
                                     <div class="selectChangeContainer">
                                         <input id="BGMFolderInput" type="text" placeholder="输入文件夹路径">
                                         <button id="selectBGMFolder">选择文件夹</button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="extendInnerContainer">
+                        <div class="extendPart" id="ramdomQuote">
+                            <div class="extendTitle">随机一言</div>
+                            <div class="extendContent">
+                                <div class="enableChange singleSetting" id="enableQuoteChange">
+                                    <label for="enableQuote">显示随机一言</label>
+                                    <label class="switch">
+                                        <input id="enableQuote" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                        <p class="extraInfo">&emsp;每次启动应用或刷新页面时均会重新选择</p>
+                                </div>
+                                <div class="inputChange singleSetting" id="quoteFileChange">
+                                    <label for="quoteFileInput">选择文件</label>
+                                    <input id="quoteFileInput" type="text" placeholder="输入本地文件路径">
+                                    <button id="selectQuoteFile">选择文件</button>
+                                    <p class="extraInfo">&emsp;<a href="">查看文件格式</a></p>
+                                </div>  
+                                <div class="rangeChange singleSetting" id="quoteFontSizeScaleChange">
+                                    <label for="quoteFontSizeScale">文字缩放</label>
+                                    <div class="numberInputClick" id="quoteFontSizeScale">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="2" step="0.1" value="0.8">
+                                        <div class="plus numberChange">+</div>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSetting" id="enableQuoteTranslationChange">
+                                    <label for="enableQuoteTranslation">显示语句翻译</label>
+                                    <label class="switch">
+                                        <input id="enableQuoteTranslation" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="singleSetting" id="copyQuoteElement">
+                                    <button class="configsButton" id="copyQuoteElementButton">复制元素</button>
+                                    <p class="extraInfo">&emsp;复制元素到任意列表框中即可显示(注意不得重复)</p>
                                 </div>
                             </div>
                         </div>
@@ -474,4 +515,5 @@
     <script src="sortable.min.js"></script>
     <script src="script.js"></script>
     <script src="writingBGM.js"></script>
+    <script src="ramdomQuote.js"></script>
 </html>

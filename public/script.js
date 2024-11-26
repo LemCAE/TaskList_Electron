@@ -152,6 +152,7 @@ async function loadStyleSetting() {
     setCheckbox('autoDownloadUpdate', configJson.autoDownloadUpdate)
     document.getElementById('updateSource').value = configJson.updateSource;
     //拓展部分
+    //随机音乐
     setCheckbox('enableWritingBGM', configJson.extension.writingBGM.enable);
     setInputValue('writingBGMLasting', configJson.extension.writingBGM.lasting);
     setInputValue('writingBGMVolume', configJson.extension.writingBGM.volume); 
@@ -163,6 +164,12 @@ async function loadStyleSetting() {
         document.getElementById('systemVolumeChange').style.display = 'none';
     };
     document.getElementById('systemVolume').querySelector('input').value = configJson.extension.writingBGM.systemVolume;
+    //随机一言
+    document.getElementById('quoteFileInput').value = configJson.extension.randomQuote.quoteFile;
+    setCheckbox('enableQuote', configJson.extension.randomQuote.enable);
+    setInputValue('quoteFontSizeScale', configJson.extension.randomQuote.quoteFontSizeScale);
+    setCheckbox('enableQuoteTranslation', configJson.extension.randomQuote.quoteTranslation);
+
 }
 document.addEventListener('DOMContentLoaded', loadStyleSetting);
 
@@ -324,7 +331,6 @@ async function getListToEdit(jsonFile) {
             }
         }
         monitorVisibilityAndAdjustTextareaHeight();
-        // 监控 textarea 可见性并调整高度
     } catch (error) {
         console.error('处理任务数据时出错:', error);
     }
@@ -343,16 +349,21 @@ function createTaskInput(content) {
     // 自动调整 textarea 高度
     adjustTextareaHeight(textarea);
     textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
-
     return inputWrapper;
 }
 
 // 调整 textarea 高度
 function adjustTextareaHeight(textarea) {
     textarea.style.height = 'auto'; // 重置高度
-    console.log(textarea.scrollHeight);
     textarea.style.height = `${textarea.scrollHeight + 2}px`; // 设置新高度
 }
+function adjustTextareaHeightOnResize() {
+    const textareas = document.querySelectorAll('.editListContentInput');
+    textareas.forEach(adjustTextareaHeight);
+}
+
+window.addEventListener('resize', adjustTextareaHeightOnResize); // 窗口大小变化时调整
+
 // 监控 textarea 可见性并调整高度
 function monitorVisibilityAndAdjustTextareaHeight() {
     const textareas = document.querySelectorAll('.editListContentInput');
@@ -366,7 +377,6 @@ function monitorVisibilityAndAdjustTextareaHeight() {
         const observer = new MutationObserver(() => {
             const isVisible = window.getComputedStyle(parentElement).display !== 'none';
             if (isVisible) {
-                console.log(`Element for ${textarea} is now visible`);
                 adjustTextareaHeight(textarea);
                 observer.disconnect(); // 停止观察
             }
@@ -431,14 +441,20 @@ document.querySelectorAll('.listContent').forEach(container=> {
 }
 
 async function reloadEditListContent(jsonFile) {
-    // 清空当前的编辑列表内容，保留 "createNewTask" 按钮
-    document.querySelectorAll('.editListContent').forEach(container=> {
-            container.innerHTML='<div draggable="false" class="createNewTask">+</div>'; // 重置内容，保留按钮
-        });
-    // 重新读取并加载编辑输入框内容
+    // 清空编辑内容
+    document.querySelectorAll('.editListContent').forEach(container => {
+        container.innerHTML = '<div draggable="false" class="createNewTask">+</div>'; // 重置内容
+    });
+    // 重新加载内容
     await getListToEdit(jsonFile);
-    initializeSorting()
+    await initializeSorting();
+    setTimeout(() => {
+        document.querySelectorAll('.editListContentInput').forEach(textarea => {
+            adjustTextareaHeight(textarea);
+        });
+    }, 100);
 }
+
 
 document.getElementById('saveList').addEventListener('click', async () => {
     const data = {
@@ -466,7 +482,7 @@ document.getElementById('saveList').addEventListener('click', async () => {
     console.log('Data saved successfully');
     reloadTaskList('list.json');
     reloadEditListContent('list.json');
-    hideTitles(document.querySelectorAll(".editListContent"), ".editListTitle")
+    getQuote(); //来自randomQuote.js
 });
 
 function initializeSortable(container) {
@@ -723,6 +739,11 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const preCountdownDuration = document.getElementById('preCountdownDuration').querySelector('input').value;
     const systemVolumeSet = document.getElementById('systemVolumeSet').checked;
     const systemVolume = document.getElementById('systemVolume').querySelector('input').value;
+    
+    const randomQuoteEnable = document.getElementById('enableQuote').checked;
+    const quoteFile = document.getElementById('quoteFileInput').value;
+    const quoteFontSizeScale = document.getElementById('quoteFontSizeScale').querySelector('input').value;
+    const quoteTranslation = document.getElementById('enableQuoteTranslation').checked;
     // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
@@ -737,6 +758,12 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
                 preCountdownDuration: preCountdownDuration,
                 systemVolumeSet: systemVolumeSet,
                 systemVolume: systemVolume
+            },
+            randomQuote: {
+                enable: randomQuoteEnable,
+                quoteFile: quoteFile,
+                quoteFontSizeScale: quoteFontSizeScale,
+                quoteTranslation: quoteTranslation
             }
         }
     };
@@ -819,6 +846,15 @@ document.getElementById('systemVolumeSet').addEventListener('change', function()
         document.getElementById('systemVolumeChange').style.display = 'none';
     }
 })
+//随机一言
+document.getElementById('selectQuoteFile').addEventListener('click', async () => {
+    const filePath = await window.fileAPI.selectJson();
+    if (filePath) {
+        document.getElementById('quoteFileInput').value = filePath; // 将路径显示在输入框中
+    }
+});
+
+//
 document.addEventListener("DOMContentLoaded", function () {
     // 通用的加减函数
     function initializeNumberInput(containerId) {
@@ -864,6 +900,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeNumberInput("preCountdownDurationChange");
     initializeNumberInput("listBlurChange");
     initializeNumberInput("systemVolume");
+    initializeNumberInput("quoteFontSizeScale");
 });
 document.getElementById('clearTaskButton').addEventListener('click', async () => {
     const detailText = '现有任务列表将被清除';

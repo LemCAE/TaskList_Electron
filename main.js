@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Tray, Menu } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, shell } = require("electron");
 const path = require("path");
 const WinReg = require("winreg");
 const fs = require("fs");
@@ -152,7 +152,7 @@ if (!gotTheLock) {
         tray = new Tray(path.join(__dirname, "./resource/icon.ico"));
         const contextMenu = Menu.buildFromTemplate([
             {
-                label: "还原窗口",
+                label: "显示窗口",
                 click: () => {
                     mainWindow.show();
                 },
@@ -188,12 +188,31 @@ if (!gotTheLock) {
             },
             { type: 'separator' },
             {
-                label: "重启应用",
-                click: () => {
-                    app.relaunch();
-                    app.exit(0);
-                }
+                label: "更多",
+                submenu:[
+                    {
+                        label: "切换至开发者模式",
+                        click: () => {
+                            mainWindow.webContents.openDevTools()
+                        }
+                    },
+                    {
+                        label: "打开配置文件夹",
+                        click: () => {
+                            let configPath = path.join(app.getPath('appData'), "TaskList/config");
+                            shell.openPath(configPath)
+                        }
+                    },
+                    {
+                        label: "重启应用",
+                        click: () => {
+                            app.relaunch();
+                            app.exit(0);
+                        }
+                    },
+                ]
             },
+            { type: 'separator' },
             {
                 label: "退出应用",
                 click: () => {
@@ -376,6 +395,16 @@ ipcMain.handle("read-config", async (event, fileName) => {
     }
 });
 
+ipcMain.handle("readJson", async (event, filePath) => {
+    try {
+        const data = await fs.promises.readFile(filePath, "utf-8");
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error reading config file:", error);
+        throw error;
+    }
+});
+
 
 ipcMain.handle("write-config", async (event, { fileName, data }) => {
     try {
@@ -403,6 +432,23 @@ ipcMain.handle("dialog:selectImage", async () => {
             {
                 name: "Images",
                 extensions: ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"],
+            },
+        ],
+    });
+    if (canceled) {
+        return null;
+    } else {
+        return filePaths[0];
+    }
+});
+
+ipcMain.handle("dialog:selectJson", async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+        properties: ["openFile"],
+        filters: [
+            {
+                name: "Images",
+                extensions: ["json"],
             },
         ],
     });

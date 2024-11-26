@@ -3,8 +3,10 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("fileAPI", {
     readConfig: (fileName) => ipcRenderer.invoke("read-config", fileName),
     writeConfig: (fileName, data) => ipcRenderer.invoke("write-config", { fileName, data }),
+    readJson: (fileName) => ipcRenderer.invoke("readJson", fileName),
     getResourcePath: (fileName) => ipcRenderer.invoke("get-resource-path", fileName),
     selectImage: () => ipcRenderer.invoke("dialog:selectImage"),
+    selectJson: () => ipcRenderer.invoke("dialog:selectJson"),
     importFile: () => ipcRenderer.invoke("dialog:importFile"),
     exportFile: (data) => ipcRenderer.invoke("dialog:exportFile", data),
     selectFolder: () => ipcRenderer.invoke('select-folder'),

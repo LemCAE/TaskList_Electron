@@ -316,7 +316,7 @@ p.subject-name {
 		width:98%;
 	}
 	textarea {
-		line-height: normal;
+		line-height: 1.6vw;
 		padding: 0;
 		resize: none;
 	}
@@ -596,7 +596,7 @@ select option {
 	display:flex;
 	align-items:center;
 }
-#backgroundLocal,#backgroundURLInput,#BGMFolderInput {
+#backgroundLocal,#backgroundURLInput,#BGMFolderInput,#quoteFileInput {
 	font-size:1vw;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
@@ -608,14 +608,14 @@ select option {
 #backgroundLocal:focus,#backgroundURL:focus {
 	background-color:#ffffff2f;
 }
-#selectLocalImage ,#selectBGMFolder {
+#selectLocalImage ,#selectBGMFolder ,#selectQuoteFile {
 	font-size:1vw;
 	background-color:#ffffff4f;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
 	margin:1vh;
 }
-#selectLocalImage:hover,#selectBGMFolder:hover {
+#selectLocalImage:hover,#selectBGMFolder:hover,#selectQuoteFile:hover {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }
@@ -763,4 +763,7 @@ select option {
 	position: absolute;
 	height: 5px;
 	background: #4c7aaf;
+}
+.extraInfo {
+	font-size: 1.0vw;
 }

@@ -45,6 +45,12 @@ const defaultConfigs = {
             "preCountdownDuration": "3",
             "systemVolumeSet": true,
             "systemVolume": "20"
+          },
+          "randomQuote": {
+            "enable": false,
+            "quoteFile": "",
+            "quoteFontSizeScale": "0.8",
+            "quoteTranslation": true
           }
         }
     },
