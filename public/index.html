@@ -45,6 +45,11 @@
                     <p id="writingBGMDetail">即将开始</p>
                     <p id="writingBGMTime"></p>
                 </div>
+                <div id="dateCountdown">
+                    <p>距离</p>
+                    <p id="dateCountdownDetail">Event</p>
+                    <p id="dateCountdownTime">Value</p>
+                </div>
             </div>
         </div>
         <div id="taskList"></div>
@@ -444,8 +449,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="extendInnerContainer">
                         <div class="extendPart" id="ramdomQuote">
                             <div class="extendTitle">随机一言</div>
                             <div class="extendContent">
@@ -461,7 +464,7 @@
                                     <label for="quoteFileInput">选择文件</label>
                                     <input id="quoteFileInput" type="text" placeholder="输入本地文件路径">
                                     <button id="selectQuoteFile">选择文件</button>
-                                    <p class="extraInfo">&emsp;<a href="">查看文件格式</a></p>
+                                    <p class="extraInfo">&emsp;<a id="quoteFileFormatView">查看文件格式</a></p>
                                 </div>  
                                 <div class="rangeChange singleSetting" id="quoteFontSizeScaleChange">
                                     <label for="quoteFontSizeScale">文字缩放</label>
@@ -485,8 +488,26 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="extendInnerContainer">
+                        <div class="extendPart" id="dateCountDown">
+                            <div class="extendTitle">倒计时</div>
+                            <div class="extendContent">
+                                <div class="enableChange singleSetting" id="enableDateCountDownChange">
+                                    <label for="enableDateCountDown">显示倒计时</label>
+                                    <label class="switch">
+                                        <input id="enableDateCountDown" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="inputChange singleSetting" id="dateCountdownNameChange">
+                                    <label for="dateCountdownNameInput">倒计时名称</label>
+                                    <input id="dateCountdownNameInput" type="text" placeholder="输入倒计时名称">
+                                </div>  
+                                <div class="inputChange singleSetting" id="dateCountDownChange">
+                                    <label for="dateCountDownInput">倒计时日期</label>
+                                    <input type="date" id="dateCountDownInput" class="dateInput" value="2024-12-01"/>
+                                </div>
+                            </div>
+                        </div>
                         <div class="extendPart" id="tools">
                             <div class="extendTitle">小工具 🡥</div>
                             <div class="extendContent"></div>
@@ -516,4 +537,5 @@
     <script src="script.js"></script>
     <script src="writingBGM.js"></script>
     <script src="ramdomQuote.js"></script>
+    <script src="dateCountDown.js"></script>
 </html>

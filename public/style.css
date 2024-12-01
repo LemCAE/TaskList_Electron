@@ -596,7 +596,7 @@ select option {
 	display:flex;
 	align-items:center;
 }
-#backgroundLocal,#backgroundURLInput,#BGMFolderInput,#quoteFileInput {
+#backgroundLocal,#backgroundURLInput,#BGMFolderInput,#quoteFileInput,#dateCountdownNameInput {
 	font-size:1vw;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
@@ -646,25 +646,14 @@ select option {
 }
 
 
-#saveSetting {
+#saveSetting ,#saveExtensionSetting {
 	font-size:1.35vw;
 	background-color:#ffffff4f;
 	border:1px solid #ffffff;
 	border-radius:0.3vw;
 	margin:1vh;
 }
-#saveSetting:hover {
-	cursor:pointer;
-	background-color:#ffffffa1;
-}
-#saveExtensionSetting {
-	font-size:1.35vw;
-	background-color:#ffffff4f;
-	border:1px solid #ffffff;
-	border-radius:0.3vw;
-	margin:1vh;
-}
-#saveExtensionSetting:hover {
+#saveSetting:hover ,#saveExtensionSetting:hover {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }
@@ -733,7 +722,8 @@ select option {
 	}
 }
 #extraFunction {
-    margin-top: 20vh;
+	position: absolute;
+	bottom: 6vh;
 }
 #writingBGMShow {
 	display: none;
@@ -752,6 +742,20 @@ select option {
 		font-size:1.8vw;
 	}
 }
+#dateCountdown {
+	display: none;
+	p{
+		margin:0px;
+		font-size: 1.3vw;
+		text-align:center;
+	}
+	#dateCountdownDetail {
+		font-size: 1.8vw;
+	}
+	#dateCountdownTime{
+		font-size: 1.5vw;
+	}
+}
 #progress-container{
 	width: 100%; 
 	background: #00000000;
@@ -766,4 +770,13 @@ select option {
 }
 .extraInfo {
 	font-size: 1.0vw;
+}
+
+.dateInput {
+	margin-left: 0.5vw;
+	font-size:1.2vw;
+	background-color:#ffffff4f;
+	border:1px solid #ffffff;
+	border-radius:0.3vw;
+	font-family: "Microsoft YaHei", sans-serif;
 }

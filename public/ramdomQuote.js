@@ -12,15 +12,23 @@ async function getQuote() {
     setTimeout(() => {
         try {
             let quoteBox = document.getElementById("randomQuoteBox")
+            let quoteHtml = ''
             if (configJson.extension.randomQuote.quoteTranslation) {
-                quoteBox.innerHTML = `<p id="quoteMain">${quoteSet.main}</p> 
-                    <p id="quoteTranslation">${"&emsp;" + quoteSet.translation}</p> 
-                    <p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`;
+                quoteHtml += `<p id="quoteMain">${quoteSet.main}</p>`
+                if (quoteSet.translation !== '') {
+                    quoteHtml += `<p id="quoteTranslation">${"&emsp;" + quoteSet.translation}</p>`
+                }
+                if (quoteSet.author !== '') {
+                    quoteHtml += `<p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`
+                }
             }
             else {
-            quoteBox.innerHTML = `<p id="quoteMain">${quoteSet.main}</p> 
-                <p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`;
+                quoteHtml += `<p id="quoteMain">${quoteSet.main}</p>`
+                if (quoteSet.author !== '') {
+                    quoteHtml += `<p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`
+                }
             }
+            quoteBox.innerHTML = quoteHtml;
         }
         catch (e) {
             console.log("delay");
@@ -50,4 +58,30 @@ function copyText() {
     })
 };
 document.getElementById('copyQuoteElementButton').addEventListener('click', copyText);
+document.getElementById('quoteFileFormatView').addEventListener('click', function () {
+    alert(`文件应使用json格式,其基本结构如下:
+======================================================
+example.json
+======================================================
+{
+    "quotes":[
+        {
+            "main":"",
+            "translation":"",
+            "author":""
+        },         <-- 相邻字段间有逗号
+        ...(更多)
+        {
+            "main":"",
+            "translation":"",
+            "author":""
+        }          <-- 最后一个字段后无逗号
+    ]
+}
+======================================================
+其中,main为主文,translation为另一语言翻译,author为作者或来源。
+main为必填项,translation和author为选填项。
+请确保格式正确,否则可能导致无法正常显示甚至程序崩溃。
+`)
+});
 getQuote();

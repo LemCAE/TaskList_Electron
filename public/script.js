@@ -169,6 +169,10 @@ async function loadStyleSetting() {
     setCheckbox('enableQuote', configJson.extension.randomQuote.enable);
     setInputValue('quoteFontSizeScale', configJson.extension.randomQuote.quoteFontSizeScale);
     setCheckbox('enableQuoteTranslation', configJson.extension.randomQuote.quoteTranslation);
+    //倒计时
+    setCheckbox('enableDateCountDown', configJson.extension.dateCountdown.enable);
+    document.getElementById('dateCountdownNameInput').value = configJson.extension.dateCountdown.dateCountdownDetail;
+    document.getElementById('dateCountDownInput').value = configJson.extension.dateCountdown.dateCountdownTime;
 
 }
 document.addEventListener('DOMContentLoaded', loadStyleSetting);
@@ -744,6 +748,11 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const quoteFile = document.getElementById('quoteFileInput').value;
     const quoteFontSizeScale = document.getElementById('quoteFontSizeScale').querySelector('input').value;
     const quoteTranslation = document.getElementById('enableQuoteTranslation').checked;
+
+    const dateCountdownEnable = document.getElementById('enableDateCountDown').checked;
+    const dateCountdownDetail = document.getElementById('dateCountdownNameInput').value;
+    const dateCountdownTime = document.getElementById('dateCountDownInput').value;
+    
     // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
@@ -764,6 +773,11 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
                 quoteFile: quoteFile,
                 quoteFontSizeScale: quoteFontSizeScale,
                 quoteTranslation: quoteTranslation
+            },
+            dateCountdown: {
+                enable: dateCountdownEnable,
+                dateCountdownDetail: dateCountdownDetail,
+                dateCountdownTime: dateCountdownTime
             }
         }
     };
