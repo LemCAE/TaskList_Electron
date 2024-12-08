@@ -38,6 +38,7 @@ const defaultConfigs = {
         "extension": {
           "writingBGM": {
             "enable": false,
+            "name": "Event",
             "lasting": "10",
             "volume": "100",
             "startTime": "19:00",
@@ -51,6 +52,11 @@ const defaultConfigs = {
             "quoteFile": "",
             "quoteFontSizeScale": "0.8",
             "quoteTranslation": true
+          },
+          "dateCountdown": {
+            "enable": false,
+            "dateCountdownDetail": "Event",
+            "dateCountdownTime": "2025-01-01"
           }
         }
     },

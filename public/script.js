@@ -160,6 +160,7 @@ async function loadStyleSetting() {
     setCheckbox('systemVolumeSet', configJson.extension.writingBGM.systemVolumeSet);
     document.getElementById('writingBGMStartTime').value = configJson.extension.writingBGM.startTime;
     document.getElementById('BGMFolderInput').value = configJson.extension.writingBGM.BGMFolder;
+    document.getElementById('writingBGMNameInput').value = configJson.extension.writingBGM.name;
     if (!configJson.extension.writingBGM.systemVolumeSet) {
         document.getElementById('systemVolumeChange').style.display = 'none';
     };
@@ -735,7 +736,9 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
 document.getElementById('saveExtensionSetting').addEventListener('click', async () => {
     // 读取现有的 JSON 数据
     const existingConfig = await window.fileAPI.readConfig('config.json') || {};
+
     const writingBGMEnable = document.getElementById('enableWritingBGM').checked;
+    const writingBGMName = document.getElementById('writingBGMNameInput').value;
     const writingBGMLasting = document.getElementById('writingBGMLasting').querySelector('input').value;
     const writingBGMVolume = document.getElementById('writingBGMVolume').querySelector('input').value;
     const writingBGMStartTime = document.getElementById('writingBGMStartTime').value;
@@ -760,6 +763,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
             ...existingConfig.extension,  // 保持已有的 extension 设置
             writingBGM: {
                 enable: writingBGMEnable,
+                name: writingBGMName,
                 lasting: writingBGMLasting,
                 volume: writingBGMVolume,
                 startTime: writingBGMStartTime,

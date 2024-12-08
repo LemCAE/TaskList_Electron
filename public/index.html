@@ -41,7 +41,7 @@
             <div id="classTableBox"></div>
             <div id="extraFunction">
                 <div id="writingBGMShow">
-                    <p>练字</p>
+                    <p id="writingBGMName">Name</p>
                     <p id="writingBGMDetail">即将开始</p>
                     <p id="writingBGMTime"></p>
                 </div>
@@ -384,15 +384,19 @@
                 <div id="extend">
                     <div class="extendInnerContainer">
                         <div class="extendPart" id="writingBGM">
-                            <div class="extendTitle">练字背景音乐</div>
+                            <div class="extendTitle">定时背景音乐</div>
                             <div class="extendContent">
                                 <div class="enableChange singleSetting" id="enableWritingBGMChange">
-                                    <label for="enableWritingBGM">启用练字背景音乐</label>
+                                    <label for="enableWritingBGM">启用定时背景音乐</label>
                                     <label class="switch">
                                         <input id="enableWritingBGM" type="checkbox">
                                         <span class="slider"></span>
                                     </label>
                                 </div>
+                                <div class="inputChange singleSetting" id="writingBGMNameChange">
+                                    <label for="writingBGMNameInput">名称</label>
+                                    <input id="writingBGMNameInput" type="text" placeholder="输入名称">
+                                </div>  
                                 <div class="rangeChange singleSetting" id="writingBGMLastingChange">
                                     <label for="writingBGMLasting">背景音乐时长</label>
                                     <div class="numberInputClick" id="writingBGMLasting">
@@ -412,7 +416,7 @@
                                     </div>
                                 </div>
                                 <div class="singleSetting timeInput" id="writingBGMStartTimeChange">
-                                    <label for="writingBGMStartTime">练字背景音乐开始时间</label>
+                                    <label for="writingBGMStartTime">定时背景音乐开始时间</label>
                                     <input type="time" id="writingBGMStartTime" class="timeInputer">
                                 </div>
                                 <div class="rangeChange singleSetting" id="preCountdownDurationChange">

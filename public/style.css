@@ -596,7 +596,7 @@ select option {
 	display:flex;
 	align-items:center;
 }
-#backgroundLocal,#backgroundURLInput,#BGMFolderInput,#quoteFileInput,#dateCountdownNameInput {
+#backgroundLocal,#backgroundURLInput,#BGMFolderInput,#writingBGMNameInput,#quoteFileInput,#dateCountdownNameInput {
 	font-size:1vw;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;

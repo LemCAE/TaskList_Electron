@@ -10,7 +10,7 @@ let freshGap = 1; // 刷新间隔（秒）
 let audioOnPlay = false; // 是否正在播放音乐
 let currentAudio = null; // 当前播放的音乐
 //////倒计时部分//////
-async function startCountdown(startTime, lastingTime, musicFiles, preCountdownDuration, tempFolderPath, volume) {
+async function startCountdown(startTime, countDownName, lastingTime, musicFiles, preCountdownDuration, tempFolderPath, volume) {
     const startDateTime = new Date();
     const [startHour, startMin] = startTime.split(':').map(Number);
     startDateTime.setHours(startHour, startMin, 0, 0);
@@ -31,31 +31,32 @@ async function startCountdown(startTime, lastingTime, musicFiles, preCountdownDu
         }
         if (timeDiff < preCountdownDuration) {
             const adjustedPreCountdown = Math.max(timeDiff, 0);
-            startPreCountdown(adjustedPreCountdown, musicFiles, lastingTime, tempFolderPath, volume);
+            startPreCountdown(adjustedPreCountdown, musicFiles, countDownName, lastingTime, tempFolderPath, volume);
             console.log('调整预倒计时时间：', adjustedPreCountdown);
             clearInterval(checkInterval);
         } else {
             if (timeDiff <= preCountdownDuration + 3 * 60) {
-                setTimeout(() => startPreCountdown(preCountdownDuration, musicFiles, lastingTime, tempFolderPath, volume), (timeDiff - preCountdownDuration) * 1000);
+                setTimeout(() => startPreCountdown(preCountdownDuration, musicFiles, countDownName, lastingTime, tempFolderPath, volume), (timeDiff - preCountdownDuration) * 1000);
                 clearInterval(checkInterval);
                 console.log('预倒计时开始');
             }
         }
     }, (freshGap * 1000));
 }
-async function startPreCountdown(Duration, musicFiles, lastingTime, tempFolderPath, volume) {
+async function startPreCountdown(Duration, musicFiles, countDownName, lastingTime, tempFolderPath, volume) {
     let preCountdown = Duration;
+    document.getElementById('writingBGMName').innerText = countDownName;
     document.getElementById("writingBGMShow").style.display = "block";
     const preInterval = setInterval(() => {
         document.getElementById('writingBGMTime').innerText = formatTime(preCountdown);
         preCountdown--;
         if (preCountdown < 0) {
             clearInterval(preInterval);
-            startMainCountdown(lastingTime, musicFiles, tempFolderPath, volume);
+            startMainCountdown(countDownName, lastingTime, musicFiles, tempFolderPath, volume);
         }
     }, 1000);
 }
-async function startMainCountdown(lastingTime, musicFiles, tempFolderPath, volume) {
+async function startMainCountdown(countDownName, lastingTime, musicFiles, tempFolderPath, volume) {
     let mainCountdown = lastingTime;
     audioOnPlay = true;
     // 自动设置系统音量
@@ -73,6 +74,7 @@ async function startMainCountdown(lastingTime, musicFiles, tempFolderPath, volum
     console.log('播放状态参数：', audioOnPlay);
     console.log('主倒计时开始');
     document.getElementById('writingBGMTime').innerText = formatTime(mainCountdown);
+    document.getElementById('writingBGMName').innerText = countDownName;
     document.getElementById('writingBGMDetail').innerText = '正在进行';
     document.getElementById("writingBGMShow").style.display = "block";
     playAudioLoop(musicFiles, volume, 1000, 1000, tempFolderPath);
@@ -212,23 +214,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (configJson.extension.writingBGM.enable) {
         console.log('writingBGM is enabled');
         const startTime = configJson.extension.writingBGM.startTime;
+        const countDownName = configJson.extension.writingBGM.name;
         const lastingTime = configJson.extension.writingBGM.lasting * 60;
         const folder = configJson.extension.writingBGM.BGMFolder;
         const musicFiles = await fetchMusicFiles(folder);
         const volume = configJson.extension.writingBGM.volume;
         const preCountdownDuration = configJson.extension.writingBGM.preCountdownDuration * 60;
-        await startCountdown(startTime, lastingTime, musicFiles, preCountdownDuration, folder, volume);
+        await startCountdown(startTime, countDownName, lastingTime, musicFiles, preCountdownDuration, folder, volume);
     }
 });
 
 async function directStart() {
     const configJson = await window.fileAPI.readConfig('config.json');
+    const countDownName = configJson.extension.writingBGM.name;
     const lastingTime = configJson.extension.writingBGM.lasting * 60;
     const folder = configJson.extension.writingBGM.BGMFolder;
     const musicFiles = await fetchMusicFiles(folder);
     const tempFolderPath = folder;
     const volume = configJson.extension.writingBGM.volume;
     const preCountdownDuration = configJson.extension.writingBGM.preCountdownDuration * 60;
-    await startMainCountdown(lastingTime, musicFiles, tempFolderPath, volume, preCountdownDuration);
+
+
+
+    await startMainCountdown(countDownName, lastingTime, musicFiles, tempFolderPath, volume, preCountdownDuration);
 }
 //directStart();
