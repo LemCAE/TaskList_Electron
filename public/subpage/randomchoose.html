@@ -39,7 +39,7 @@
                 <label for="end">终止</label>
                 <input type="number" id="end" value="55" min="0">
                 <label for="count">数量</label>
-                <input type="number" id="count" value="1" min="1">
+                <input type="number" id="count" value="1" min="1" max="55">
                 <button id="choose">抽取</button>
                 <div id="result"></div>
             </div>
@@ -145,6 +145,24 @@
             }
             return range.slice(0, count);
         }
+        document.getElementById('count').max = document.getElementById('end').value - document.getElementById('start').value + 1;
+        document.getElementById('end').addEventListener('change', () => {
+            document.getElementById('count').max = document.getElementById('end').value - document.getElementById('start').value + 1;
+            let currentSize = parseFloat(document.getElementById('count').value);
+            if (currentSize > parseFloat(document.getElementById('count').max)) {
+                document.getElementById('count').value = document.getElementById('count').max;
+            } else if (currentSize < parseFloat(document.getElementById('count').min)) {
+                document.getElementById('count').value = document.getElementById('count').min;
+            }
+        });
+        document.getElementById('count').addEventListener("input", function () {
+            let currentSize = parseFloat(document.getElementById('count').value);
+            if (currentSize > parseFloat(document.getElementById('count').max)) {
+                document.getElementById('count').value = document.getElementById('count').max;
+            } else if (currentSize < parseFloat(document.getElementById('count').min)) {
+                document.getElementById('count').value = document.getElementById('count').min;
+            }
+        });
         document.getElementById('choose').addEventListener('click', () => {
             const start = parseInt(document.getElementById('start').value);
             const end = parseInt(document.getElementById('end').value);

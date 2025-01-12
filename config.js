@@ -57,7 +57,10 @@ const defaultConfigs = {
             "enable": false,
             "dateCountdownDetail": "Event",
             "dateCountdownTime": "2025-01-01"
-          }
+          },
+          "enable": false,
+          "focusingModeMask": "0.95",
+          "foucsingModePeriod": []
         }
     },
     list: {

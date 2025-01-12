@@ -43,6 +43,11 @@
       "enable": false,
       "dateCountdownDetail": "Event",
       "dateCountdownTime": "2025-01-01"
+    },
+    "focusingMode": {
+      "enable": false,
+      "focusingModeMask": "0.95",
+      "foucsingModePeriod": []
     }
   }
 }

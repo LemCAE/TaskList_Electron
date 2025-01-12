@@ -27,6 +27,9 @@ async function loadStyle() {
         #inControl {
             background-color: rgba(255, 255, 255, ${configJson.configMask});
         }
+        #focusingModeContainer {
+            background-image: url(${configJson.background});
+        }
     `;
     document.head.appendChild(style);
     if (configJson.darkMode === true) {
@@ -83,6 +86,9 @@ async function loadStyle() {
             }
             input[type="time"]::-webkit-calendar-picker-indicator {
                 color: #ffffff;
+            }
+            #focusingModeContainer::before {
+                background-color: rgba(0, 0, 0, ${configJson.extension.focusingMode.focusingModeMask}); 
             }
         `;
         document.head.appendChild(darkMode);

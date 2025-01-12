@@ -512,6 +512,37 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="extendPart" id="focusingMode">
+                            <div class="extendTitle">专注模式</div>
+                            <div class="extendContent">
+                                <div class="singleSetting" id="enterFousingMode">
+                                    <button class="configsButton" id="enterFousingModeButton" onclick="enterFocusingMode()">进入专注模式</button>
+                                    <p class="extraInfo">&emsp;也可以使用快捷键：连按三次 Ctrl+Q；连按三次 Ctrl+E 即可退出</p>
+                                </div>
+                                <div class="rangeChange singleSetting" id="focusingModeMaskChange">
+                                    <label for="focusingModeMask">专注模式遮罩不透明度</label>
+                                    <div class="numberInputClick" id="focusingModeMask">
+                                        <div class="minus numberChange">-</div>
+                                        <input type="number" min="0" max="1" step="0.05" value="0.95">
+                                        <div class="plus numberChange">+</div>
+                                    </div>
+                                </div>
+                                <div class="enableChange singleSetting" id="enableAutoFoucsingModeChange">
+                                    <label for="enableAutoFoucsingMode">定时进入专注模式</label>
+                                    <label class="switch">
+                                        <input id="enableAutoFoucsingMode" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="inputChange singleSetting" id="autoFoucsingModePeriodChange">
+                                    <label for="autoFoucsingModePeriod">专注时段</label>
+                                    <div class="valueInputArea">
+                                        <div id="autoFoucsingModePeriodValueArea"></div>
+                                        <div draggable="false" id="addNewFoucsingModePeriod">+</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="extendPart" id="tools">
                             <div class="extendTitle">小工具 🡥</div>
                             <div class="extendContent"></div>
@@ -530,6 +561,10 @@
         <div id="progress-container">
             <div id="progress-bar"></div>
         </div>
+        <div id="focusingModeContainer">
+            <div id="focusingModeMask"></div>
+            <div id="focusingClock">23:11:12</div>
+        </div>
         <style>
             #tools .extendTitle {
                 border-bottom: none !important;
@@ -542,4 +577,5 @@
     <script src="writingBGM.js"></script>
     <script src="ramdomQuote.js"></script>
     <script src="dateCountDown.js"></script>
+    <script src="focusingMode.js"></script>
 </html>

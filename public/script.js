@@ -174,7 +174,12 @@ async function loadStyleSetting() {
     setCheckbox('enableDateCountDown', configJson.extension.dateCountdown.enable);
     document.getElementById('dateCountdownNameInput').value = configJson.extension.dateCountdown.dateCountdownDetail;
     document.getElementById('dateCountDownInput').value = configJson.extension.dateCountdown.dateCountdownTime;
-
+    //自动专注模式
+    setCheckbox('enableAutoFoucsingMode', configJson.extension.focusingMode.enable);
+    setInputValue('focusingModeMask', configJson.extension.focusingMode.focusingModeMask);
+    if (!configJson.extension.focusingMode.enable) {
+        document.getElementById('autoFoucsingModePeriodChange').style.display = 'none';
+    }
 }
 document.addEventListener('DOMContentLoaded', loadStyleSetting);
 
@@ -733,6 +738,38 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     window.location.reload();
 });
 
+//////////////////////////扩展设置保存//////////////////////////
+
+
+function getFocusingModePeriods(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container with ID "${containerId}" not found.`);
+        return [];
+    }
+
+    // 获取所有时间段
+    const wrappers = Array.from(container.querySelectorAll('.input-wrapper'));
+    const periods = wrappers
+        .map(wrapper => {
+            const startTime = wrapper.querySelector('.startTimeInputer')?.value;
+            const endTime = wrapper.querySelector('.endTimeInputer')?.value;
+
+            // 确保时间段完整（非空）
+            if (startTime && endTime) {
+                return { start: startTime, end: endTime };
+            }
+            return null; // 跳过不完整时间段
+        })
+        .filter(period => period !== null);
+
+    // 按开始时间排序
+    periods.sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+
+    return periods;
+}
+
+
 document.getElementById('saveExtensionSetting').addEventListener('click', async () => {
     // 读取现有的 JSON 数据
     const existingConfig = await window.fileAPI.readConfig('config.json') || {};
@@ -755,7 +792,11 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const dateCountdownEnable = document.getElementById('enableDateCountDown').checked;
     const dateCountdownDetail = document.getElementById('dateCountdownNameInput').value;
     const dateCountdownTime = document.getElementById('dateCountDownInput').value;
-    
+
+    const foucsingModeEnable = document.getElementById('enableAutoFoucsingMode').checked;
+    const focusingModeMask = document.getElementById('focusingModeMask').querySelector('input').value;
+    const foucsingModePeriod = getFocusingModePeriods('autoFoucsingModePeriodValueArea');
+
     // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
@@ -782,6 +823,11 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
                 enable: dateCountdownEnable,
                 dateCountdownDetail: dateCountdownDetail,
                 dateCountdownTime: dateCountdownTime
+            },
+            focusingMode: {
+                enable: foucsingModeEnable,
+                focusingModeMask: focusingModeMask,
+                foucsingModePeriod: foucsingModePeriod
             }
         }
     };
@@ -871,6 +917,16 @@ document.getElementById('selectQuoteFile').addEventListener('click', async () =>
         document.getElementById('quoteFileInput').value = filePath; // 将路径显示在输入框中
     }
 });
+//自动专注模式
+document.getElementById('enableAutoFoucsingMode').addEventListener('change', function() {
+    const enableAutoFoucsingMode = document.getElementById('enableAutoFoucsingMode').checked;
+    if (enableAutoFoucsingMode) {
+        document.getElementById('autoFoucsingModePeriodChange').style.display = 'flex';
+    } else {
+        document.getElementById('autoFoucsingModePeriodChange').style.display = 'none';
+    }
+})
+
 
 //
 document.addEventListener("DOMContentLoaded", function () {
@@ -919,6 +975,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initializeNumberInput("listBlurChange");
     initializeNumberInput("systemVolume");
     initializeNumberInput("quoteFontSizeScale");
+    initializeNumberInput("focusingModeMaskChange");
 });
 document.getElementById('clearTaskButton').addEventListener('click', async () => {
     const detailText = '现有任务列表将被清除';
