@@ -590,13 +590,19 @@ select option {
 		background-color:#ffffff;
 	}
 }
-#fileInputContainerLocal,#fileInputContainerURL {
+#fileInputContainerLocal,#fileInputContainerURL,#fileInputContainerFolder, .subSetting{
 	font-size:1vw;
 	padding-left:1vw;
 	display:flex;
 	align-items:center;
 }
-#backgroundLocal,#backgroundURLInput,#BGMFolderInput,#writingBGMNameInput,#quoteFileInput,#dateCountdownNameInput {
+#reomveShowedList{
+	padding-left: 2vw;
+	button {
+		font-size: 1vw;
+	}
+}
+#backgroundLocal,#backgroundURLInput,#backgroundFolder,#BGMFolderInput,#writingBGMNameInput,#quoteFileInput,#dateCountdownNameInput {
 	font-size:1vw;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
@@ -605,17 +611,17 @@ select option {
 	margin-right:0.5vw;
 	padding:0.2vw;
 }
-#backgroundLocal:focus,#backgroundURL:focus {
+#backgroundLocal:focus,#backgroundFolder:focus,#backgroundURL:focus {
 	background-color:#ffffff2f;
 }
-#selectLocalImage ,#selectBGMFolder ,#selectQuoteFile {
+#selectLocalImage ,#selectImageFolder ,#selectBGMFolder ,#selectQuoteFile {
 	font-size:1vw;
 	background-color:#ffffff4f;
 	border:1px solid #ffffff;
 	border-radius:0.2vw;
 	margin:1vh;
 }
-#selectLocalImage:hover,#selectBGMFolder:hover,#selectQuoteFile:hover {
+#selectLocalImage:hover,#selectImageFolder:hover,#selectBGMFolder:hover,#selectQuoteFile:hover {
 	cursor:pointer;
 	background-color:#ffffffa1;
 }
@@ -677,6 +683,9 @@ select option {
     #name{
         font-size: 1.2vw;
     }
+	a {
+		font-size: 1.2vw;
+	}
 }
 .numberInputClick {
 	display: flex;
@@ -800,7 +809,10 @@ select option {
 	transition: opacity 5s ease;
 }
 #focusingClock {
-	font-size: 8vw;
+	font-size: 9vw;
+}
+#focusingDate {
+	font-size: 2vw;
 }
 .valueInputArea {
     width: 85%;
@@ -886,4 +898,15 @@ select option {
 	border:1px solid #ffffff;
 	border-radius:0.3vw;
 	font-family: "Microsoft YaHei", sans-serif;
+}
+#focusingClockContainer {
+	display: flex;
+	font-size: 20px;
+	margin: 1vw;
+	padding: 2vw;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	height: fit-content;
+	width: fit-content;
 }

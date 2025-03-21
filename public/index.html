@@ -16,7 +16,7 @@
               <img src="../resource/icon.ico" alt="App Icon">
             </div>
             <div class="title">TaskList</div>
-            <div class="controls">
+            <div class="controls" id="windowControlSet">
                 <button id="minimize">
                     <svg t="1725463744988" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4231" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
                         <path d="M98.23 451.003l829.685-1.992 0.154 64-829.685 1.992z" fill="" p-id="4232"></path>
@@ -260,6 +260,7 @@
                                             <option value="defaultLight">默认亮色背景</option>
                                             <option value="defaultDark">默认暗色背景</option>
                                             <option value="local">本地文件</option>
+                                            <option value="folder">本地文件(随机轮换)</option>
                                             <option value="url">网络文件</option>
                                         </select>
                                         <div id="fileInputContainer" class="hidden">
@@ -267,6 +268,26 @@
                                                 <label for="backgroundLocal">选择本地文件</label>
                                                 <input id="backgroundLocal" type="text" placeholder="输入本地文件路径">
                                                 <button id="selectLocalImage">选择文件</button>
+                                            </div>
+                                            <div class="hidden" id="fileInputContainerFolder">
+                                                <label for="backgroundFolder">选择本地文件夹</label>
+                                                <input id="backgroundFolder" type="text" placeholder="输入图像文件夹路径">
+                                                <button id="selectImageFolder">选择文件夹</button>
+                                                <label for="RandomBackgroundStyle">背景更新频率: </label>
+                                                <select id="RandomBackgroundStyle">
+                                                    <option value="launch">每次刷新时</option>
+                                                    <option value="daily">每天</option>
+                                                </select>
+                                            </div>
+                                            <div class="enableChange singleSetting subSetting hidden" id="avoidRepeatChange">
+                                                <label for="avoidRepeat">避免重复</label>
+                                                <label class="switch">
+                                                    <input id="avoidRepeat" type="checkbox">
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <div id="reomveShowedList">
+                                                    <button class="configsButton" id="reomveShowedListButton">清空已记录的图片</button>
+                                                </div>
                                             </div>
                                             <div id="fileInputContainerURL" class="hidden">
                                                 <label for="backgroundURLInput">图片资源链接:</label>
@@ -363,6 +384,9 @@
                                 </div>
                                 <div class="singleSetting" id="checkUpdate">
                                     <button class="configsButton" id="checkUpdateButton">检查更新</button>
+                                </div>
+                                <div class="singleSetting" id="switchFullScreen">
+                                    <button class="configsButton" id="switchFullScreenButton">切换全屏</button>
                                 </div>
                                 <div class="singleSetting" id="importTask">
                                     <button class="configsButton" id="importTaskButton">导入任务列表</button>
@@ -466,7 +490,7 @@
                                 </div>
                                 <div class="inputChange singleSetting" id="quoteFileChange">
                                     <label for="quoteFileInput">选择文件</label>
-                                    <input id="quoteFileInput" type="text" placeholder="输入本地文件路径">
+                                    <input id="quoteFileInput" type="text" placeholder="留空则使用默认文件">
                                     <button id="selectQuoteFile">选择文件</button>
                                     <p class="extraInfo">&emsp;<a id="quoteFileFormatView">查看文件格式</a></p>
                                 </div>  
@@ -527,6 +551,13 @@
                                         <div class="plus numberChange">+</div>
                                     </div>
                                 </div>
+                                <div class="enableChange singleSetting" id="enableFoucsingModeColckBlurChange">
+                                <label for="enableFoucsingModeColckBlur">时钟模糊化效果</label>
+                                    <label class="switch">
+                                        <input id="enableFoucsingModeColckBlur" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
                                 <div class="enableChange singleSetting" id="enableAutoFoucsingModeChange">
                                     <label for="enableAutoFoucsingMode">定时进入专注模式</label>
                                     <label class="switch">
@@ -552,9 +583,11 @@
                 </div>
                 <div id="info">
                     <img src="../resource/icon.ico">
-                    <p id="name">TaskList v1.0.5</p>
+                    <p id="name">TaskList v1.0.6</p>
                     <p>By LemCAE</p>
                     <p>MIT License</p>
+                    <a id="openDocs">点击查看说明文档</a>
+                    <a href="https://github.com/LemCAE/TaskList_Electron" class="externalLink"> 在Github 查看</a>
                 </div>
             </div>
         </div>
@@ -563,7 +596,10 @@
         </div>
         <div id="focusingModeContainer">
             <div id="focusingModeMask"></div>
-            <div id="focusingClock">23:11:12</div>
+            <div id="focusingClockContainer">
+                <div id="focusingClock">10:00:00</div>
+                <div id="focusingDate"></div>
+            </div>
         </div>
         <style>
             #tools .extendTitle {

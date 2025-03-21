@@ -23,6 +23,9 @@ async function showDateCountdown() {
         const date1 = new Date(await getNowFormatDate());
         const date2 = new Date(configJson.extension.dateCountdown.dateCountdownTime);
         const timeDifference = difference(date1, date2);
+        if (timeDifference <= 0) {
+            document.getElementById("dateCountdown").style.display = "none";
+        }
         document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
         document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
     }

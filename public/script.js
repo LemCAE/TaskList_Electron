@@ -4,6 +4,10 @@
     });
 });
 
+// 随机背景图片
+let selectedRandomBackgroundImage = "../resource/defaultDark.jpg";
+let cleanShowedImageList = false;
+
 const maximizeSVG = `
 <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
     <path d="M836.224 917.333333h-644.266667a85.589333 85.589333 0 0 1-85.333333-85.333333V187.733333a85.589333 85.589333 0 0 1 85.333333-85.333333h644.266667a85.589333 85.589333 0 0 1 85.333333 85.333333v644.266667a91.690667 91.690667 0 0 1-85.333333 85.333333zM191.957333 170.666667a22.869333 22.869333 0 0 0-21.333333 21.333333v644.266667a22.869333 22.869333 0 0 0 21.333333 21.333333h644.266667a22.869333 22.869333 0 0 0 21.333333-21.333333V192a22.869333 22.869333 0 0 0-21.333333-21.333333z" p-id="4130"></path>
@@ -48,11 +52,64 @@ styleElements.forEach(({ selector, style }) => {
     Object.assign(document.querySelector(selector).style, style);
 });
 
+let currentDate = "";
 function updateTime() {
     const now = new Date();
     const formatTime = time => (time < 10 ? '0' + time : time);
     const timeString = `${formatTime(now.getHours())}:${formatTime(now.getMinutes())}`;
     document.getElementById('time').textContent = timeString;
+    const formatDate = date => (date < 10 ? '0' + date : date);
+    const dateString = `${formatDate(now.getMonth() + 1)}/${formatDate(now.getDate())}`;
+    document.getElementById('date').textContent = dateString;
+    const formatWeekday = weekday => {
+        switch (weekday) {
+            case 0:return '星期日';
+            case 1:return '星期一';
+            case 2:return '星期二';
+            case 3:return '星期三';
+            case 4:return '星期四';
+            case 5:return '星期五';
+            case 6:return '星期六';
+            default:return '';
+        }
+    };
+    const weekday = now.getDay();
+    document.getElementById('weekdays').textContent = formatWeekday(weekday);
+    if (currentDate !== dateString) {
+        currentDate = dateString;
+        updateDateCountDown();
+    }
+}
+
+async function updateDateCountDown() {
+    const configJson = await window.fileAPI.readConfig('config.json');
+    function difference(date1, date2) {
+        const date1utc = Date.UTC(date1.getFullYear(), date1.getMonth(), date1.getDate());
+        const date2utc = Date.UTC(date2.getFullYear(), date2.getMonth(), date2.getDate());
+        const day = 1000 * 60 * 60 * 24;
+        return (date2utc - date1utc) / day;
+    }
+    async function getNowFormatDate() {
+        let date = new Date(),
+        year = date.getFullYear(), // 获取完整的年份(4位)
+        month = date.getMonth() + 1, // 获取当前月份(0-11,0代表1月)
+        strDate = date.getDate(); // 获取当前日(1-31)
+        if (month < 10) month = `0${month}`; // 如果月份是个位数，在前面补0
+        if (strDate < 10) strDate = `0${strDate}`; // 如果日是个位数，在前面补0
+        return `${year}-${month}-${strDate}`;
+    }
+    async function getDateDiff() {
+        const date1 = new Date(await getNowFormatDate());
+        const date2 = new Date(configJson.extension.dateCountdown.dateCountdownTime);
+        const timeDifference = difference(date1, date2);
+        if (timeDifference <= 0) {
+            document.getElementById("dateCountdown").style.display = "none";
+        }
+        document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
+        document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
+        console.log(`Date countdown updated:  ${timeDifference}天`);
+    }
+    getDateDiff();
 }
 
 // 样式处理及预加载
@@ -96,9 +153,19 @@ async function loadStyleSetting() {
     }
     document.getElementById('backgroundSource').value = configJson.backgroundSource;
     const fileInput = document.getElementById('fileInputContainerLocal');
+    const folderInput = document.getElementById('fileInputContainerFolder');
     const urlInput = document.getElementById('fileInputContainerURL');
     const fileInputText = document.getElementById('backgroundLocal');
+    const folderInputText = document.getElementById('backgroundFolder');
     const urlInputText = document.getElementById('backgroundURLInput');
+
+    const avoidRepeatChange = document.getElementById("avoidRepeatChange")
+
+    if (configJson.randomBackgroundModeDaily) {
+        document.getElementById('RandomBackgroundStyle').value = "daily";
+    } else {
+        document.getElementById('RandomBackgroundStyle').value = "launch";
+    }
 
     setInputValue('backgroundMask', configJson.backgroundMask);
     setInputValue('fontSize', configJson.fontSize);
@@ -107,15 +174,63 @@ async function loadStyleSetting() {
     setInputValue('configBlurChange', configJson.configBlur);
     setInputValue('configMaskChange', configJson.configMask);
 
+    setCheckbox("avoidRepeat", configJson.avoidRepeat)
+
     if (configJson.backgroundSource === 'local'){
         fileInputContainer.classList.remove('hidden');
         fileInput.classList.remove('hidden');
-        fileInputText.value = decodeURIComponent(configJson.background.replace(/^'(.*)'$/, '$1').replace(/^file:\/\//, ''));
+    } else if (configJson.backgroundSource === 'folder') {
+        try {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+
+            fileInputContainer.classList.remove('hidden');
+            folderInput.classList.remove('hidden');
+            avoidRepeatChange.classList.remove('hidden');
+
+            console.log((configJson.randomBackgroundModeDaily && configJson.lastChangeDate !== formattedDate));
+
+            if (!configJson.randomBackgroundModeDaily) {
+                await pickRandomImageFromFolder();
+                configJson.background = selectedRandomBackgroundImage;
+            } else if ((configJson.randomBackgroundModeDaily && configJson.lastChangeDate !== formattedDate) || configJson.changeToFolder) {
+                console.log('上次更换日期:', configJson.lastChangeDate);
+                await pickRandomImageFromFolder();
+                configJson.lastChangeDate = formattedDate;
+                console.log('背景:', selectedRandomBackgroundImage);
+                configJson.background = selectedRandomBackgroundImage;
+                configJson.changeToFolder = false;
+            } else if (configJson.randomBackgroundModeDaily && configJson.lastChangeDate === formattedDate) {
+                selectedRandomBackgroundImage = configJson.background;
+            }        
+            
+            if (configJson.avoidRepeat) {
+                configJson.showedImage.push(selectedRandomBackgroundImage);
+                configJson.showedImage = configJson.showedImage.filter((item, index) => configJson.showedImage.indexOf(item) === index)
+                console.log('已移除背景图像:'+selectedRandomBackgroundImage)
+                if (cleanShowedImageList) {
+                    configJson.showedImage = [];
+                }
+            }
+
+            await window.fileAPI.writeConfig('config.json', configJson);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     } else if (configJson.backgroundSource === 'url') {
         fileInputContainer.classList.remove('hidden');
         urlInput.classList.remove('hidden');
         urlInputText.value = decodeURIComponent(configJson.background.replace(/^'(.*)'$/, '$1').replace(/^file:\/\//, ''));
     };
+
+    folderInputText.value = decodeURIComponent(configJson.backgroundFolder.replace(/^'(.*)'$/, '$1').replace(/^file:\/\//, ''));
+    if (configJson.backgroundSource !== 'url') {
+        fileInputText.value = decodeURIComponent(configJson.background.replace(/^'(.*)'$/, '$1').replace(/^file:\/\//, ''));
+    }
+
     setCheckbox('darkMode', configJson.darkMode);
     setCheckbox('showTime', configJson.showTime);
     if (configJson.showTime) {
@@ -177,6 +292,7 @@ async function loadStyleSetting() {
     //自动专注模式
     setCheckbox('enableAutoFoucsingMode', configJson.extension.focusingMode.enable);
     setInputValue('focusingModeMask', configJson.extension.focusingMode.focusingModeMask);
+    setCheckbox('enableFoucsingModeColckBlur', configJson.extension.focusingMode.focusingModeClockBlur);
     if (!configJson.extension.focusingMode.enable) {
         document.getElementById('autoFoucsingModePeriodChange').style.display = 'none';
     }
@@ -654,6 +770,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const fontSize = document.getElementById('fontSize').querySelector('input').value;
     const darkMode = document.getElementById('darkMode').checked;
     const backgroundMask = document.getElementById('backgroundMask').querySelector('input').value;
+
     const configAnimine = document.getElementById('configAnimine').checked;
     const configBlur = document.getElementById('configBlur').querySelector('input').value;
     const configMask = document.getElementById('configMask').querySelector('input').value;
@@ -691,12 +808,39 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         console.log (background);
     } else if (backgroundSource === 'url') {
         background = document.getElementById('backgroundURLInput').value; // 读取URL链接
+    } else if (backgroundSource === 'folder') {
+        console.log(selectedRandomBackgroundImage);
+        background = selectedRandomBackgroundImage;
     }
+    
+    const backgroundFolder = document.getElementById('backgroundFolder').value;
+    const avoidRepeat = document.getElementById('avoidRepeat').checked;
+    let randomBackgroundModeDaily = false;
+    if (document.getElementById('RandomBackgroundStyle').value === "launch") {
+        randomBackgroundModeDaily = false;
+    } else {
+        randomBackgroundModeDaily = true;
+    }
+
+    let changeToFolder = false;
+    let showedImage = configJson.showedImage
+    if ((configJson.backgroundSource !== "folder" && backgroundSource === "folder") || (configJson.backgroundFolder !== backgroundFolder)) {
+        changeToFolder = true;
+        showedImage = []
+    }
+
+
     // 合并新设置和现有的扩展设置（保持嵌套结构）
     const newConfig = {
         ...existingConfig,
         fontSize: fontSize,
         darkMode: darkMode,
+        backgroundFolder: backgroundFolder,
+        randomBackgroundModeDaily: randomBackgroundModeDaily,
+        lastChangeDate: configJson.lastChangeDate,
+        avoidRepeat: avoidRepeat,
+        showedImage: showedImage,
+        changeToFolder: changeToFolder,
         backgroundMask: backgroundMask,
         backgroundSource: backgroundSource,
         showTime: showTime,
@@ -795,6 +939,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
 
     const foucsingModeEnable = document.getElementById('enableAutoFoucsingMode').checked;
     const focusingModeMask = document.getElementById('focusingModeMask').querySelector('input').value;
+    const focusingModeClockBlur = document.getElementById('enableFoucsingModeColckBlur').checked ;
     const foucsingModePeriod = getFocusingModePeriods('autoFoucsingModePeriodValueArea');
 
     // 合并新设置和现有的扩展设置（保持嵌套结构）
@@ -827,6 +972,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
             focusingMode: {
                 enable: foucsingModeEnable,
                 focusingModeMask: focusingModeMask,
+                focusingModeClockBlur: focusingModeClockBlur,
                 foucsingModePeriod: foucsingModePeriod
             }
         }
@@ -841,20 +987,34 @@ document.getElementById('backgroundSource').addEventListener('change', function(
     const selectedOption = this.value;
     const fileInputContainer = document.getElementById('fileInputContainer');
     const fileInput = document.getElementById('fileInputContainerLocal');
+    const folderInput = document.getElementById('fileInputContainerFolder');
     const urlInput = document.getElementById('fileInputContainerURL');
+    const avoidRepeatChange = document.getElementById("avoidRepeatChange")
 
     if (selectedOption === 'local') {
         fileInputContainer.classList.remove('hidden'); 
         fileInput.classList.remove('hidden');
+        folderInput.classList.add('hidden');
+        urlInput.classList.add('hidden');
+        avoidRepeatChange.classList.add('hidden');
+    } else if (selectedOption === 'folder') {
+        fileInputContainer.classList.remove('hidden'); 
+        fileInput.classList.add('hidden');
+        folderInput.classList.remove('hidden');
+        avoidRepeatChange.classList.remove('hidden');
         urlInput.classList.add('hidden');
     } else if (selectedOption === 'url') {
         fileInputContainer.classList.remove('hidden'); 
-        urlInput.classList.remove('hidden');
         fileInput.classList.add('hidden');
+        folderInput.classList.add('hidden');
+        urlInput.classList.remove('hidden');
+        avoidRepeatChange.classList.add('hidden');
     } else {
         fileInputContainer.classList.add('hidden');
         fileInput.classList.add('hidden');
+        folderInput.classList.add('hidden');
         urlInput.classList.add('hidden');
+        avoidRepeatChange.classList.add('hidden');
     }
 });
 
@@ -865,12 +1025,20 @@ document.getElementById('selectLocalImage').addEventListener('click', async () =
     }
 });
 
+document.getElementById('selectImageFolder').addEventListener('click', async () => {
+    const folderPaths = await window.fileAPI.selectFolder();
+    if (folderPaths) {
+        document.getElementById('backgroundFolder').value = folderPaths; // 将路径显示在输入框中
+    }
+});
+
 document.getElementById('selectBGMFolder').addEventListener('click', async () => {
     const folderPaths = await window.fileAPI.selectFolder();
     if (folderPaths) {
         document.getElementById('BGMFolderInput').value = folderPaths; // 将路径显示在输入框中
     }
 });
+
 document.getElementById('showClassList').addEventListener('change', function() {
     const showClassList = document.getElementById('showClassList').checked;
     if (showClassList) {
@@ -1009,12 +1177,12 @@ document.getElementById('importTaskButton').addEventListener('click', async () =
             await window.fileAPI.writeConfig('list.json', result.data);
             reloadTaskList('list.json');
             reloadEditListContent('list.json');
-            alert('文件导入成功！');
+            window.infoAPI.showInfoDialog('文件导入成功！')
         } else {
             null
         }
     } else {
-        alert(`导入失败: ${result.error}`);
+        window.infoAPI.showErrorDialog(`导入失败: ${result.error}`)
     }
 });
 document.getElementById('exportTaskButton').addEventListener('click', async () => {
@@ -1036,9 +1204,9 @@ document.getElementById('exportTaskButton').addEventListener('click', async () =
     }
     const result = await window.fileAPI.exportFile(dataToExport);
     if (result.success) {
-        alert('文件导出成功！');
+        window.infoAPI.showInfoDialog('文件导出成功！');
     } else {
-        alert(`导出失败: ${result.error}`);
+        window.infoAPI.showErrorDialog(`导出失败: ${result.error}`);
     }
 });
 document.getElementById('quitAppButton').addEventListener('click', async () => {
@@ -1058,11 +1226,46 @@ document.getElementById('checkUpdateButton').addEventListener('click', async () 
             console.log('Update check completed:', result.message);
         } else {
             console.log('Update check completed:', result.message);
-            alert(result.message);
+            window.infoAPI.showInfoDialog(result.message);
         }
     } else {
         console.error('Update check failed:', result.message);
-        alert('Error checking for updates: ' + result.message);
+        window.infoAPI.showErrorDialog('Error checking for updates: ' + result.message);
+    }
+});
+
+document.getElementById('switchFullScreenButton').addEventListener('click', async () => {
+    const inFullScreen =  await window.wAPI.toggleFullscreen();
+    if (inFullScreen) {
+        document.getElementsByClassName('titlebar')[0].style.display = 'none';
+        document.getElementById('classTable').style.marginTop = 0;
+        document.getElementById('taskList').style.marginTop = 0;
+        document.getElementById('configsBox').style.marginTop = 0;
+    }
+    else {
+        document.getElementsByClassName('titlebar')[0].style.display = 'flex';
+        styleElements.forEach(({ selector, style }) => {
+            Object.assign(document.querySelector(selector).style, style);
+        });
+    }
+})
+
+document.addEventListener('keydown', async (event) => {
+    if (event.key === 'F11') {
+        event.preventDefault(); 
+        const inFullScreen =  await window.wAPI.toggleFullscreen();
+        if (inFullScreen) {
+            document.getElementsByClassName('titlebar')[0].style.display = 'none';
+            document.getElementById('classTable').style.marginTop = 0;
+            document.getElementById('taskList').style.marginTop = 0;
+            document.getElementById('configsBox').style.marginTop = 0;
+        }
+        else {
+            document.getElementsByClassName('titlebar')[0].style.display = 'flex';
+            styleElements.forEach(({ selector, style }) => {
+                Object.assign(document.querySelector(selector).style, style);
+            });
+        }
     }
 });
 
@@ -1114,10 +1317,97 @@ function showDay(day, button) {
 function updateSchedule(day, period, subject) {
     schedule[day][period] = subject;
 }
-// 示例 JSON 数据
+// JSON 数据
 async function loadClassList() {
     schedule = await window.fileAPI.readConfig('classlist.json');
     schedule = schedule.classlist;
     showDay("Monday", document.getElementById("defaultDay"));
 }
 loadClassList()
+
+// 随机背景图片
+async function fetchImageFiles(folderPath) {
+    const configJson = await window.fileAPI.readConfig('config.json');
+    try {
+        if (configJson.avoidRepeat){
+            const rawImageFilesList = await window.fileAPI.getImageFiles(folderPath);
+            console.log('原始背景图像列表:', rawImageFilesList);
+            const showedImageFilesList = configJson.showedImage;
+            console.log('已显示过的图像列表:', showedImageFilesList);
+            const imageFilesList = rawImageFilesList.filter(file => !showedImageFilesList.includes(file));
+            console.log('过滤后的背景图像列表:', imageFilesList);
+            if (imageFilesList.length === 0) {
+                console.log("所有图片已轮换,已更新列表")
+                cleanShowedImageList = true;
+                return rawImageFilesList;
+            } else {
+                return imageFilesList;
+            }
+        } else {
+            return await window.fileAPI.getImageFiles(folderPath);
+        }
+    } catch (error) {
+        selectedRandomBackgroundImage = configJson.background;
+        console.log(selectedRandomBackgroundImage);
+        document.body.style.backgroundImage = configJson.background;
+        console.error('读取背景图像列表失败:', error);
+        window.infoAPI.showErrorDialog('未找到指定的文件夹\n请检查文件夹路径是否正确');
+    }
+}
+async function pickRandomImageFromFolder() {
+    const configJson = await window.fileAPI.readConfig('config.json');
+    let folderPath = configJson.backgroundFolder;
+
+    try {
+        let imageFilesList = await fetchImageFiles(folderPath);
+
+        if (imageFilesList.length === 0) {
+            window.infoAPI.showErrorDialog('指定的文件夹中没有图像文件\n请检查所选文件夹是否正确');
+            selectedRandomBackgroundImage = configJson.background;
+            console.log(selectedRandomBackgroundImage);
+            document.body.style.backgroundImage = configJson.background;
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * imageFilesList.length);
+        const selectedFile = imageFilesList[randomIndex].replace(/\\/g, '/');
+        console.log('选中的背景图像:', selectedFile);
+        document.body.style.backgroundImage = "url(file://" + selectedFile + ")";
+        document.getElementById('focusingModeContainer').style.backgroundImage = "url(file://" + selectedFile + ")";
+        selectedRandomBackgroundImage = selectedFile;
+
+
+    } catch (error) {
+        console.error('获取背景图像时出错:', error);
+        throw error;
+    }
+}
+
+document.getElementById("reomveShowedListButton").addEventListener("click", async function() {
+    const configJson = await window.fileAPI.readConfig('config.json');
+    configJson.showedImage = [];
+    await window.fileAPI.writeConfig('config.json', configJson);
+    window.infoAPI.showInfoDialog('已清空 已显示过的图像列表');
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.externalLink').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); // 防止默认跳转
+            const url = link.getAttribute('href');
+            if (url) {
+                console.log('openUrlInBrowser', url);
+                window.fileAPI.openUrlInBrowser(url); // 这里传入变量 url，而不是字符串 "url"
+            }
+        });
+    });
+});
+
+document.getElementById("openDocs").addEventListener("click", async function() {
+    await window.docswAPI.create()
+});
+
+function openExtarnalUrl(url) {
+    console.log('openUrlInBrowser', url);
+    window.fileAPI.openUrlInBrowser(url); 
+}

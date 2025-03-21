@@ -1,0 +1,59 @@
+{
+    "quotes":[
+        {
+            "main": "The only way to do great work is to love what you do.",
+            "translation": "做出伟大工作的唯一方式是热爱你所做的事。",
+            "author": "Steve Jobs"
+        },
+        {
+            "main": "The best way to predict the future is to create it.",
+            "translation": "预测未来的最佳方式就是创造未来。",
+            "author": "Peter Drucker"
+        },
+        {
+            "main": "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+            "translation": "成功不是终点，失败也非致命：重要的是继续前行的勇气。",
+            "author": "Winston Churchill"
+        },
+        {
+            "main": "Not all those who wander are lost.",
+            "translation": "并非所有徘徊的人都迷失了方向。",
+            "author": "J.R.R. Tolkien"
+        },
+        {
+            "main": "In the middle of every difficulty lies opportunity.",
+            "translation": "在每一个困难中都蕴藏着机会。",
+            "author": "Albert Einstein"
+        },
+        {
+            "main": "Happiness can be found, even in the darkest of times, if one only remembers to turn on the light.",
+            "translation": "即使在最黑暗的时刻，幸福依然触手可及，只要记得点亮心中的灯光。",
+            "author": "J.K. Rowling"
+        },
+        {
+            "main": "The only limit to our realization of tomorrow is our doubts of today.",
+            "translation": "实现明天的唯一障碍是我们今天的疑虑。",
+            "author": "Franklin D. Roosevelt"
+        },
+        {
+            "main": "Do not go gentle into that good night.",
+            "translation": "不要温顺地走入那良夜。",
+            "author": "Dylan Thomas"
+        },
+        {
+            "main": "It always seems impossible until it's done.",
+            "translation": "事情在完成之前总看似不可能。",
+            "author": "Nelson Mandela"
+        },
+        {
+            "main": "The world is a book and those who do not travel read only one page.",
+            "translation": "世界是一本书，不旅行的人只读了一页。",
+            "author": "Saint Augustine"
+        },
+        {
+            "main": "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+            "translation": "我们是自己反复所做之事的集合体。因此，卓越不是一种行为，而是一种习惯。",
+            "author": "Aristotle"
+        }
+    ]
+}

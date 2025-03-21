@@ -4,7 +4,8 @@ const WinReg = require("winreg");
 const fs = require("fs");
 const loudness = require('loudness');
 const { autoUpdater } = require('electron-updater');
-const { checkAndReadConfig } = require('./config');
+//const { checkAndReadConfig } = require('./config0');
+const { checkAllConfigs } = require('./config');
 
 async function loadInput() {
     const dev = await import('electron-is-dev');
@@ -23,9 +24,10 @@ let mainWindow;
 let tray;
 let config;
 
-config = checkAndReadConfig('config');
-checkAndReadConfig('list');
-checkAndReadConfig('classlist');
+config = checkAllConfigs();
+//config = checkAndReadConfig('config');
+//checkAndReadConfig('list');
+//checkAndReadConfig('classlist');
 
 const updateSource = config.updateSource;
 const currentVersion = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'))).version;
@@ -186,7 +188,31 @@ if (!gotTheLock) {
                     createToolWindow('fontstyle.html')
                 }
             },
+            {
+                label: "专注模式",
+                submenu: [
+                    {
+                        label: "进入专注模式", 
+                        click: () => {
+                            // 调用渲染进程的 enterFocusingMode
+                            mainWindow.webContents.send("tray-command", "enterFocusingMode");
+                        },
+                    },
+                    {
+                        label: "退出专注模式",
+                        click: () => {
+                            mainWindow.webContents.send("tray-command", "exitFocusingMode");
+                        },
+                    }
+                ]
+            },
             { type: 'separator' },
+            {
+                label: "说明文档",
+                click: () => {
+                    createDocsWindow();
+                },
+            },
             {
                 label: "更多",
                 submenu:[
@@ -254,6 +280,14 @@ if (!gotTheLock) {
         ipcMain.on("toggle-auto-launch", (event, enable) => {
             setStartup(enable);
         });
+        ipcMain.handle('toggle-fullscreen', () => {
+            if (mainWindow) {
+              const isFullScreen = mainWindow.isFullScreen();
+              mainWindow.setFullScreen(!isFullScreen);
+              return !isFullScreen; // 返回切换后的全屏状态
+            }
+            return false;
+          });
     }
     const configFilePath = path.join(app.getPath('appData'), "TaskList/config/config.json");
     app.whenReady().then(() => {
@@ -328,6 +362,8 @@ function createToolWindow(fileName) {
   toolWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    minWidth: 640,
+    minHeight: 360,
     frame: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -376,9 +412,75 @@ function createToolWindow(fileName) {
     }
   });
 }
+/////////////////
+let docsWindow; // 声明在外部作用域以便于跟踪窗口状态
 
+function createDocsWindow() {
+  // 如果窗口已经存在，直接聚焦
+  if (docsWindow) {
+    docsWindow.focus();
+    return;
+  }
+  docsWindow = new BrowserWindow({
+    width: 1280,
+    height: 720,
+    minWidth: 640,
+    minHeight: 360,
+    frame: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+    },
+  });
+  docsWindow.loadFile(path.join(__dirname, "public", "docs", "index.html")); // 加载子窗口的 HTML 文件
+  // 绑定窗口关闭事件
+  docsWindow.on("closed", () => {
+    docsWindow = null; // 清空引用，防止内存泄漏
+    ipcMain.removeAllListeners("docsminimize"); // 清理事件监听
+    ipcMain.removeAllListeners("docsmaximize");
+    ipcMain.removeAllListeners("docsclose");
+  });
+  // 监听 IPC 事件
+  ipcMain.on("docsminimize", () => {
+    if (docsWindow) {
+        docsWindow.minimize();
+    }
+  });
+  ipcMain.on("docsmaximize", () => {
+    if (docsWindow) {
+      if (docsWindow.isMaximized()) {
+        docsWindow.unmaximize();
+      } else {
+        docsWindow.maximize();
+      }
+    }
+  });
+  ipcMain.on("docsclose", () => {
+    if (docsWindow) {
+        docsWindow.close();
+    }
+  });
+  docsWindow.on("maximize", () => {
+    if (docsWindow) {
+        docsWindow.webContents.send("docswindow-maximized");
+    }
+  });
+  docsWindow.on("unmaximize", () => {
+    if (docsWindow) {
+        docsWindow.webContents.send("docswindow-unmaximized");
+    }
+  });
+}
+
+/////////////////
 ipcMain.handle('createToolWindow', async (event, fileName) => {
   createToolWindow(fileName);
+});
+ipcMain.handle('createDocsWindow', async (event) => {
+  createDocsWindow();
 });
 ipcMain.handle('isWindowMaximized', async (event) => {
     return toolWindow.isMaximized(); 
@@ -422,8 +524,17 @@ ipcMain.handle("write-config", async (event, { fileName, data }) => {
 
 
 ipcMain.handle("get-resource-path", (event, fileName) => {
-    return path.join(process.cwd(), "resource", fileName);
-});
+    if (!fileName) {
+      throw new Error("Invalid file name. Ensure the file name is provided.");
+    }
+    // 根据环境构建路径
+    const resourcePath = app.isPackaged
+      ? path.join(process.resourcesPath, 'app.asar', 'resource', fileName) // 打包环境
+      : path.join(__dirname, 'resource', fileName); // 开发环境
+  
+    console.log("Computed resource path:", resourcePath);
+    return resourcePath;
+  });
 
 ipcMain.handle("dialog:selectImage", async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -431,7 +542,7 @@ ipcMain.handle("dialog:selectImage", async () => {
         filters: [
             {
                 name: "Images",
-                extensions: ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"],
+                extensions: ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg', 'ico'],
             },
         ],
     });
@@ -474,6 +585,28 @@ ipcMain.handle("dialog:showWarning", async (event, detailText) => {
         cancelId: 1,
         title: "警告",
         message: "确定要继续吗？",
+        detail: detailText,
+    });
+    return result.response;
+});
+
+ipcMain.handle("dialog:showError", async (event, detailText) => {
+    const result = await dialog.showMessageBox(mainWindow, {
+        type: "error",
+        buttons: ["确认"],
+        defaultId: 0,
+        title: "错误",
+        detail: detailText,
+    });
+    return result.response;
+});
+
+ipcMain.handle("dialog:showInfo", async (event, detailText) => {
+    const result = await dialog.showMessageBox(mainWindow, {
+        type: "info",
+        buttons: ["确认"],
+        defaultId: 0,
+        title: "通知",
         detail: detailText,
     });
     return result.response;
@@ -539,6 +672,13 @@ ipcMain.handle('getMusic', (event, folderPath) => {
     return musicFiles.map(file => path.join(folderPath, file)); // 返回完整路径
 });
 
+ipcMain.handle('getImage', (event, folderPath) => {
+    const supportedFormats = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.svg', '.ico'];
+    const files = fs.readdirSync(folderPath);
+    const imageFiles = files.filter(file => supportedFormats.includes(path.extname(file).toLowerCase()));
+    return imageFiles.map(file => path.join(folderPath, file).replace(/\\/g, "/")); // 返回完整路径
+});
+
 ipcMain.on('exit-app', () => {
     app.quit();
 });
@@ -560,3 +700,9 @@ ipcMain.handle('getMuted', async (event) => {
     const muted = await loudness.getMuted();
     return muted;
 })
+ipcMain.on('open-external-link', (event, url) => {
+    console.log('Main received:', url);
+    if (url) {
+        shell.openExternal(url);
+    }
+});

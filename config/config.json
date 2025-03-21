@@ -1,6 +1,12 @@
 {
   "backgroundSource": "defaultDark",
   "background": "../resource/defaultDark.jpg",
+  "backgroundFolder": "",
+  "randomBackgroundModeDaily": false,
+  "lastChangeDate": "2025-01-01",
+  "avoidRepeat": true,
+  "showedImage": [],
+  "changeToFolder": false,
   "darkMode": true,
   "backgroundMask": "0.4",
   "fontSize": "1.6",
@@ -47,6 +53,7 @@
     "focusingMode": {
       "enable": false,
       "focusingModeMask": "0.95",
+      "focusingModeClockBlur": false,
       "foucsingModePeriod": []
     }
   }

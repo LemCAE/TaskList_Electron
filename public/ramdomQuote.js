@@ -3,7 +3,14 @@ async function getQuote() {
     if (!configJson.extension.randomQuote.enable) {
         return
     }
-    const quoteFilePath = configJson.extension.randomQuote.quoteFile;
+    let quoteFilePath = ''
+    if (configJson.extension.randomQuote.quoteFile === '') {
+        quoteFilePath = await window.fileAPI.getResourcePath('defaultQuote.json');//打包后不行
+        console.log(quoteFilePath)
+    }
+    else {
+        quoteFilePath = configJson.extension.randomQuote.quoteFile;
+    }
     const quoteJson = await window.fileAPI.readJson(quoteFilePath);
     const quoteLength = quoteJson.quotes.length;
     const randomIndex = Math.floor(Math.random() * quoteLength);
@@ -11,24 +18,29 @@ async function getQuote() {
     const quoteFontScale = configJson.extension.randomQuote.quoteFontSizeScale;
     setTimeout(() => {
         try {
-            let quoteBox = document.getElementById("randomQuoteBox")
-            let quoteHtml = ''
-            if (configJson.extension.randomQuote.quoteTranslation) {
-                quoteHtml += `<p id="quoteMain">${quoteSet.main}</p>`
-                if (quoteSet.translation !== '') {
-                    quoteHtml += `<p id="quoteTranslation">${"&emsp;" + quoteSet.translation}</p>`
+            if (document.getElementById("randomQuoteBox")) {
+                let quoteBox = document.getElementById("randomQuoteBox")
+                let quoteHtml = ''
+                if (configJson.extension.randomQuote.quoteTranslation) {
+                    quoteHtml += `<p id="quoteMain">${quoteSet.main}</p>`
+                    if (quoteSet.translation !== '') {
+                        quoteHtml += `<p id="quoteTranslation">${"&emsp;" + quoteSet.translation}</p>`
+                    }
+                    if (quoteSet.author !== '') {
+                        quoteHtml += `<p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`
+                    }
                 }
-                if (quoteSet.author !== '') {
-                    quoteHtml += `<p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`
+                else {
+                    quoteHtml += `<p id="quoteMain">${quoteSet.main}</p>`
+                    if (quoteSet.author !== '') {
+                        quoteHtml += `<p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`
+                    }
                 }
+                quoteBox.innerHTML = quoteHtml;
             }
             else {
-                quoteHtml += `<p id="quoteMain">${quoteSet.main}</p>`
-                if (quoteSet.author !== '') {
-                    quoteHtml += `<p id="quoteAuthor">${"&mdash;&mdash; " + quoteSet.author}</p>`
-                }
+                console.log("no box");
             }
-            quoteBox.innerHTML = quoteHtml;
         }
         catch (e) {
             console.log("delay");
@@ -52,9 +64,9 @@ async function getQuote() {
 const quoteElement = `<div id="randomQuoteBox"></div>`;
 function copyText() {
     navigator.clipboard.writeText(quoteElement).then(() => {
-        alert('复制成功');
+        window.infoAPI.showInfoDialog('复制成功');
     }).catch(err => {
-        console.error('复制失败', err);
+        window.infoAPI.showErrorDialog('复制失败', err);
     })
 };
 document.getElementById('copyQuoteElementButton').addEventListener('click', copyText);

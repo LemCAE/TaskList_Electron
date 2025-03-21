@@ -1,12 +1,28 @@
+// 定义一个函数 updateFocusingTime 用于更新页面上的时间和日期显示
 function updateFocusingTime() {
+    // 获取当前日期和时间
     const now = new Date();
+    // 定义一个数组 daysOfWeek，包含一周七天的名称
+    const daysOfWeek = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+    // 获取当前是星期几，并从 daysOfWeek 数组中获取对应的星期名称
+    const dayName = daysOfWeek[now.getDay()];
+    // 定义一个格式化时间的函数 formatTime，如果时间小于10，则在前面补0
     const formatTime = time => (time < 10 ? '0' + time : time);
+    // 获取当前的时间字符串，格式为 HH:MM:SS
     const timeString = `${formatTime(now.getHours())}:${formatTime(now.getMinutes())}:${formatTime(now.getSeconds())}`;
-    document.getElementById('focusingClock').textContent = timeString;
+    // 获取当前的日期字符串，格式为 YYYY年MM月DD日 星期
+    const date = `${now.getFullYear()}年${formatTime(now.getMonth() + 1)}月${formatTime(now.getDate())}日&emsp;${dayName}`;
+    // 将时间字符串更新到页面上 id 为 focusingClock 的元素中
+    document.getElementById('focusingClock').innerHTML = timeString;
+    // 将日期字符串更新到页面上 id 为 focusingDate 的元素中
+    document.getElementById('focusingDate').innerHTML = date;
 }
 updateFocusingTime();
 
-let updateFocusingTimeInterval = "" // 时间更新的定时器
+
+let updateFocusingTimeInterval = null // 时间更新的定时器
+let inFocusingMode = false;
+let inAutoFocusingMode = false;
 
 ////// 淡入淡出效果
 function fadeOut(Element) {
@@ -32,14 +48,25 @@ async function enterFocusingMode() {
     document.getElementById('icons').classList.remove('show');
     updateFocusingTime();
     updateFocusingTimeInterval = setInterval(updateFocusingTime, 1000);
+    inFocusingMode = true;
     fadeIn("focusingModeContainer")
 }
 async function exitFocusingMode() {
+    inFocusingMode = false;
     fadeOut("focusingModeContainer");
     setTimeout(() => {
         clearInterval(updateFocusingTimeInterval);
     }, 6000);
 }
+////// 托盘图标-进入/退出专注模式
+// 监听主进程的托盘命令
+window.infoAPI.onFromMain("tray-command", (command) => {
+    if (command === "enterFocusingMode") {
+      enterFocusingMode();
+    } else if (command === "exitFocusingMode") {
+      exitFocusingMode();
+    }
+  });
 ////// 按键监听-进入/退出专注模式
 //进入
 let focusingStartPressCount = 0;   // 记录按键次数
@@ -317,3 +344,41 @@ async function loadFocusingModePeriods(containerId) {
 document.addEventListener('DOMContentLoaded', () => {
     loadFocusingModePeriods('autoFoucsingModePeriodValueArea');
 });
+
+
+/**
+ * 判断当前时间是否处于设定的时间段内
+ * @param {Array} periods - 时间段数组，每个时间段是一个对象 { start: "HH:mm", end: "HH:mm" }
+ * @returns {boolean} - 如果当前时间处于任意时间段内，返回 true，否则返回 false
+ */
+function isCurrentTimeInPeriods(periods) {
+    const now = new Date();
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    return periods.some(period => currentTime >= period.start && currentTime < period.end);
+}
+
+// 每秒钟检查一次
+async function checkIfInSetPeriod() {
+    const configJson = await window.fileAPI.readConfig('config.json');
+    const periods = configJson.extension.focusingMode.foucsingModePeriod || [];
+    if (configJson.extension.focusingMode.enable){
+        setInterval(() => {
+            const isInPeriod = isCurrentTimeInPeriods(periods);
+            if (isInPeriod && !inFocusingMode && !inAutoFocusingMode) {
+                inAutoFocusingMode = true;
+                enterFocusingMode();
+            };
+            if (!isInPeriod && inFocusingMode && inAutoFocusingMode) {
+                inFocusingMode = false;
+                inAutoFocusingMode = false;
+                exitFocusingMode();
+            };
+            if (!isInPeriod && !inFocusingMode && inAutoFocusingMode) {
+                inAutoFocusingMode = false;
+            };
+        }, 1000);
+    }
+}
+
+checkIfInSetPeriod();

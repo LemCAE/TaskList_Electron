@@ -168,5 +168,26 @@ async function loadStyle() {
         `
         document.head.appendChild(taskListHoverAnimine);
     }
+    if (configJson.extension.focusingMode.focusingModeClockBlur) {
+        const focusingModeClockBlur = document.createElement('style');
+        focusingModeClockBlur.textContent = `
+            #focusingClockContainer {
+                display: flex;
+                font-size: 20px;
+                margin: 1vw;
+                padding: 2vw;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                height: fit-content;
+                width: fit-content;
+                backdrop-filter: blur(5px);
+                border-radius:5px;
+                border: 1px solid #ffffffa1;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            }
+        `
+        document.head.appendChild(focusingModeClockBlur);
+    }
 }
 loadStyle();
