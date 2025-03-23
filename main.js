@@ -6,6 +6,9 @@ const loudness = require('loudness');
 const { autoUpdater } = require('electron-updater');
 //const { checkAndReadConfig } = require('./config0');
 const { checkAllConfigs } = require('./config');
+const { logToFile } = require('./log');
+const iconv = require("iconv-lite");
+const { exec } = require("child_process");
 
 async function loadInput() {
     const dev = await import('electron-is-dev');
@@ -17,7 +20,7 @@ autoUpdater.forceDevUpdateConfig = true;
 loadInput().then(dev => {
     isDev = dev; 
 }).catch(error => {
-    console.error('Failed to load isDev:', error);
+    logToFile("main.js",`Failed to load isDev:', ${error}`);
 });
 
 let mainWindow;
@@ -58,13 +61,13 @@ function configureUpdater() {
 }
 
 autoUpdater.on('update-available', async () => {
-    console.log('update-avi')
+    logToFile("main.js",'Update available')
     if (!config.autoDownloadUpdate) {
         const result = await showUpdateDialog('可用更新', '检测到新版本，是否立即更新？');
         if (result.response === 0) {
             autoUpdater.downloadUpdate(); // 用户确认后才下载
         } else {
-            console.log('canceled');
+            logToFile("main.js",'Update canceled');
         }
     } else {
         autoUpdater.downloadUpdate()
@@ -85,7 +88,7 @@ autoUpdater.on('update-downloaded', async () => {
 });
 
 autoUpdater.on('error', (error) => {
-    console.error('Update error:', error);
+    logToFile("main.js",`Update error:' ${error}`);
     dialog.showErrorBox('Update Error', error.message);
 });
 
@@ -93,13 +96,12 @@ autoUpdater.on('error', (error) => {
 app.on('ready', () => {
     configureUpdater();
     if (!isDev && config.autoCheckUpdate) {
-        console.log(config.autoCheckUpdate);
         const checkUpdates = async () => {
             try {
                 const updateCheckResult = await autoUpdater.checkForUpdates();
-                console.log(updateCheckResult.updateInfo.version , currentVersion);
+                logToFile("main.js",`${updateCheckResult.updateInfo.version} ${currentVersion}`);
             } catch (error) {
-                console.error('Update check error:', error);
+                logToFile("main.js",`Update check error:'${error}`);
             }
         };
         checkUpdates();
@@ -288,6 +290,7 @@ if (!gotTheLock) {
             }
             return false;
           });
+          logToFile("main.js",'==================== App started ====================');
     }
     const configFilePath = path.join(app.getPath('appData'), "TaskList/config/config.json");
     app.whenReady().then(() => {
@@ -295,7 +298,7 @@ if (!gotTheLock) {
         // 读取配置文件
         fs.readFile(configFilePath, "utf8", (err, data) => {
             if (err) {
-                console.error("failed to read config file:", err);
+                logToFile("main.js",`failed to read config file: ${err}`);
                 return;
             }
             const config = JSON.parse(data);
@@ -316,27 +319,27 @@ if (!gotTheLock) {
     });
 
     function setStartup(enable) {
-        const key = new WinReg({
-            hive: WinReg.HKCU,
-            key: "\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
-        });
-        const appName = "TaskList";
         const exePath = `"${app.getPath("exe")} --autostart"`;
         if (enable) {
-            key.set(appName, WinReg.REG_SZ, exePath, (err) => {
-                if (err) {
-                    console.error("failed to set startup item:", err);
-                } else {
-                    console.log("startup item set successfully");
+            exec(`reg add "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v TaskList /t REG_SZ /d ${exePath} /f`,
+                { encoding: "buffer" },
+                (error, stdout, stderr) => {
+                    if (error) {
+                        logToFile("main.js",`Error 自启动项添加${iconv.decode(stderr, "gbk").trim()}`);
+                    } else {
+                        logToFile("main.js",`成功添加自启动项`);
+                    }
                 }
-            });
+            )
         } else {
-            key.remove(appName, (err) => {
-                if (err) {
-                    console.error("failed to remove startup item:", err);
-                } else {
-                    console.log("startup item removed successfully");
-                }
+            exec('reg delete "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v TaskList /f', 
+                { encoding: "buffer" }, 
+                (error, stdout, stderr) => {
+                    if (error) {
+                        logToFile("main.js", `Error 自启动项移除${iconv.decode(stderr, "gbk").trim()}`);
+                    } else {
+                        logToFile("main.js", `成功移除自启动项`);
+                    }
             });
         }
     }
@@ -492,7 +495,7 @@ ipcMain.handle("read-config", async (event, fileName) => {
         const data = await fs.promises.readFile(filePath, "utf-8");
         return JSON.parse(data);
     } catch (error) {
-        console.error("Error reading config file:", error);
+        logToFile("main.js",`Error reading config file:" ${error}`);
         throw error;
     }
 });
@@ -502,7 +505,7 @@ ipcMain.handle("readJson", async (event, filePath) => {
         const data = await fs.promises.readFile(filePath, "utf-8");
         return JSON.parse(data);
     } catch (error) {
-        console.error("Error reading config file:", error);
+        logToFile("main.js",`Error reading config file:", ${error}`);
         throw error;
     }
 });
@@ -517,7 +520,7 @@ ipcMain.handle("write-config", async (event, { fileName, data }) => {
             "utf-8"
         );
     } catch (error) {
-        console.error("Error writing config file:", error);
+        logToFile("main.js",`Error writing config file: ${error}`);
         throw error;
     }
 });
@@ -532,7 +535,6 @@ ipcMain.handle("get-resource-path", (event, fileName) => {
       ? path.join(process.resourcesPath, 'app.asar', 'resource', fileName) // 打包环境
       : path.join(__dirname, 'resource', fileName); // 开发环境
   
-    console.log("Computed resource path:", resourcePath);
     return resourcePath;
   });
 
@@ -700,9 +702,16 @@ ipcMain.handle('getMuted', async (event) => {
     const muted = await loudness.getMuted();
     return muted;
 })
+
 ipcMain.on('open-external-link', (event, url) => {
-    console.log('Main received:', url);
+    logToFile("main.js",`Extrrnal link received in Main: ${url}`);
     if (url) {
         shell.openExternal(url);
+    }
+});
+
+ipcMain.on('write-log', (event, fileName, message) => {
+    if (message) {
+        logToFile(fileName, message);
     }
 });

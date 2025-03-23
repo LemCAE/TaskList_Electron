@@ -1,8 +1,30 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { app } = require('electron');
+const { console } = require('inspector');
+const { logToFile } = require('./log');
 
-const configJson = {
+
+function getConfigPath (fileName) {
+    if (!fileName) {
+      throw new Error("Invalid file name. Ensure the file name is provided.");
+    }
+    // 根据环境构建路径
+    const configPath = app.isPackaged
+      ? path.join(process.resourcesPath, 'app.asar', 'config', fileName) // 打包环境
+      : path.join(__dirname, 'config', fileName); // 开发环境
+  
+    logToFile("config.js",`Config path: ${configPath}`);
+    return configPath;
+}
+
+const configJson = JSON.parse(fs.readFileSync(getConfigPath('config.json'), 'utf-8'));
+const listJson = JSON.parse(fs.readFileSync(getConfigPath('list.json'), 'utf-8'));
+const classlistJson = JSON.parse(fs.readFileSync(getConfigPath('classlist.json'), 'utf-8'));
+
+
+const configJson1 = {
     "backgroundSource": "defaultDark",
     "background": "../resource/defaultDark.jpg",
     "backgroundFolder": "",
@@ -63,7 +85,7 @@ const configJson = {
     }
 }
 
-const listJson = {
+const listJson1 = {
     "cn": [],
     "ma": [],
     "en": [],
@@ -76,7 +98,7 @@ const listJson = {
     "ot": []
 }
 
-const classlistJson = {
+const classlistJson1 = {
     "time": {
       "class1": "8:10-8:50",
       "class2": "9:00-9:40",
@@ -124,7 +146,7 @@ function checkAndUpdateConfig(fileName, template) {
   const userConfigPath = getUserConfigFilePath(fileName);
 
   if (!fs.existsSync(userConfigPath)) {
-    console.log(`配置文件 ${fileName} 不存在，创建新文件`);
+    logToFile("config.js",`配置文件 ${fileName} 不存在，创建新文件`);
     fs.writeFileSync(userConfigPath, JSON.stringify(template, null, 2), 'utf-8');
     return template;
   }
@@ -146,10 +168,10 @@ function checkAndUpdateConfig(fileName, template) {
 function mergeConfig(template, userConfig, fileName) {
     for (const key in template) {
       if (!(key in userConfig)) {
-        console.log(`补充缺失的键: ${key}`);
+        logToFile("config.js",`补充缺失的键: ${key}`);
         userConfig[key] = template[key]; // 直接补充缺失的键
       } else if (Array.isArray(template[key])) {
-        console.log(`检查数组字段: ${key}`);
+        logToFile("config.js",`检查数组字段: ${key}`);
   
         if (key === 'enabledSubject' && Array.isArray(userConfig[key])) {
           // **1. 处理 enabledSubject，防止重复**
@@ -157,7 +179,7 @@ function mergeConfig(template, userConfig, fileName) {
           template[key].forEach(subj => {
             const subjKey = Object.keys(subj)[0]; // 获取模板科目键
             if (!existingSubjects.includes(subjKey)) {
-              console.log(`为 enabledSubject 添加缺失科目: ${subjKey}`);
+              logToFile("config.js",`为 enabledSubject 添加缺失键值对: ${subjKey}`);
               userConfig[key].push(subj); // 只添加缺失的科目
             }
           });
@@ -170,12 +192,12 @@ function mergeConfig(template, userConfig, fileName) {
         } else if (fileName === 'list.json' || fileName === 'classlist.json') {
           // **3. 仅确保数组长度匹配**
           if (userConfig[key].length < template[key].length) {
-            console.log(`补充 ${fileName} 的 ${key}，目标长度: ${template[key].length}`);
+            logToFile("config.js",`补充 ${fileName} 的 ${key}，目标长度: ${template[key].length}`);
             userConfig[key] = userConfig[key].concat(template[key].slice(userConfig[key].length));
           }
         }
       } else if (typeof template[key] === 'object' && template[key] !== null) {
-        console.log(`递归检查对象字段: ${key}`);
+        logToFile("config.js",`递归检查对象字段: ${key}`);
         // 递归合并对象
         userConfig[key] = mergeConfig(template[key], userConfig[key], fileName);
       }

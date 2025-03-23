@@ -50,6 +50,7 @@ async function enterFocusingMode() {
     updateFocusingTimeInterval = setInterval(updateFocusingTime, 1000);
     inFocusingMode = true;
     fadeIn("focusingModeContainer")
+    window.fileAPI.writeLog('focusingMode.js', '进入专注模式');
 }
 async function exitFocusingMode() {
     inFocusingMode = false;
@@ -57,6 +58,7 @@ async function exitFocusingMode() {
     setTimeout(() => {
         clearInterval(updateFocusingTimeInterval);
     }, 6000);
+    window.fileAPI.writeLog('focusingMode.js', '退出专注模式');
 }
 ////// 托盘图标-进入/退出专注模式
 // 监听主进程的托盘命令

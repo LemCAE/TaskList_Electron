@@ -6,7 +6,6 @@ async function getQuote() {
     let quoteFilePath = ''
     if (configJson.extension.randomQuote.quoteFile === '') {
         quoteFilePath = await window.fileAPI.getResourcePath('defaultQuote.json');//打包后不行
-        console.log(quoteFilePath)
     }
     else {
         quoteFilePath = configJson.extension.randomQuote.quoteFile;
@@ -65,35 +64,14 @@ const quoteElement = `<div id="randomQuoteBox"></div>`;
 function copyText() {
     navigator.clipboard.writeText(quoteElement).then(() => {
         window.infoAPI.showInfoDialog('复制成功');
+        window.fileAPI.writeLog('randomQuote.js', "成功复制元素");
     }).catch(err => {
         window.infoAPI.showErrorDialog('复制失败', err);
+        window.fileAPI.writeLog('randomQuote.js', "元素复制失败: "+err);
     })
 };
 document.getElementById('copyQuoteElementButton').addEventListener('click', copyText);
-document.getElementById('quoteFileFormatView').addEventListener('click', function () {
-    alert(`文件应使用json格式,其基本结构如下:
-======================================================
-example.json
-======================================================
-{
-    "quotes":[
-        {
-            "main":"",
-            "translation":"",
-            "author":""
-        },         <-- 相邻字段间有逗号
-        ...(更多)
-        {
-            "main":"",
-            "translation":"",
-            "author":""
-        }          <-- 最后一个字段后无逗号
-    ]
-}
-======================================================
-其中,main为主文,translation为另一语言翻译,author为作者或来源。
-main为必填项,translation和author为选填项。
-请确保格式正确,否则可能导致无法正常显示甚至程序崩溃。
-`)
+document.getElementById('quoteFileFormatView').addEventListener('click', async function () {
+    await window.docswAPI.create()
 });
 getQuote();

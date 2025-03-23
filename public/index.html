@@ -46,7 +46,7 @@
                     <p id="writingBGMTime"></p>
                 </div>
                 <div id="dateCountdown">
-                    <p>距离</p>
+                    <p id="dateCountDownText">距离</p>
                     <p id="dateCountdownDetail">Event</p>
                     <p id="dateCountdownTime">Value</p>
                 </div>
@@ -491,8 +491,8 @@
                                 <div class="inputChange singleSetting" id="quoteFileChange">
                                     <label for="quoteFileInput">选择文件</label>
                                     <input id="quoteFileInput" type="text" placeholder="留空则使用默认文件">
-                                    <button id="selectQuoteFile">选择文件</button>
-                                    <p class="extraInfo">&emsp;<a id="quoteFileFormatView">查看文件格式</a></p>
+                                    <button id="selectQuoteFile">名言文件</button>
+                                    <p class="extraInfo">&emsp;<a id="quoteFileFormatView">前往说明文档查看文件格式(拓展功能/随机一言)</a></p>
                                 </div>  
                                 <div class="rangeChange singleSetting" id="quoteFontSizeScaleChange">
                                     <label for="quoteFontSizeScale">文字缩放</label>
@@ -533,6 +533,13 @@
                                 <div class="inputChange singleSetting" id="dateCountDownChange">
                                     <label for="dateCountDownInput">倒计时日期</label>
                                     <input type="date" id="dateCountDownInput" class="dateInput" value="2024-12-01"/>
+                                </div>
+                                <div class="enableChange singleSetting" id="dateCountDownIgnoreTodayChange">
+                                    <label for="dateCountDownIgnoreToday">排除当前一天</label>
+                                    <label class="switch">
+                                        <input id="dateCountDownIgnoreToday" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
                                 </div>
                             </div>
                         </div>

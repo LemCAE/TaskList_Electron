@@ -20,6 +20,7 @@
     "electron-is-dev": "^3.0.1",
     "electron-updater": "^6.3.4",
     "express": "^4.19.2",
+    "iconv-lite": "^0.6.3",
     "loudness": "^0.4.2",
     "winreg": "^1.2.5"
   },
@@ -47,9 +48,11 @@
       "package.json",
       "preload.js",
       "config.js",
+      "log.js",
       "resource/**/*",
       "public/**/*",
       "LICENSE.txt",
+      "config/**/*",
       "!resource/icons/**/*"
     ],
     "asar": {

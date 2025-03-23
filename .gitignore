@@ -4,3 +4,5 @@ tempNote.md
 dist/*
 selfConfig/*
 Appconfig/*
+app.log
+.vscode/*

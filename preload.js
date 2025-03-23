@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld("fileAPI", {
     openUrlInBrowser: (url) => {
         console.log('Preload received:', url);
         ipcRenderer.send('open-external-link', url);
+    },
+    writeLog: (fileName, message) => {
+        ipcRenderer.send('write-log', fileName, message );
     }
 });
 

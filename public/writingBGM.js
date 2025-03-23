@@ -9,6 +9,7 @@ function formatTime(seconds) {
 let freshGap = 1; // 刷新间隔（秒）
 let audioOnPlay = false; // 是否正在播放音乐
 let currentAudio = null; // 当前播放的音乐
+let musicFiles = []; // 音乐文件列表
 //////倒计时部分//////
 async function startCountdown(startTime, countDownName, lastingTime, musicFiles, preCountdownDuration, tempFolderPath, volume) {
     const startDateTime = new Date();
@@ -73,6 +74,8 @@ async function startMainCountdown(countDownName, lastingTime, musicFiles, tempFo
     };
     console.log('播放状态参数：', audioOnPlay);
     console.log('主倒计时开始');
+    window.fileAPI.writeLog('writingBGM.js', '播放状态参数: '+ audioOnPlay);
+    window.fileAPI.writeLog('writingBGM.js', '主倒计时开始');
     document.getElementById('writingBGMTime').innerText = formatTime(mainCountdown);
     document.getElementById('writingBGMName').innerText = countDownName;
     document.getElementById('writingBGMDetail').innerText = '正在进行';
@@ -89,8 +92,10 @@ async function startMainCountdown(countDownName, lastingTime, musicFiles, tempFo
         if (mainCountdown < 0) {
             clearInterval(mainInterval);
             audioOnPlay = false;
+            window.fileAPI.writeLog('writingBGM.js', '播放状态参数: '+ audioOnPlay);
             document.getElementById("writingBGMShow").style.display = "none";
             console.log('倒计时结束');
+            window.fileAPI.writeLog('writingBGM.js', '倒计时结束');
             if (systemVolumeSet) {
                 window.wAPI.setVolume(originalSystemVolume);
                 if (systemMuted) {
@@ -186,6 +191,7 @@ async function fetchMusicFiles(folderPath) {
         return musicFilesList;
     } catch (error) {
         console.error('读取音乐文件失败:', error);
+        window.fileAPI.writeLog('writingBGM.js', '读取音乐文件失败:' + error);
     }
 };
 // 从文件夹中随机选取文件
@@ -195,6 +201,7 @@ async function pickRandomFileFromFolder(musicFiles, folderPath) {
             console.error('音乐文件夹为空，尝试重新获取音乐文件');
             musicFiles = await fetchMusicFiles(folderPath);
             if (musicFiles.length === 0) {
+                window.fileAPI.writeLog('writingBGM.js', 'Error: 文件夹中没有音频文件');
                 throw new Error('文件夹中没有音频文件');
             }
         }
@@ -202,9 +209,11 @@ async function pickRandomFileFromFolder(musicFiles, folderPath) {
         const selectedFile = musicFiles[randomIndex];
         musicFiles.splice(randomIndex, 1);
         console.log('当前列表:', musicFiles);
+        window.fileAPI.writeLog('writingBGM.js', '选中音频: ' + selectedFile);
         return selectedFile;
     } catch (error) {
         console.error('获取音乐文件时出错:', error);
+        window.fileAPI.writeLog('writingBGM.js', '获取音乐文件时出错: ' + error);
         throw error;
     }
 }
@@ -229,12 +238,10 @@ async function directStart() {
     const countDownName = configJson.extension.writingBGM.name;
     const lastingTime = configJson.extension.writingBGM.lasting * 60;
     const folder = configJson.extension.writingBGM.BGMFolder;
-    const musicFiles = await fetchMusicFiles(folder);
+    musicFiles = await fetchMusicFiles(folder);
     const tempFolderPath = folder;
     const volume = configJson.extension.writingBGM.volume;
     const preCountdownDuration = configJson.extension.writingBGM.preCountdownDuration * 60;
-
-
 
     await startMainCountdown(countDownName, lastingTime, musicFiles, tempFolderPath, volume, preCountdownDuration);
 }

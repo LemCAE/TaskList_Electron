@@ -39,7 +39,7 @@ a[href="https://github.com/LemCAE/TaskList_Electron"] {
     background-color: #81818161 !important; 
 }
 
-.lang-html{
+.lang-html, .lang-json{
     background-color: #2e2e2e00 !important; 
     color: #d6d5d5 !important;
 }

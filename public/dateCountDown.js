@@ -22,12 +22,29 @@ async function showDateCountdown() {
     async function getDateDiff() {
         const date1 = new Date(await getNowFormatDate());
         const date2 = new Date(configJson.extension.dateCountdown.dateCountdownTime);
-        const timeDifference = difference(date1, date2);
-        if (timeDifference <= 0) {
-            document.getElementById("dateCountdown").style.display = "none";
+        let timeDifference = difference(date1, date2);
+        if (configJson.extension.dateCountdown.ignoreToday) {
+            timeDifference = timeDifference - 1;
+            document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
+            console.log(timeDifference);
+            if (timeDifference == 0) {
+                document.getElementById("dateCountDownText").style.display = "none";
+                document.getElementById("dateCountdownTime").innerHTML = "明天";
+            }
+            if (timeDifference < 0) {
+                document.getElementById("dateCountdown").style.display = "none";
+            }
+        } else {
+            document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
+            document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
+            if (timeDifference == 1) {
+                document.getElementById("dateCountDownText").style.display = "none";
+                document.getElementById("dateCountdownTime").innerHTML = "明天";
+            }
+            if (timeDifference <= 0) {
+                document.getElementById("dateCountdown").style.display = "none";
+            }
         }
-        document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
-        document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
     }
     getDateDiff();
 };

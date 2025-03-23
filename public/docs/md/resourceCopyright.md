@@ -1,6 +1,6 @@
 # 资源版权说明
 
-该程序中使用了一部分外部资源，现对其来源说明如下
+该程序中使用了一部分外部资源，现对其来源说明如下：
 
 ---
 
@@ -16,4 +16,4 @@
 
 ---
 
-上述资源的使用均不涉及商业行为。如果您认为以上资源的使用侵犯了您的权益，请联系**lemcae@outlook.com**，在收到您的要求后，我将第一时间移除这些内容。
+上述资源的使用均不涉及商业行为。如果您认为以上资源的使用侵犯了您的权益，请在<a class="externalLink" onclick="openExtarnalUrl('https://github.com/LemCAE/TaskList_Electron/issues')">GitHub Issues</a>中提出，在收到您的要求后，我将第一时间移除这些内容。

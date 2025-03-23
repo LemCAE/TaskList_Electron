@@ -48,7 +48,8 @@
     "dateCountdown": {
       "enable": false,
       "dateCountdownDetail": "Event",
-      "dateCountdownTime": "2025-01-01"
+      "dateCountdownTime": "2025-01-01",
+      "ignoreToday": false
     },
     "focusingMode": {
       "enable": false,

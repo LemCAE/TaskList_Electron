@@ -101,13 +101,30 @@ async function updateDateCountDown() {
     async function getDateDiff() {
         const date1 = new Date(await getNowFormatDate());
         const date2 = new Date(configJson.extension.dateCountdown.dateCountdownTime);
-        const timeDifference = difference(date1, date2);
-        if (timeDifference <= 0) {
-            document.getElementById("dateCountdown").style.display = "none";
+        let timeDifference = difference(date1, date2);
+        if (configJson.extension.dateCountdown.ignoreToday) {
+            timeDifference = timeDifference - 1;
+            document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
+            document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
+            console.log(timeDifference);
+            if (timeDifference == 0) {
+                document.getElementById("dateCountDownText").style.display = "none";
+                document.getElementById("dateCountdownTime").innerHTML = "明天";
+            }
+            if (timeDifference < 0) {
+                document.getElementById("dateCountdown").style.display = "none";
+            }
+        } else {
+            document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
+            document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
+            if (timeDifference == 1) {
+                document.getElementById("dateCountDownText").style.display = "none";
+                document.getElementById("dateCountdownTime").innerHTML = "明天";
+            }
+            if (timeDifference <= 0) {
+                document.getElementById("dateCountdown").style.display = "none";
+            }
         }
-        document.getElementById("dateCountdownDetail").innerHTML = configJson.extension.dateCountdown.dateCountdownDetail;
-        document.getElementById("dateCountdownTime").innerHTML = `${timeDifference}天`;
-        console.log(`Date countdown updated:  ${timeDifference}天`);
     }
     getDateDiff();
 }
@@ -200,7 +217,6 @@ async function loadStyleSetting() {
                 console.log('上次更换日期:', configJson.lastChangeDate);
                 await pickRandomImageFromFolder();
                 configJson.lastChangeDate = formattedDate;
-                console.log('背景:', selectedRandomBackgroundImage);
                 configJson.background = selectedRandomBackgroundImage;
                 configJson.changeToFolder = false;
             } else if (configJson.randomBackgroundModeDaily && configJson.lastChangeDate === formattedDate) {
@@ -210,7 +226,7 @@ async function loadStyleSetting() {
             if (configJson.avoidRepeat) {
                 configJson.showedImage.push(selectedRandomBackgroundImage);
                 configJson.showedImage = configJson.showedImage.filter((item, index) => configJson.showedImage.indexOf(item) === index)
-                console.log('已移除背景图像:'+selectedRandomBackgroundImage)
+                console.log('已移除背景图像于列表:'+selectedRandomBackgroundImage)
                 if (cleanShowedImageList) {
                     configJson.showedImage = [];
                 }
@@ -289,6 +305,7 @@ async function loadStyleSetting() {
     setCheckbox('enableDateCountDown', configJson.extension.dateCountdown.enable);
     document.getElementById('dateCountdownNameInput').value = configJson.extension.dateCountdown.dateCountdownDetail;
     document.getElementById('dateCountDownInput').value = configJson.extension.dateCountdown.dateCountdownTime;
+    setCheckbox('dateCountDownIgnoreToday', configJson.extension.dateCountdown.ignoreToday);
     //自动专注模式
     setCheckbox('enableAutoFoucsingMode', configJson.extension.focusingMode.enable);
     setInputValue('focusingModeMask', configJson.extension.focusingMode.focusingModeMask);
@@ -351,9 +368,11 @@ async function readClassTable() {
         }
         else {
             console.log('没有找到该天的课程表');
+            window.fileAPI.writeLog('script.js', '没有找到该天的课程表');
         }
         }
     catch (error) {
+        window.fileAPI.writeLog('script.js', '处理课程数据时出错:' + error);
         console.error('处理课程数据时出错:', error);
     }
 }
@@ -402,11 +421,13 @@ async function readTaskList(jsonFile) {
                 const listElement=document.getElementById(`${key}list`);
                 if ( !listElement) {
                     console.error(`无法找到元素: ${key}list`);
+                    window.fileAPI.writeLog('script.js', `无法找到元素: ${key}list`);
                     continue;
                 }
                 const listContent=listElement.querySelector(".listContent");
                 if ( !listContent) {
                     console.error(`无法找到 .listContent 在: ${key}list`);
+                    window.fileAPI.writeLog('script.js', `无法找到 .listContent 在: ${key}list`);
                     continue;
                 }
                 tasklist[key].forEach(element=> {
@@ -417,6 +438,7 @@ async function readTaskList(jsonFile) {
     }
     catch (error) {
         console.error('处理任务数据时出错:', error);
+        window.fileAPI.writeLog('script.js', '处理任务数据时出错:' + error);
     }
 }
 
@@ -459,6 +481,7 @@ async function getListToEdit(jsonFile) {
         monitorVisibilityAndAdjustTextareaHeight();
     } catch (error) {
         console.error('处理任务数据时出错:', error);
+        window.fileAPI.writeLog('script.js', '处理任务数据时出错:' + error);
     }
 }
 
@@ -564,6 +587,7 @@ document.querySelectorAll('.listContent').forEach(container=> {
         container.innerHTML=''; // 清空内容
     });
     readTaskList(jsonFile);
+    window.fileAPI.writeLog('script.js', '任务列表已重新加载');
 }
 
 async function reloadEditListContent(jsonFile) {
@@ -606,6 +630,7 @@ document.getElementById('saveList').addEventListener('click', async () => {
     console.log('Final data to save:', data);
     await window.fileAPI.writeConfig('list.json', data);
     console.log('Data saved successfully');
+    window.fileAPI.writeLog('script.js', '任务列表已保存');
     reloadTaskList('list.json');
     reloadEditListContent('list.json');
     getQuote(); //来自randomQuote.js
@@ -877,7 +902,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     await window.fileAPI.writeConfig('classlist.json', newClassList);
     console.log('Config saved successfully');
 
-
+    window.fileAPI.writeLog('script.js', '配置文件已保存');
     window.wAPI.toggleAutoLaunch(autoLaunch); // 直接传递autoLaunch的状态
     window.location.reload();
 });
@@ -936,6 +961,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const dateCountdownEnable = document.getElementById('enableDateCountDown').checked;
     const dateCountdownDetail = document.getElementById('dateCountdownNameInput').value;
     const dateCountdownTime = document.getElementById('dateCountDownInput').value;
+    const dateCountdownIgnoreToday = document.getElementById('dateCountDownIgnoreToday').checked;
 
     const foucsingModeEnable = document.getElementById('enableAutoFoucsingMode').checked;
     const focusingModeMask = document.getElementById('focusingModeMask').querySelector('input').value;
@@ -967,7 +993,8 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
             dateCountdown: {
                 enable: dateCountdownEnable,
                 dateCountdownDetail: dateCountdownDetail,
-                dateCountdownTime: dateCountdownTime
+                dateCountdownTime: dateCountdownTime,
+                ignoreToday: dateCountdownIgnoreToday
             },
             focusingMode: {
                 enable: foucsingModeEnable,
@@ -981,6 +1008,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     console.log('Final config to save:', newConfig);
     await window.fileAPI.writeConfig('config.json', newConfig);
     console.log('Config saved successfully');
+    window.fileAPI.writeLog('script.js', '配置文件已保存');
     window.location.reload();
 });
 document.getElementById('backgroundSource').addEventListener('change', function() {
@@ -1332,12 +1360,15 @@ async function fetchImageFiles(folderPath) {
         if (configJson.avoidRepeat){
             const rawImageFilesList = await window.fileAPI.getImageFiles(folderPath);
             console.log('原始背景图像列表:', rawImageFilesList);
+            window.fileAPI.writeLog('script.js','获取原始背景图像列表: '+ rawImageFilesList);
             const showedImageFilesList = configJson.showedImage;
             console.log('已显示过的图像列表:', showedImageFilesList);
             const imageFilesList = rawImageFilesList.filter(file => !showedImageFilesList.includes(file));
             console.log('过滤后的背景图像列表:', imageFilesList);
+            window.fileAPI.writeLog('script.js','过滤后的背景图像列表: '+ imageFilesList);
             if (imageFilesList.length === 0) {
                 console.log("所有图片已轮换,已更新列表")
+                window.fileAPI.writeLog('script.js','所有图片已轮换,已更新列表');
                 cleanShowedImageList = true;
                 return rawImageFilesList;
             } else {
@@ -1351,6 +1382,7 @@ async function fetchImageFiles(folderPath) {
         console.log(selectedRandomBackgroundImage);
         document.body.style.backgroundImage = configJson.background;
         console.error('读取背景图像列表失败:', error);
+        window.fileAPI.writeLog('script.js','读取背景图像列表失败: '+ error);
         window.infoAPI.showErrorDialog('未找到指定的文件夹\n请检查文件夹路径是否正确');
     }
 }
@@ -1363,6 +1395,7 @@ async function pickRandomImageFromFolder() {
 
         if (imageFilesList.length === 0) {
             window.infoAPI.showErrorDialog('指定的文件夹中没有图像文件\n请检查所选文件夹是否正确');
+            window.fileAPI.writeLog('script.js','指定的文件夹中没有图像文件');
             selectedRandomBackgroundImage = configJson.background;
             console.log(selectedRandomBackgroundImage);
             document.body.style.backgroundImage = configJson.background;
@@ -1372,6 +1405,7 @@ async function pickRandomImageFromFolder() {
         const randomIndex = Math.floor(Math.random() * imageFilesList.length);
         const selectedFile = imageFilesList[randomIndex].replace(/\\/g, '/');
         console.log('选中的背景图像:', selectedFile);
+        window.fileAPI.writeLog('script.js','选中图像: '+ selectedFile);
         document.body.style.backgroundImage = "url(file://" + selectedFile + ")";
         document.getElementById('focusingModeContainer').style.backgroundImage = "url(file://" + selectedFile + ")";
         selectedRandomBackgroundImage = selectedFile;
@@ -1379,6 +1413,7 @@ async function pickRandomImageFromFolder() {
 
     } catch (error) {
         console.error('获取背景图像时出错:', error);
+        window.fileAPI.writeLog('script.js','获取背景图像时出错: '+ error);
         throw error;
     }
 }
@@ -1388,6 +1423,7 @@ document.getElementById("reomveShowedListButton").addEventListener("click", asyn
     configJson.showedImage = [];
     await window.fileAPI.writeConfig('config.json', configJson);
     window.infoAPI.showInfoDialog('已清空 已显示过的图像列表');
+    window.fileAPI.writeLog('script.js','已清空已显示过的图像列表');
 })
 
 document.addEventListener('DOMContentLoaded', () => {
