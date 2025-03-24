@@ -8,7 +8,7 @@ async function loadStyle() {
     const style = document.createElement('style');
     style.textContent = `
         body {
-            background-image: url(${configJson.background});
+            background-image: url("${configJson.background}");
         }
     `;
     document.head.appendChild(style);

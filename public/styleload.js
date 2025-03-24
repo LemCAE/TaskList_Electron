@@ -3,7 +3,7 @@ async function loadStyle() {
     const style = document.createElement('style');
     style.textContent = `
         body {
-            background-image: url(${configJson.background});
+            background-image: url("${configJson.background}");
         }
         body::before {
             content: "";
@@ -28,7 +28,7 @@ async function loadStyle() {
             background-color: rgba(255, 255, 255, ${configJson.configMask});
         }
         #focusingModeContainer {
-            background-image: url(${configJson.background});
+            background-image: url("${configJson.background}");
         }
     `;
     document.head.appendChild(style);

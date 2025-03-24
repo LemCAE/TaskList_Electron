@@ -7,6 +7,7 @@
 // 随机背景图片
 let selectedRandomBackgroundImage = "../resource/defaultDark.jpg";
 let cleanShowedImageList = false;
+let showImageListCleared = false;
 
 const maximizeSVG = `
 <svg t="1725463363630" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4129" width="200" height="200">
@@ -212,12 +213,12 @@ async function loadStyleSetting() {
 
             if (!configJson.randomBackgroundModeDaily) {
                 await pickRandomImageFromFolder();
-                configJson.background = selectedRandomBackgroundImage;
+                configJson.background = selectedRandomBackgroundImage.replace(/\\/g, '/');
             } else if ((configJson.randomBackgroundModeDaily && configJson.lastChangeDate !== formattedDate) || configJson.changeToFolder) {
                 console.log('上次更换日期:', configJson.lastChangeDate);
                 await pickRandomImageFromFolder();
                 configJson.lastChangeDate = formattedDate;
-                configJson.background = selectedRandomBackgroundImage;
+                configJson.background = selectedRandomBackgroundImage.replace(/\\/g, '/');
                 configJson.changeToFolder = false;
             } else if (configJson.randomBackgroundModeDaily && configJson.lastChangeDate === formattedDate) {
                 selectedRandomBackgroundImage = configJson.background;
@@ -829,7 +830,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     } else if (backgroundSource === 'defaultDark') {
         background = '../resource/defaultDark.jpg';
     } else if (backgroundSource === 'local') {
-        background = "'" + encodeURI("file://" + document.getElementById('backgroundLocal').value.replace(/\\/g, '/')) + "'"; 
+        background = document.getElementById('backgroundLocal').value.replace(/\\/g, '/'); 
         console.log (background);
     } else if (backgroundSource === 'url') {
         background = document.getElementById('backgroundURLInput').value; // 读取URL链接
@@ -838,7 +839,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         background = selectedRandomBackgroundImage;
     }
     
-    const backgroundFolder = document.getElementById('backgroundFolder').value;
+    const backgroundFolder = document.getElementById('backgroundFolder').value.replace(/\\/g, '/');
     const avoidRepeat = document.getElementById('avoidRepeat').checked;
     let randomBackgroundModeDaily = false;
     if (document.getElementById('RandomBackgroundStyle').value === "launch") {
@@ -852,6 +853,9 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     if ((configJson.backgroundSource !== "folder" && backgroundSource === "folder") || (configJson.backgroundFolder !== backgroundFolder)) {
         changeToFolder = true;
         showedImage = []
+    }
+    if (showImageListCleared){
+        showedImage = [];
     }
 
 
@@ -948,7 +952,7 @@ document.getElementById('saveExtensionSetting').addEventListener('click', async 
     const writingBGMLasting = document.getElementById('writingBGMLasting').querySelector('input').value;
     const writingBGMVolume = document.getElementById('writingBGMVolume').querySelector('input').value;
     const writingBGMStartTime = document.getElementById('writingBGMStartTime').value;
-    const writingBGMBGMFolder = document.getElementById('BGMFolderInput').value;
+    const writingBGMBGMFolder = document.getElementById('BGMFolderInput').value.replace(/\\/g, '/');
     const preCountdownDuration = document.getElementById('preCountdownDuration').querySelector('input').value;
     const systemVolumeSet = document.getElementById('systemVolumeSet').checked;
     const systemVolume = document.getElementById('systemVolume').querySelector('input').value;
@@ -1056,14 +1060,14 @@ document.getElementById('selectLocalImage').addEventListener('click', async () =
 document.getElementById('selectImageFolder').addEventListener('click', async () => {
     const folderPaths = await window.fileAPI.selectFolder();
     if (folderPaths) {
-        document.getElementById('backgroundFolder').value = folderPaths; // 将路径显示在输入框中
+        document.getElementById('backgroundFolder').value = folderPaths.value.replace(/\\/g, '/'); // 将路径显示在输入框中
     }
 });
 
 document.getElementById('selectBGMFolder').addEventListener('click', async () => {
     const folderPaths = await window.fileAPI.selectFolder();
     if (folderPaths) {
-        document.getElementById('BGMFolderInput').value = folderPaths; // 将路径显示在输入框中
+        document.getElementById('BGMFolderInput').value = folderPaths.replace(/\\/g, '/'); // 将路径显示在输入框中
     }
 });
 
@@ -1406,8 +1410,8 @@ async function pickRandomImageFromFolder() {
         const selectedFile = imageFilesList[randomIndex].replace(/\\/g, '/');
         console.log('选中的背景图像:', selectedFile);
         window.fileAPI.writeLog('script.js','选中图像: '+ selectedFile);
-        document.body.style.backgroundImage = "url(file://" + selectedFile + ")";
-        document.getElementById('focusingModeContainer').style.backgroundImage = "url(file://" + selectedFile + ")";
+        document.body.style.backgroundImage = `url("file://${selectedFile}")`;
+        document.getElementById('focusingModeContainer').style.backgroundImage = `url("file://${selectedFile}")`;
         selectedRandomBackgroundImage = selectedFile;
 
 
@@ -1422,6 +1426,7 @@ document.getElementById("reomveShowedListButton").addEventListener("click", asyn
     const configJson = await window.fileAPI.readConfig('config.json');
     configJson.showedImage = [];
     await window.fileAPI.writeConfig('config.json', configJson);
+    showImageListCleared = true;
     window.infoAPI.showInfoDialog('已清空 已显示过的图像列表');
     window.fileAPI.writeLog('script.js','已清空已显示过的图像列表');
 })
