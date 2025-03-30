@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld("wAPI", {
     onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (event, percent) => {
         callback(percent);
     }),
+    relaodTrayMenu: () => ipcRenderer.send('reload-tray-menu'),
 });
 
 contextBridge.exposeInMainWorld("subwAPI", {
@@ -69,4 +70,14 @@ contextBridge.exposeInMainWorld("infoAPI", {
     showInfoDialog: (detailText) => ipcRenderer.invoke("dialog:showInfo", detailText),
     sendToMain: (channel, data) => ipcRenderer.send(channel, data),
     onFromMain: (channel, callback) => ipcRenderer.on(channel, (event, ...args) => callback(...args)),
+    onAutoLaunchUpdate: (callback) => {
+        ipcRenderer.on('auto-launch-updated', (event, isEnabled) => {
+          callback(isEnabled)
+        })
+    },
+    onAutoLaunchMinUpdate: (callback) => {
+        ipcRenderer.on('auto-launch-min-updated', (event, isEnabled) => {
+          callback(isEnabled)
+        })
+    }
 });

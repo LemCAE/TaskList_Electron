@@ -9,6 +9,7 @@ const { checkAllConfigs } = require('./config');
 const { logToFile } = require('./log');
 const iconv = require("iconv-lite");
 const { exec } = require("child_process");
+const { buildTrayMenu } = require('./trayMenu');
 
 async function loadInput() {
     const dev = await import('electron-is-dev');
@@ -27,7 +28,7 @@ let mainWindow;
 let tray;
 let config;
 
-config = checkAllConfigs();
+config = checkAllConfigs().config;//checkAndReadConfig()会返回{classlist:{...}, config:{...}, list:{...}}
 //config = checkAndReadConfig('config');
 //checkAndReadConfig('list');
 //checkAndReadConfig('classlist');
@@ -58,6 +59,11 @@ function configureUpdater() {
             repo: 'TaskList_Electron'
         });
     }
+}
+
+function saveConfig() {
+    const configFilePath = path.join(app.getPath('appData'), "TaskList/config/config.json");
+    fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2), 'utf-8');
 }
 
 autoUpdater.on('update-available', async () => {
@@ -154,102 +160,8 @@ if (!gotTheLock) {
         });
         mainWindow.loadFile(path.join(__dirname, "public", "index.html"));
         tray = new Tray(path.join(__dirname, "./resource/icon.ico"));
-        const contextMenu = Menu.buildFromTemplate([
-            {
-                label: "显示窗口",
-                click: () => {
-                    mainWindow.show();
-                },
-            },
-            { type: 'separator' }, 
-            {
-                label: '小工具',
-                enabled: false,
-            },
-            {
-                label: '工具页',
-                click: () => {
-                    createToolWindow('tools.html')
-                }
-            },
-            {
-                label: '倒计时',
-                click: () => {
-                    createToolWindow('countdown.html')
-                }
-            },
-            {
-                label: '随机抽取',
-                click: () => {
-                    createToolWindow('randomchoose.html')
-                }
-            },
-            {
-                label: '字体编辑',
-                click: () => {
-                    createToolWindow('fontstyle.html')
-                }
-            },
-            {
-                label: "专注模式",
-                submenu: [
-                    {
-                        label: "进入专注模式", 
-                        click: () => {
-                            // 调用渲染进程的 enterFocusingMode
-                            mainWindow.webContents.send("tray-command", "enterFocusingMode");
-                        },
-                    },
-                    {
-                        label: "退出专注模式",
-                        click: () => {
-                            mainWindow.webContents.send("tray-command", "exitFocusingMode");
-                        },
-                    }
-                ]
-            },
-            { type: 'separator' },
-            {
-                label: "说明文档",
-                click: () => {
-                    createDocsWindow();
-                },
-            },
-            {
-                label: "更多",
-                submenu:[
-                    {
-                        label: "切换至开发者模式",
-                        click: () => {
-                            mainWindow.webContents.openDevTools()
-                        }
-                    },
-                    {
-                        label: "打开配置文件夹",
-                        click: () => {
-                            let configPath = path.join(app.getPath('appData'), "TaskList/config");
-                            shell.openPath(configPath)
-                        }
-                    },
-                    {
-                        label: "重启应用",
-                        click: () => {
-                            app.relaunch();
-                            app.exit(0);
-                        }
-                    },
-                ]
-            },
-            { type: 'separator' },
-            {
-                label: "退出应用",
-                click: () => {
-                    app.quit();
-                },
-            },
-        ]);
+        refreshTray();
         tray.setToolTip("TaskList");
-        tray.setContextMenu(contextMenu);
         mainWindow.on("close", (event) => {
             if (!app.isQuiting) {
                 event.preventDefault();
@@ -310,6 +222,7 @@ if (!gotTheLock) {
             }
         });
         // 程序启动时设置自动启动
+        console.log("Auto launch:", config.autoLaunch);
         setStartup(config.autoLaunch);
         app.on("activate", () => {
             if (BrowserWindow.getAllWindows().length === 0) {
@@ -715,3 +628,24 @@ ipcMain.on('write-log', (event, fileName, message) => {
         logToFile(fileName, message);
     }
 });
+
+ipcMain.on('reload-tray-menu', () => {
+        refreshTray();
+    } 
+);
+
+const dependencies = {
+    app,                  // 从 electron 引入
+    shell,                // 从 electron 引入
+    config,               // 配置对象
+    getMainWindow: () => mainWindow,           // 主窗口实例
+    saveConfig,
+    setStartup,           // 开机启动设置函数
+    createToolWindow,
+    createDocsWindow,
+    checkAllConfigs,
+  }
+
+function refreshTray() {
+    tray.setContextMenu(buildTrayMenu(dependencies)) // 始终使用最新模板
+}

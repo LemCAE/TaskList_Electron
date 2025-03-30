@@ -908,6 +908,7 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
 
     window.fileAPI.writeLog('script.js', '配置文件已保存');
     window.wAPI.toggleAutoLaunch(autoLaunch); // 直接传递autoLaunch的状态
+    window.wAPI.relaodTrayMenu()
     window.location.reload();
 });
 
@@ -1060,14 +1061,14 @@ document.getElementById('selectLocalImage').addEventListener('click', async () =
 document.getElementById('selectImageFolder').addEventListener('click', async () => {
     const folderPaths = await window.fileAPI.selectFolder();
     if (folderPaths) {
-        document.getElementById('backgroundFolder').value = folderPaths.value.replace(/\\/g, '/'); // 将路径显示在输入框中
+        document.getElementById('backgroundFolder').value = folderPaths; // 将路径显示在输入框中
     }
 });
 
 document.getElementById('selectBGMFolder').addEventListener('click', async () => {
     const folderPaths = await window.fileAPI.selectFolder();
     if (folderPaths) {
-        document.getElementById('BGMFolderInput').value = folderPaths.replace(/\\/g, '/'); // 将路径显示在输入框中
+        document.getElementById('BGMFolderInput').value = folderPaths; // 将路径显示在输入框中
     }
 });
 
@@ -1452,3 +1453,16 @@ function openExtarnalUrl(url) {
     console.log('openUrlInBrowser', url);
     window.fileAPI.openUrlInBrowser(url); 
 }
+
+window.infoAPI.onAutoLaunchUpdate((isEnabled) => {
+    document.getElementById('autoLaunch').checked = isEnabled
+    if (!isEnabled) {
+        document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'none';
+    } else {
+        document.getElementById('autoMinimizeWhenAutoLaunchChange').style.display = 'block';
+    }
+})
+
+window.infoAPI.onAutoLaunchMinUpdate((isEnabled) => {
+    document.getElementById('autoMinimizeWhenAutoLaunch').checked = isEnabled
+})

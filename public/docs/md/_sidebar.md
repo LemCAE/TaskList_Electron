@@ -1,7 +1,7 @@
 - [首页](README.md)
 - **使用指南**
   - [任务编辑](./md/edit.md)
-  - 设置
+  - [设置](./md/setting/mainSetting.md)
     - [列表显示设置](./md/setting/listSetting.md)
     - [课程表设置](./md/setting/courseSetting.md)
     - [外观设置](./md/setting/appearanceSetting.md)

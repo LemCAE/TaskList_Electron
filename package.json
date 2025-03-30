@@ -49,6 +49,7 @@
       "preload.js",
       "config.js",
       "log.js",
+      "trayMenu.js",
       "resource/**/*",
       "public/**/*",
       "LICENSE.txt",
