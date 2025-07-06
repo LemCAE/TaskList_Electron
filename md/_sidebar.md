@@ -1,0 +1,14 @@
+- [首页](README.md)
+- **使用指南**
+  - [任务编辑](./md/edit.md)
+  - [设置](./md/setting/mainSetting.md)
+    - [列表显示设置](./md/setting/listSetting.md)
+    - [课程表设置](./md/setting/courseSetting.md)
+    - [外观设置](./md/setting/appearanceSetting.md)
+    - [功能设置](./md/setting/featureSetting.md)
+    - [其他设置](./md/setting/otherSetting.md)
+  - [拓展功能](./md/extension.md)
+- **其他**
+  - [问题反馈](./md/feedback.md)
+  - [资源版权说明](./md/resourceCopyright.md)
+  - [关于](./md/about.md)
