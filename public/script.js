@@ -256,7 +256,15 @@ async function loadStyleSetting() {
     };
     setCheckbox('CheckboxAnimine', configJson.CheckboxAnimine);
     setCheckbox('configAnimine', configJson.configAnimine);
-    setCheckbox('autoColseAfterSave', configJson.autoColseAfterSave);   
+    setCheckbox('autoColseAfterSave', configJson.autoColseAfterSave);
+
+    //HTML支持及换行
+    setCheckbox('enableHTMLText', configJson.HTMLText);
+    setCheckbox('enableAutoNewLineToBr', configJson.autoNewLineToBr);
+    if (!configJson.HTMLText) {
+        document.getElementById('enableAutoNewLineToBrChange').style.display = 'none';
+    }
+
     if (configJson.autoColseAfterSave) {
         document.getElementById('saveList').addEventListener('click', function () {
             var element=document.getElementById('configsBox');
@@ -431,9 +439,21 @@ async function readTaskList(jsonFile) {
                     window.fileAPI.writeLog('script.js', `无法找到 .listContent 在: ${key}list`);
                     continue;
                 }
-                tasklist[key].forEach(element=> {
-                    listContent.appendChild(createlist(element));
-                });
+                if (configJson.HTMLText) {
+                    if (configJson.autoNewLineToBr) {
+                        tasklist[key].forEach(element=> {
+                            listContent.appendChild(createlist(textLinesToBr(element)));
+                        });
+                    } else {
+                        tasklist[key].forEach(element=> {
+                            listContent.appendChild(createlist(element));
+                        });
+                    }
+                } else {
+                    tasklist[key].forEach(element=> {
+                        listContent.appendChild(createlist(safeText(element)));
+                    });
+                }
             }
         }
     }
@@ -806,6 +826,10 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
     const refreshTime = document.getElementById('refreshTime').querySelector('input').value;
     const autoColseAfterSave = document.getElementById('autoColseAfterSave').checked;
     const reorderMethod = document.getElementById('reorderMethod').value;
+
+    const HTMLText = document.getElementById('enableHTMLText').checked;
+    const autoNewLineToBr = document.getElementById('enableAutoNewLineToBr').checked;
+
     const autoLaunch = document.getElementById('autoLaunch').checked;
     const autoMinimizeWhenAutoLaunch = document.getElementById('autoMinimizeWhenAutoLaunch').checked;
     const showClassList = document.getElementById('showClassList').checked;
@@ -877,6 +901,8 @@ document.getElementById('saveSetting').addEventListener('click', async () => {
         configAnimine: configAnimine,
         configBlur: configBlur,
         configMask: configMask,
+        HTMLText: HTMLText,
+        autoNewLineToBr: autoNewLineToBr,
         enabledSubject: enabledSubjects,
         CheckboxAnimine: CheckboxAnimine,
         refreshTime: refreshTime,
@@ -1094,6 +1120,15 @@ document.getElementById('autoLaunch').addEventListener('change', function() {
     }
 })
 
+document.getElementById('enableHTMLText').addEventListener('change', function() {
+    const enableHTMLText = document.getElementById('enableHTMLText').checked;
+    if (enableHTMLText) {
+        document.getElementById('enableAutoNewLineToBrChange').style.display = 'flex';
+    } else {
+        document.getElementById('enableAutoNewLineToBrChange').style.display = 'none';
+    }
+})
+
 document.getElementById('autoCheckUpdate').addEventListener('change', function() {
     const autoCheckUpdate = document.getElementById('autoCheckUpdate').checked;
     if (autoCheckUpdate) {
@@ -1211,6 +1246,7 @@ document.getElementById('importTaskButton').addEventListener('click', async () =
             reloadTaskList('list.json');
             reloadEditListContent('list.json');
             window.infoAPI.showInfoDialog('文件导入成功！')
+            getQuote(); //来自randomQuote.js
         } else {
             null
         }
@@ -1466,3 +1502,18 @@ window.infoAPI.onAutoLaunchUpdate((isEnabled) => {
 window.infoAPI.onAutoLaunchMinUpdate((isEnabled) => {
     document.getElementById('autoMinimizeWhenAutoLaunch').checked = isEnabled
 })
+
+function safeText(text) {
+    const escaped = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  
+    return escaped.replace(/\n/g, "<br>");
+  }
+
+function textLinesToBr(text) {
+    return text.replace(/\n/g, "<br>");
+}

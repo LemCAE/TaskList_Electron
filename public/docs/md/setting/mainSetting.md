@@ -1,5 +1,7 @@
 # 设置
 
+---
+
 这里是对应用设置的一些说明~
 
 > [列表显示设置](./md/setting/listSetting.md)

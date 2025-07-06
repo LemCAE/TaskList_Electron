@@ -673,8 +673,9 @@ select option {
 	justify-content:center;
 	box-sizing:border-box;
     img {
-        width: 15%;
+        width: 10%;
         height: auto;
+		margin-bottom: 1vh;
     }
     p{
         font-size: 1vw;
@@ -685,6 +686,10 @@ select option {
     }
 	a {
 		font-size: 1.2vw;
+	}
+	#openDocs {
+		text-decoration: underline;
+		cursor: pointer;
 	}
 }
 .numberInputClick {

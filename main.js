@@ -539,7 +539,7 @@ ipcMain.handle("dialog:importFile", async () => {
     try {
         const fileContent = await fs.promises.readFile(filePath, "utf-8");
         const data = JSON.parse(fileContent);
-        const requiredKeys = ["cn", "ma", "en", "ph", "ch", "bi", "ot"];
+        const requiredKeys = ["cn", "ma", "en", "ph", "ch", "bi", "ot", "po", "hi", "ge"];
         const missingKeys = requiredKeys.filter(
             (key) => !Object.hasOwn(data, key)
         );

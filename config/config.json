@@ -14,6 +14,8 @@
   "configAnimine": true,
   "configBlur": "10",
   "configMask": "0",
+  "HTMLText": true,
+  "autoNewLineToBr": true,
   "enabledSubject": [{"cn": true}, {"ma": true}, {"en": true}, {"ph": true}, {"ch": true}, {"bi": true}, {"po": true}, {"hi": true}, {"ge": true}, {"ot": true}],
   "taskListHoverAnimine": true,
   "CheckboxAnimine": true,

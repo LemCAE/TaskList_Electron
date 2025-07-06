@@ -8,7 +8,6 @@
     - [功能设置](./md/setting/featureSetting.md)
     - [其他设置](./md/setting/otherSetting.md)
   - [拓展功能](./md/extension.md)
-  - [更新](./md/update.md)
 - **其他**
   - [问题反馈](./md/feedback.md)
   - [资源版权说明](./md/resourceCopyright.md)
